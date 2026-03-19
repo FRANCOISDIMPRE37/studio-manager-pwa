@@ -1,9 +1,10 @@
 /*
  * DESIGN: Studio Nocturne — Modal d'ajout de client avec formulaire complet
+ * Correction : validation robuste, champ date compatible Android, messages d'erreur
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
-import { X } from 'lucide-react';
+import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { DocumentType, PrestationType } from '@/lib/types';
 import { toast } from 'sonner';
 
@@ -19,28 +20,81 @@ interface Props {
   onClose: () => void;
 }
 
+function calcAge(dateStr: string): number {
+  if (!dateStr) return -1;
+  const birth = new Date(dateStr);
+  if (isNaN(birth.getTime())) return -1;
+  const now = new Date();
+  let age = now.getFullYear() - birth.getFullYear();
+  const m = now.getMonth() - birth.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+  return age;
+}
+
 export default function AddClientModal({ onClose }: Props) {
-  const { addClient } = useApp();
+  const { addClient, state } = useApp();
+  const formRef = useRef<HTMLFormElement>(null);
+
   const [form, setForm] = useState({
-    prenom: '', nom: '', dateNaissance: '', telephone: '', email: '',
-    adresse: '', codePostal: '', ville: '',
+    prenom: '',
+    nom: '',
+    dateNaissance: '',
+    telephone: '',
+    email: '',
+    adresse: '',
+    codePostal: '',
+    ville: '',
     pieceIdentiteType: '' as '' | 'CNI' | 'Passeport' | 'Permis' | 'Autre',
     pieceIdentiteNumero: '',
     prestationType: '' as '' | PrestationType,
   });
 
-  const isMineur = (() => {
-    if (!form.dateNaissance) return false;
-    const age = Math.floor((Date.now() - new Date(form.dateNaissance).getTime()) / (365.25 * 24 * 60 * 60 * 1000));
-    return age < 18;
-  })();
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitted, setSubmitted] = useState(false);
 
-  const set = (k: string, v: string) => setForm(f => ({ ...f, [k]: v }));
+  // Champs date séparés pour compatibilité Android
+  const [dateJour, setDateJour] = useState('');
+  const [dateMois, setDateMois] = useState('');
+  const [dateAnnee, setDateAnnee] = useState('');
+
+  // Construire la date ISO à partir des 3 champs
+  const buildDateISO = (j: string, m: string, a: string): string => {
+    if (!j || !m || !a || a.length < 4) return '';
+    const jj = j.padStart(2, '0');
+    const mm = m.padStart(2, '0');
+    return `${a}-${mm}-${jj}`;
+  };
+
+  const dateNaissanceValue = buildDateISO(dateJour, dateMois, dateAnnee);
+
+  const age = calcAge(dateNaissanceValue);
+  const isMineur = age >= 0 && age < 18;
+  const isDateValid = age >= 0 && age <= 120;
+
+  const set = (k: string, v: string) => {
+    setForm(f => ({ ...f, [k]: v }));
+    if (submitted) setErrors(prev => ({ ...prev, [k]: '' }));
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    if (!form.prenom.trim()) newErrors.prenom = 'Le prénom est requis';
+    if (!form.nom.trim()) newErrors.nom = 'Le nom est requis';
+    if (!form.telephone.trim()) newErrors.telephone = 'Le téléphone est requis';
+    if (!dateJour || !dateMois || !dateAnnee) {
+      newErrors.dateNaissance = 'La date de naissance est requise';
+    } else if (!isDateValid) {
+      newErrors.dateNaissance = 'Date invalide (vérifiez le format)';
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.prenom || !form.nom || !form.telephone || !form.dateNaissance) {
-      toast.error('Veuillez remplir les champs obligatoires');
+    setSubmitted(true);
+    if (!validate()) {
+      toast.error('Veuillez corriger les erreurs du formulaire');
       return;
     }
 
@@ -54,16 +108,16 @@ export default function AddClientModal({ onClose }: Props) {
     const dateSuppressionPrevue = d.toISOString().split('T')[0];
 
     addClient({
-      prenom: form.prenom,
-      nom: form.nom.toUpperCase(),
-      dateNaissance: form.dateNaissance,
-      telephone: form.telephone,
-      email: form.email || undefined,
-      adresse: form.adresse,
-      codePostal: form.codePostal,
-      ville: form.ville,
+      prenom: form.prenom.trim(),
+      nom: form.nom.trim().toUpperCase(),
+      dateNaissance: dateNaissanceValue,
+      telephone: form.telephone.trim(),
+      email: form.email.trim() || undefined,
+      adresse: form.adresse.trim(),
+      codePostal: form.codePostal.trim(),
+      ville: form.ville.trim(),
       pieceIdentiteType: (form.pieceIdentiteType as 'CNI' | 'Passeport' | 'Permis' | 'Autre') || undefined,
-      pieceIdentiteNumero: form.pieceIdentiteNumero || undefined,
+      pieceIdentiteNumero: form.pieceIdentiteNumero.trim() || undefined,
       estMineur: isMineur,
       prestations: [],
       documentsAssocies: docsAssocies,
@@ -75,20 +129,29 @@ export default function AddClientModal({ onClose }: Props) {
       estArchive: false,
     });
 
-    toast.success(`Client ${form.prenom} ${form.nom.toUpperCase()} créé`);
+    toast.success(`✓ ${form.prenom} ${form.nom.trim().toUpperCase()} ajouté(e)`);
     onClose();
   };
 
-  const inputStyle: React.CSSProperties = {
+  const inputBase: React.CSSProperties = {
     background: 'var(--brand-navy)',
     border: '1px solid var(--brand-border)',
     color: 'var(--brand-text)',
     borderRadius: '0.5rem',
-    padding: '0.5rem 0.75rem',
+    padding: '0.6rem 0.75rem',
     width: '100%',
-    fontSize: '14px',
+    fontSize: '15px',
     outline: 'none',
+    WebkitAppearance: 'none',
+    appearance: 'none',
   };
+
+  const inputError: React.CSSProperties = {
+    ...inputBase,
+    border: '1px solid #F44336',
+  };
+
+  const getInputStyle = (name: string) => errors[name] ? inputError : inputBase;
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
@@ -106,32 +169,87 @@ export default function AddClientModal({ onClose }: Props) {
         style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b sticky top-0" style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy-light)' }}>
-          <h2 className="text-base font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Nouveau client</h2>
+        <div className="flex items-center justify-between p-4 border-b sticky top-0 z-10" style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy-light)' }}>
+          <h2 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Nouveau client</h2>
+          {state.isDemo && (
+            <span className="text-xs px-2 py-0.5 rounded" style={{ background: 'rgba(255,152,0,0.15)', color: '#FF9800', border: '1px solid #FF9800' }}>Mode démo</span>
+          )}
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-all">
             <X size={18} style={{ color: 'var(--brand-text-muted)' }} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4">
+        <form ref={formRef} onSubmit={handleSubmit} className="p-4 space-y-5" noValidate>
           {/* Identité */}
           <div>
             <p className="text-xs font-600 mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Identité</p>
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>Prénom *</label>
-                <input style={inputStyle} value={form.prenom} onChange={e => set('prenom', e.target.value)} required />
+                <input style={getInputStyle('prenom')} value={form.prenom} onChange={e => set('prenom', e.target.value)} autoComplete="off" />
+                {errors.prenom && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errors.prenom}</p>}
               </div>
               <div>
                 <label style={labelStyle}>Nom *</label>
-                <input style={inputStyle} value={form.nom} onChange={e => set('nom', e.target.value)} required />
+                <input style={getInputStyle('nom')} value={form.nom} onChange={e => set('nom', e.target.value)} autoComplete="off" />
+                {errors.nom && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errors.nom}</p>}
               </div>
             </div>
             <div className="mt-3">
               <label style={labelStyle}>Date de naissance *</label>
-              <input type="date" style={inputStyle} value={form.dateNaissance} onChange={e => set('dateNaissance', e.target.value)} required />
-              {isMineur && (
-                <p className="text-xs mt-1" style={{ color: '#9C27B0' }}>⚠ Client mineur — documents parentaux requis</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div>
+                  <input
+                    type="number"
+                    style={errors.dateNaissance ? inputError : inputBase}
+                    value={dateJour}
+                    onChange={e => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setDateJour(v);
+                      if (submitted) setErrors(prev => ({ ...prev, dateNaissance: '' }));
+                    }}
+                    placeholder="JJ"
+                    min="1" max="31"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="number"
+                    style={errors.dateNaissance ? inputError : inputBase}
+                    value={dateMois}
+                    onChange={e => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 2);
+                      setDateMois(v);
+                      if (submitted) setErrors(prev => ({ ...prev, dateNaissance: '' }));
+                    }}
+                    placeholder="MM"
+                    min="1" max="12"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="number"
+                    style={errors.dateNaissance ? inputError : inputBase}
+                    value={dateAnnee}
+                    onChange={e => {
+                      const v = e.target.value.replace(/\D/g, '').slice(0, 4);
+                      setDateAnnee(v);
+                      if (submitted) setErrors(prev => ({ ...prev, dateNaissance: '' }));
+                    }}
+                    placeholder="AAAA"
+                    min="1900" max={new Date().getFullYear()}
+                  />
+                </div>
+              </div>
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)', opacity: 0.6 }}>Jour / Mois / Année</p>
+              {errors.dateNaissance && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errors.dateNaissance}</p>}
+              {dateNaissanceValue && isDateValid && (
+                <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: isMineur ? '#9C27B0' : 'var(--brand-text-muted)' }}>
+                  {isMineur
+                    ? <><AlertCircle size={11} /> Client mineur ({age} ans) — documents parentaux requis</>
+                    : <><CheckCircle2 size={11} style={{ color: 'var(--brand-cyan)' }} /> {age} ans</>
+                  }
+                </p>
               )}
             </div>
           </div>
@@ -142,24 +260,25 @@ export default function AddClientModal({ onClose }: Props) {
             <div className="space-y-3">
               <div>
                 <label style={labelStyle}>Téléphone *</label>
-                <input type="tel" style={inputStyle} value={form.telephone} onChange={e => set('telephone', e.target.value)} required />
+                <input type="tel" style={getInputStyle('telephone')} value={form.telephone} onChange={e => set('telephone', e.target.value)} placeholder="06 XX XX XX XX" autoComplete="off" />
+                {errors.telephone && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errors.telephone}</p>}
               </div>
               <div>
                 <label style={labelStyle}>Email</label>
-                <input type="email" style={inputStyle} value={form.email} onChange={e => set('email', e.target.value)} />
+                <input type="email" style={inputBase} value={form.email} onChange={e => set('email', e.target.value)} placeholder="exemple@email.fr" autoComplete="off" />
               </div>
               <div>
                 <label style={labelStyle}>Adresse</label>
-                <input style={inputStyle} value={form.adresse} onChange={e => set('adresse', e.target.value)} />
+                <input style={inputBase} value={form.adresse} onChange={e => set('adresse', e.target.value)} autoComplete="off" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label style={labelStyle}>Code postal</label>
-                  <input style={inputStyle} value={form.codePostal} onChange={e => set('codePostal', e.target.value)} />
+                  <input style={inputBase} value={form.codePostal} onChange={e => set('codePostal', e.target.value)} placeholder="75000" autoComplete="off" />
                 </div>
                 <div>
                   <label style={labelStyle}>Ville</label>
-                  <input style={inputStyle} value={form.ville} onChange={e => set('ville', e.target.value)} />
+                  <input style={inputBase} value={form.ville} onChange={e => set('ville', e.target.value)} autoComplete="off" />
                 </div>
               </div>
             </div>
@@ -171,7 +290,7 @@ export default function AddClientModal({ onClose }: Props) {
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label style={labelStyle}>Type</label>
-                <select style={{ ...inputStyle }} value={form.pieceIdentiteType} onChange={e => set('pieceIdentiteType', e.target.value)}>
+                <select style={{ ...inputBase, cursor: 'pointer' }} value={form.pieceIdentiteType} onChange={e => set('pieceIdentiteType', e.target.value)}>
                   <option value="">— Sélectionner —</option>
                   <option value="CNI">CNI</option>
                   <option value="Passeport">Passeport</option>
@@ -181,7 +300,7 @@ export default function AddClientModal({ onClose }: Props) {
               </div>
               <div>
                 <label style={labelStyle}>Numéro</label>
-                <input style={inputStyle} value={form.pieceIdentiteNumero} onChange={e => set('pieceIdentiteNumero', e.target.value)} />
+                <input style={inputBase} value={form.pieceIdentiteNumero} onChange={e => set('pieceIdentiteNumero', e.target.value)} autoComplete="off" />
               </div>
             </div>
           </div>
@@ -189,7 +308,7 @@ export default function AddClientModal({ onClose }: Props) {
           {/* Prestation */}
           <div>
             <p className="text-xs font-600 mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Prestation prévue</p>
-            <select style={{ ...inputStyle }} value={form.prestationType} onChange={e => set('prestationType', e.target.value)}>
+            <select style={{ ...inputBase, cursor: 'pointer' }} value={form.prestationType} onChange={e => set('prestationType', e.target.value)}>
               <option value="">— Sélectionner —</option>
               <option value="piercing">Piercing</option>
               <option value="tatouage">Tatouage</option>
