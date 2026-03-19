@@ -1,3 +1,11 @@
+/*
+ * DESIGN PHILOSOPHY: "Studio Nocturne" — Interface sombre professionnelle
+ * Inspirée de Lightroom / DaVinci Resolve / Final Cut Pro
+ * Palette Intemporelle: bleu nuit #0A1628, cyan #83D0F5, rose #C0396A
+ * Typographie: Outfit (géométrique, moderne)
+ * Optimisé tablette Android (base 14px)
+ */
+
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -42,75 +50,55 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
+/* Intemporelle brand colors */
 :root {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-600);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --radius: 0.65rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.235 0.015 65);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.235 0.015 65);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.235 0.015 65);
-  --secondary: oklch(0.98 0.001 286.375);
-  --secondary-foreground: oklch(0.4 0.015 65);
-  --muted: oklch(0.967 0.001 286.375);
-  --muted-foreground: oklch(0.552 0.016 285.938);
-  --accent: oklch(0.967 0.001 286.375);
-  --accent-foreground: oklch(0.141 0.005 285.823);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(0.92 0.004 286.32);
-  --input: oklch(0.92 0.004 286.32);
-  --ring: oklch(0.623 0.214 259.815);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.235 0.015 65);
-  --sidebar-accent: oklch(0.967 0.001 286.375);
-  --sidebar-accent-foreground: oklch(0.141 0.005 285.823);
-  --sidebar-border: oklch(0.92 0.004 286.32);
-  --sidebar-ring: oklch(0.623 0.214 259.815);
+  --brand-navy: #0A1628;
+  --brand-navy-light: #0F2040;
+  --brand-navy-mid: #1A3560;
+  --brand-cyan: #83D0F5;
+  --brand-cyan-dim: rgba(131, 208, 245, 0.15);
+  --brand-rose: #C0396A;
+  --brand-rose-dim: rgba(192, 57, 106, 0.15);
+  --brand-text: #E8F4FF;
+  --brand-text-muted: #7A9CC4;
+  --brand-border: #1E3A5F;
 }
 
-.dark {
-  --primary: var(--color-blue-700);
-  --primary-foreground: var(--color-blue-50);
-  --sidebar-primary: var(--color-blue-500);
-  --sidebar-primary-foreground: var(--color-blue-50);
-  --background: oklch(0.141 0.005 285.823);
-  --foreground: oklch(0.85 0.005 65);
-  --card: oklch(0.21 0.006 285.885);
-  --card-foreground: oklch(0.85 0.005 65);
-  --popover: oklch(0.21 0.006 285.885);
-  --popover-foreground: oklch(0.85 0.005 65);
-  --secondary: oklch(0.24 0.006 286.033);
-  --secondary-foreground: oklch(0.7 0.005 65);
-  --muted: oklch(0.274 0.006 286.033);
-  --muted-foreground: oklch(0.705 0.015 286.067);
-  --accent: oklch(0.274 0.006 286.033);
-  --accent-foreground:  oklch(0.92 0.005 65);
-  --destructive: oklch(0.704 0.191 22.216);
-  --destructive-foreground: oklch(0.985 0 0);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.488 0.243 264.376);
-  --chart-1: var(--color-blue-300);
-  --chart-2: var(--color-blue-500);
-  --chart-3: var(--color-blue-600);
-  --chart-4: var(--color-blue-700);
-  --chart-5: var(--color-blue-800);
-  --sidebar: oklch(0.21 0.006 285.885);
-  --sidebar-foreground: oklch(0.85 0.005 65);
-  --sidebar-accent: oklch(0.274 0.006 286.033);
-  --sidebar-accent-foreground:  oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.488 0.243 264.376);
+/* Dark theme (default — Studio Nocturne) */
+:root {
+  --radius: 0.5rem;
+  --background: oklch(0.09 0.025 240);
+  --foreground: oklch(0.92 0.015 220);
+  --card: oklch(0.12 0.028 240);
+  --card-foreground: oklch(0.92 0.015 220);
+  --popover: oklch(0.12 0.028 240);
+  --popover-foreground: oklch(0.92 0.015 220);
+  --primary: oklch(0.78 0.12 210);
+  --primary-foreground: oklch(0.09 0.025 240);
+  --secondary: oklch(0.16 0.03 240);
+  --secondary-foreground: oklch(0.75 0.04 220);
+  --muted: oklch(0.14 0.025 240);
+  --muted-foreground: oklch(0.55 0.06 220);
+  --accent: oklch(0.16 0.03 240);
+  --accent-foreground: oklch(0.92 0.015 220);
+  --destructive: oklch(0.62 0.22 15);
+  --destructive-foreground: oklch(0.98 0 0);
+  --border: oklch(0.22 0.04 240);
+  --input: oklch(0.18 0.035 240);
+  --ring: oklch(0.78 0.12 210);
+  --chart-1: oklch(0.78 0.12 210);
+  --chart-2: oklch(0.62 0.18 340);
+  --chart-3: oklch(0.72 0.14 150);
+  --chart-4: oklch(0.68 0.16 60);
+  --chart-5: oklch(0.58 0.2 280);
+  --sidebar: oklch(0.10 0.028 240);
+  --sidebar-foreground: oklch(0.92 0.015 220);
+  --sidebar-primary: oklch(0.78 0.12 210);
+  --sidebar-primary-foreground: oklch(0.09 0.025 240);
+  --sidebar-accent: oklch(0.16 0.03 240);
+  --sidebar-accent-foreground: oklch(0.92 0.015 220);
+  --sidebar-border: oklch(0.20 0.04 240);
+  --sidebar-ring: oklch(0.78 0.12 210);
 }
 
 @layer base {
@@ -119,6 +107,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Outfit', sans-serif;
+    font-size: 14px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
@@ -134,24 +126,11 @@
 }
 
 @layer components {
-  /**
-   * Custom container utility that centers content and adds responsive padding.
-   *
-   * This overrides Tailwind's default container behavior to:
-   * - Auto-center content (mx-auto)
-   * - Add responsive horizontal padding
-   * - Set max-width for large screens
-   *
-   * Usage: <div className="container">...</div>
-   *
-   * For custom widths, use max-w-* utilities directly:
-   * <div className="max-w-6xl mx-auto px-4">...</div>
-   */
   .container {
     width: 100%;
     margin-left: auto;
     margin-right: auto;
-    padding-left: 1rem; /* 16px - mobile padding */
+    padding-left: 1rem;
     padding-right: 1rem;
   }
 
@@ -162,16 +141,100 @@
 
   @media (min-width: 640px) {
     .container {
-      padding-left: 1.5rem; /* 24px - tablet padding */
+      padding-left: 1.5rem;
       padding-right: 1.5rem;
     }
   }
 
   @media (min-width: 1024px) {
     .container {
-      padding-left: 2rem; /* 32px - desktop padding */
+      padding-left: 2rem;
       padding-right: 2rem;
-      max-width: 1280px; /* Standard content width */
+      max-width: 1280px;
     }
+  }
+
+  /* Studio Nocturne card style */
+  .studio-card {
+    background: var(--brand-navy-light);
+    border: 1px solid var(--brand-border);
+    border-radius: 0.5rem;
+    transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .studio-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  }
+
+  /* RGPD status badges */
+  .badge-ok {
+    background: rgba(76, 175, 80, 0.15);
+    border: 1px solid #4CAF50;
+    color: #4CAF50;
+  }
+  .badge-warning {
+    background: rgba(255, 152, 0, 0.15);
+    border: 1px solid #FF9800;
+    color: #FF9800;
+  }
+  .badge-urgent {
+    background: rgba(244, 67, 54, 0.15);
+    border: 1px solid #F44336;
+    color: #F44336;
+  }
+  .badge-expired {
+    background: rgba(156, 39, 176, 0.15);
+    border: 1px solid #9C27B0;
+    color: #9C27B0;
+  }
+
+  /* Sidebar active state */
+  .nav-item-active {
+    background: var(--brand-cyan-dim);
+    border-left: 3px solid var(--brand-cyan);
+    color: var(--brand-cyan);
+  }
+
+  /* Scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--brand-navy);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--brand-border);
+    border-radius: 3px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--brand-navy-mid);
+  }
+
+  /* Page transition animation */
+  @keyframes fadeSlideUp {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .page-enter {
+    animation: fadeSlideUp 300ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  }
+
+  /* Skeleton loading */
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+  .skeleton {
+    background: linear-gradient(90deg, var(--brand-navy-light) 25%, var(--brand-navy-mid) 50%, var(--brand-navy-light) 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+    border-radius: 0.25rem;
   }
 }
