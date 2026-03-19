@@ -818,8 +818,8 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
       <FormField label="Commentaires / observations complémentaires" value={data.observationsPostseance || ''} onChange={v => update('observationsPostseance', v)} multiline />
 
       <LegalBox>
-        <strong>Conservation RGPD :</strong> Cette fiche doit être conservée 5 ans minimum à compter de la date de la séance (Art. R 1311-7 CSP).<br />
-        Références : Décret n°2008-149 du 13/02/2008 - Arrêté du 13/03/2009 - Art. R 1311-7 CSP - Art. R 1335-1 CSP (DASRI)
+        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans<br />
+        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
     </>
   );
