@@ -752,7 +752,7 @@ function FormSoins({ docType, data, update }: { docType: string; data: Record<st
   );
 }
 
-// ─── Fiche de Séance Piercing ─────────────────────────────────────────────────
+// ─── Fiche de Traçabilité Matériel Stérile ─────────────────────────────────────────────────
 
 function FormFicheSeance({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
   return (

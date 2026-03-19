@@ -153,7 +153,7 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   questionnaire_mineur: '01 — Questionnaire Médical Mineur',
   autorisation_parentale: '02 — Autorisation Parentale',
   questionnaire_majeur: '03 — Questionnaire Médical Majeur',
-  fiche_seance_piercing: '04 — Fiche de Séance Piercing',
+  fiche_seance_piercing: '04 — Fiche de Traçabilité Matériel Stérile',
   soins_oreilles: 'A — Fiche de Soins Oreilles',
   soins_nez: 'B — Fiche de Soins Nez',
   soins_bouche_levres: 'C — Fiche de Soins Bouche & Lèvres',
