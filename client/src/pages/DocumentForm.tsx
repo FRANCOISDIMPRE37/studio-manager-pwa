@@ -744,9 +744,8 @@ function FormSoins({ docType, data, update }: { docType: string; data: Record<st
       <FormField label="Notes du professionnel" value={data.notes || ''} onChange={v => update('notes', v)} multiline />
 
       <LegalBox color="cyan">
-        <strong>VOS DROITS RGPD</strong> — Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles.<br />
-        Art. 15 Accès · Art. 16 Rectification · Art. 17 Effacement · Art. 21 Opposition.<br />
-        Durée de conservation : données de santé 3 ans.
+        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans<br />
+        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
     </>
   );
