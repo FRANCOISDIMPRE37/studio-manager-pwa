@@ -284,18 +284,11 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
       <FormField label="Téléphone d'urgence" value={data.urgenceTelephone || ''} onChange={v => update('urgenceTelephone', v)} type="tel" />
 
       <FormSection title="6 — REPRÉSENTANT(S) LÉGAL/AUX" />
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <FormField label="Représentant N°1 — Nom / Prénom" value={data.representantNom || ''} onChange={v => update('representantNom', v)} required />
-          <RadioField label="Lien" options={['Mère', 'Père', 'Tuteur légal', 'Autre']} value={data.representantLien || ''} onChange={v => update('representantLien', v)} />
-          <FormField label="Téléphone représentant N°1" value={data.representantTelephone || ''} onChange={v => update('representantTelephone', v)} type="tel" />
-          <RadioField label="Pièce d'identité" options={['CNI', 'Passeport', 'Titre de séjour']} value={data.representantPieceId || ''} onChange={v => update('representantPieceId', v)} />
-        </div>
-        <div>
-          <FormField label="Représentant N°2 — Nom / Prénom (facultatif)" value={data.representant2Nom || ''} onChange={v => update('representant2Nom', v)} />
-          <RadioField label="Lien représentant N°2" options={['Mère', 'Père', 'Tuteur légal', 'Autre']} value={data.representant2Lien || ''} onChange={v => update('representant2Lien', v)} />
-          <FormField label="Téléphone représentant N°2" value={data.representant2Telephone || ''} onChange={v => update('representant2Telephone', v)} type="tel" />
-        </div>
+      <div>
+        <FormField label="Représentant légal — Nom / Prénom" value={data.representantNom || ''} onChange={v => update('representantNom', v)} required />
+        <RadioField label="Lien" options={['Mère', 'Père', 'Tuteur légal', 'Autre']} value={data.representantLien || ''} onChange={v => update('representantLien', v)} />
+        <FormField label="Téléphone représentant" value={data.representantTelephone || ''} onChange={v => update('representantTelephone', v)} type="tel" />
+        <RadioField label="Pièce d'identité" options={['CNI', 'Passeport', 'Titre de séjour']} value={data.representantPieceId || ''} onChange={v => update('representantPieceId', v)} />
       </div>
 
       <FormSection title="7 — CONSENTEMENT PARENTAL ÉCLAIRÉ" />
