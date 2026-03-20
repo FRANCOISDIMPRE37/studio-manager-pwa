@@ -150,3 +150,23 @@ export const smtpConfig = mysqlTable("smtp_config", {
 
 export type SmtpConfig = typeof smtpConfig.$inferSelect;
 export type InsertSmtpConfig = typeof smtpConfig.$inferInsert;
+
+/**
+ * Table des utilisateurs locaux du studio (créés par l'admin)
+ * Distincts des comptes OAuth — accès par login + mot de passe
+ */
+export const studioUsers = mysqlTable("studio_users", {
+  id: int("id").autoincrement().primaryKey(),
+  ownerId: int("ownerId").notNull(), // FK vers users.id (le propriétaire du studio)
+  prenom: varchar("prenom", { length: 100 }).notNull(),
+  nom: varchar("nom", { length: 100 }).notNull(),
+  login: varchar("login", { length: 100 }).notNull(), // identifiant de connexion
+  passwordHash: text("passwordHash").notNull(), // bcrypt hash
+  role: mysqlEnum("role", ["admin", "employe", "stagiaire"]).default("employe").notNull(),
+  actif: boolean("actif").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type StudioUser = typeof studioUsers.$inferSelect;
+export type InsertStudioUser = typeof studioUsers.$inferInsert;

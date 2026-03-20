@@ -1,7 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig } from "../drizzle/schema";
-import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig } from "../drizzle/schema";
+import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers } from "../drizzle/schema";
+import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig, InsertStudioUser } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -240,6 +240,63 @@ export async function upsertSmtpConfig(userId: number, data: Omit<InsertSmtpConf
   await db.insert(smtpConfig)
     .values({ userId, ...data })
     .onDuplicateKeyUpdate({ set: data });
+}
+
+// ============ STUDIO USERS (utilisateurs locaux) ============
+
+export async function getStudioUsersByOwner(ownerId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select({
+    id: studioUsers.id,
+    prenom: studioUsers.prenom,
+    nom: studioUsers.nom,
+    login: studioUsers.login,
+    role: studioUsers.role,
+    actif: studioUsers.actif,
+    createdAt: studioUsers.createdAt,
+    updatedAt: studioUsers.updatedAt,
+  }).from(studioUsers).where(eq(studioUsers.ownerId, ownerId));
+}
+
+export async function getStudioUserById(id: number, ownerId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(studioUsers)
+    .where(and(eq(studioUsers.id, id), eq(studioUsers.ownerId, ownerId)))
+    .limit(1);
+  return result[0];
+}
+
+export async function loginExistsForOwner(login: string, ownerId: number, excludeId?: number) {
+  const db = await getDb();
+  if (!db) return false;
+  const result = await db.select({ id: studioUsers.id }).from(studioUsers)
+    .where(and(eq(studioUsers.login, login), eq(studioUsers.ownerId, ownerId)))
+    .limit(1);
+  if (result.length === 0) return false;
+  if (excludeId && result[0].id === excludeId) return false;
+  return true;
+}
+
+export async function createStudioUser(data: InsertStudioUser) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(studioUsers).values(data);
+}
+
+export async function updateStudioUser(id: number, ownerId: number, data: Partial<Pick<InsertStudioUser, 'prenom' | 'nom' | 'login' | 'passwordHash' | 'role' | 'actif'>>) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.update(studioUsers).set(data)
+    .where(and(eq(studioUsers.id, id), eq(studioUsers.ownerId, ownerId)));
+}
+
+export async function deleteStudioUser(id: number, ownerId: number) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.delete(studioUsers)
+    .where(and(eq(studioUsers.id, id), eq(studioUsers.ownerId, ownerId)));
 }
 
 // ============ RDV RAPPELS ============

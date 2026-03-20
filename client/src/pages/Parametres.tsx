@@ -4,6 +4,7 @@
 import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, Server, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react';
+import GestionUtilisateurs from './GestionUtilisateurs';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
@@ -483,6 +484,15 @@ export default function Parametres() {
             Choisir un fichier de sauvegarde
           </button>
         </div>
+      </div>
+
+      {/* Gestion des utilisateurs */}
+      <div className="studio-card p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Users size={16} style={{ color: 'var(--brand-cyan)' }} />
+          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Gestion des utilisateurs</h2>
+        </div>
+        <GestionUtilisateurs />
       </div>
 
       {/* Logout */}

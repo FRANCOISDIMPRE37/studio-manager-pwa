@@ -4,6 +4,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
 import nodemailer from "nodemailer";
+import bcrypt from "bcryptjs";
 import {
   getClientsByUserId, getClientById, createClient, updateClientById, deleteClientById,
   getPrestationsByClientId, createPrestation, deletePrestationById,
@@ -11,6 +12,8 @@ import {
   getRDVByUserId, createRDV, updateRDVById, deleteRDVById,
   getSalonSettings, upsertSalonSettings,
   getSmtpConfig, upsertSmtpConfig,
+  getStudioUsersByOwner, getStudioUserById, loginExistsForOwner,
+  createStudioUser, updateStudioUser, deleteStudioUser,
 } from "./db";
 
 export const appRouter = router({
@@ -547,6 +550,82 @@ export const appRouter = router({
         } catch (err: any) {
           throw new Error(`Échec d'envoi : ${err.message}`);
         }
+      }),
+  }),
+
+  // ─── Gestion des utilisateurs locaux du studio ───────────────────────────
+  studioUsers: router({
+    // Lister tous les utilisateurs du studio
+    list: protectedProcedure.query(async ({ ctx }) => {
+      return getStudioUsersByOwner(ctx.user.id);
+    }),
+
+    // Créer un nouvel utilisateur
+    create: protectedProcedure
+      .input(z.object({
+        prenom: z.string().min(1, 'Le prénom est requis'),
+        nom: z.string().min(1, 'Le nom est requis'),
+        login: z.string().min(3, 'Le login doit faire au moins 3 caractères').regex(/^[a-zA-Z0-9._-]+$/, 'Login invalide (lettres, chiffres, . _ - uniquement)'),
+        password: z.string().min(6, 'Le mot de passe doit faire au moins 6 caractères'),
+        role: z.enum(['admin', 'employe', 'stagiaire']).default('employe'),
+        actif: z.boolean().default(true),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const exists = await loginExistsForOwner(input.login, ctx.user.id);
+        if (exists) throw new Error(`Le login "${input.login}" est déjà utilisé.`);
+        const passwordHash = await bcrypt.hash(input.password, 10);
+        await createStudioUser({
+          ownerId: ctx.user.id,
+          prenom: input.prenom,
+          nom: input.nom,
+          login: input.login,
+          passwordHash,
+          role: input.role,
+          actif: input.actif,
+        });
+        return { success: true };
+      }),
+
+    // Modifier un utilisateur existant
+    update: protectedProcedure
+      .input(z.object({
+        id: z.number(),
+        prenom: z.string().min(1).optional(),
+        nom: z.string().min(1).optional(),
+        login: z.string().min(3).regex(/^[a-zA-Z0-9._-]+$/).optional(),
+        password: z.string().min(6).optional(), // vide = ne pas changer
+        role: z.enum(['admin', 'employe', 'stagiaire']).optional(),
+        actif: z.boolean().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const { id, password, ...rest } = input;
+        if (rest.login) {
+          const exists = await loginExistsForOwner(rest.login, ctx.user.id, id);
+          if (exists) throw new Error(`Le login "${rest.login}" est déjà utilisé.`);
+        }
+        const updateData: Record<string, unknown> = { ...rest };
+        if (password && password.length > 0) {
+          updateData.passwordHash = await bcrypt.hash(password, 10);
+        }
+        await updateStudioUser(id, ctx.user.id, updateData as any);
+        return { success: true };
+      }),
+
+    // Supprimer un utilisateur
+    delete: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await deleteStudioUser(input.id, ctx.user.id);
+        return { success: true };
+      }),
+
+    // Réinitialiser le mot de passe
+    resetPassword: protectedProcedure
+      .input(z.object({ id: z.number(), newPassword: z.string().min(6) }))
+      .mutation(async ({ ctx, input }) => {
+        const passwordHash = await bcrypt.hash(input.newPassword, 10);
+        await updateStudioUser(input.id, ctx.user.id, { passwordHash });
+        return { success: true };
       }),
   }),
 
