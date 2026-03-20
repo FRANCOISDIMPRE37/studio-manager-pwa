@@ -31,6 +31,8 @@ export type DocumentType =
   | 'questionnaire_dermographe'
   | 'consentement_soins_tatouage'
   | 'soins_dermographe'
+  | 'engagement_confidentialite'
+  | 'affichage_salon'
 ;
 
 // Document rempli
@@ -168,6 +170,8 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   questionnaire_dermographe: '06 — Questionnaire Médical Dermographe',
   consentement_soins_tatouage: '07 — Consentement & Soins Post-Tatouage',
   soins_dermographe: '08 — Soins Post-Dermographie (Maquillage Permanent)',
+  engagement_confidentialite: '07 — Engagement de Confidentialité (RGPD Art. 29)',
+  affichage_salon: '08 — Information Client — Protection des Données (RGPD)',
 };
 
 export function calculateRGPDStatus(dateSuppressionPrevue: string): RGPDStatus {

@@ -36,6 +36,13 @@ const DOC_CATEGORIES = [
     docs: ['questionnaire_tatouage_majeur', 'questionnaire_dermographe', 'consentement_soins_tatouage', 'soins_dermographe'] as DocumentType[],
     forMineur: null,
   },
+  {
+    title: 'RGPD & Confidentialité',
+    icon: Shield,
+    color: '#E53935',
+    docs: ['engagement_confidentialite', 'affichage_salon'] as DocumentType[],
+    forMineur: null,
+  },
 ];
 
 export default function Documents() {

@@ -8,3 +8,8 @@
 - [x] Ajouter la fiche dans la catégorie Tatouage & Dermographie de Documents.tsx
 - [x] Créer FormSoinsDermographe avec consignes spécifiques maquillage permanent
 - [x] Ajouter le case dans le switch renderForm() de DocumentForm.tsx
+- [x] Ajouter types engagement_confidentialite et affichage_salon dans types.ts
+- [x] Ajouter les deux fiches dans la catégorie RGPD de Documents.tsx
+- [x] Créer FormEngagementConfidentialite fidèle au PDF (mise en page + toutes lois)
+- [x] Créer FormAffichageSalon fidèle au PDF (blocs colorés rouge/bleu/vert/orange/violet/gris)
+- [x] Ajouter les deux cases dans le switch renderForm() de DocumentForm.tsx
