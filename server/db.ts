@@ -1,7 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers } from "../drizzle/schema";
-import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig, InsertStudioUser } from "../drizzle/schema";
+import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers, smsConfig } from "../drizzle/schema";
+import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig, InsertStudioUser, InsertSmsConfig } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -297,6 +297,23 @@ export async function deleteStudioUser(id: number, ownerId: number) {
   if (!db) throw new Error("Database not available");
   await db.delete(studioUsers)
     .where(and(eq(studioUsers.id, id), eq(studioUsers.ownerId, ownerId)));
+}
+
+// ============ SMS CONFIG ============
+
+export async function getSmsConfig(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db.select().from(smsConfig).where(eq(smsConfig.userId, userId)).limit(1);
+  return result[0];
+}
+
+export async function upsertSmsConfig(userId: number, data: Pick<InsertSmsConfig, 'apiKey' | 'senderName'>) {
+  const db = await getDb();
+  if (!db) throw new Error('Database not available');
+  await db.insert(smsConfig)
+    .values({ userId, ...data })
+    .onDuplicateKeyUpdate({ set: data });
 }
 
 // ============ RDV RAPPELS ============

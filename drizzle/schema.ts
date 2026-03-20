@@ -170,3 +170,17 @@ export const studioUsers = mysqlTable("studio_users", {
 
 export type StudioUser = typeof studioUsers.$inferSelect;
 export type InsertStudioUser = typeof studioUsers.$inferInsert;
+
+/**
+ * Configuration SMS Brevo (ex-Sendinblue)
+ */
+export const smsConfig = mysqlTable("sms_config", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(),
+  apiKey: text("apiKey").notNull(),
+  senderName: varchar("senderName", { length: 11 }).default("Studio").notNull(), // max 11 chars pour SMS
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SmsConfig = typeof smsConfig.$inferSelect;
+export type InsertSmsConfig = typeof smsConfig.$inferInsert;

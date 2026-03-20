@@ -4,7 +4,7 @@
 import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useLocation, useParams } from 'wouter';
-import { ArrowLeft, Phone, Mail, MapPin, CreditCard, Calendar, FileText, Shield, Trash2, Archive, AlertTriangle, CheckCircle, Edit, PlusCircle, Send, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MapPin, CreditCard, Calendar, FileText, Shield, Trash2, Archive, AlertTriangle, CheckCircle, Edit, PlusCircle, Send, X, Loader2, MessageSquare } from 'lucide-react';
 import { DOCUMENT_LABELS, RGPDStatus } from '@/lib/types';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
@@ -21,6 +21,13 @@ export default function ClientDetail() {
   const [tab, setTab] = useState<Tab>('infos');
   const [showDossierModal, setShowDossierModal] = useState(false);
   const [dossierEmail, setDossierEmail] = useState('');
+  // ─── SMS ───
+  const [showSmsModal, setShowSmsModal] = useState(false);
+  const [smsMessage, setSmsMessage] = useState('');
+  const sendSms = trpc.sms.send.useMutation({
+    onSuccess: (r) => { toast.success(`SMS envoyé au ${r.phone}`); setShowSmsModal(false); setSmsMessage(''); },
+    onError: (e) => toast.error(e.message),
+  });
   const sendDossier = trpc.smtp.sendClientDossier.useMutation({
     onSuccess: () => {
       toast.success('Dossier envoyé avec succès !');
@@ -149,6 +156,17 @@ export default function ClientDetail() {
                 </div>
               ))}
             </div>
+            {/* Bouton SMS */}
+            {client.telephone && (
+              <button
+                onClick={() => { setSmsMessage(''); setShowSmsModal(true); }}
+                className="w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
+                style={{ background: 'rgba(100,255,218,0.08)', border: '1px solid rgba(100,255,218,0.35)', color: '#64FFDA', fontWeight: 600 }}
+              >
+                <MessageSquare size={14} />
+                Envoyer un SMS
+              </button>
+            )}
             <div className="flex gap-3">
               <button onClick={handleArchive} className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
                 style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
@@ -366,6 +384,83 @@ export default function ClientDetail() {
               style={{ background: 'rgba(131,208,245,0.15)', border: '1px solid rgba(131,208,245,0.4)', color: 'var(--brand-cyan)', fontWeight: 600, opacity: !dossierEmail ? 0.5 : 1 }}
             >
               {sendDossier.isPending ? <><Loader2 size={14} className="animate-spin" />Envoi...</> : <><Send size={14} />Envoyer</>}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {/* Modal envoi SMS */}
+    {showSmsModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.75)' }}>
+        <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: 'var(--brand-navy)', border: '1px solid rgba(100,255,218,0.3)' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MessageSquare size={18} style={{ color: '#64FFDA' }} />
+              <h3 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Envoyer un SMS</h3>
+            </div>
+            <button onClick={() => setShowSmsModal(false)} className="p-1.5 rounded-lg hover:bg-white/10">
+              <X size={16} style={{ color: 'var(--brand-text-muted)' }} />
+            </button>
+          </div>
+
+          <div className="p-3 rounded-lg" style={{ background: 'rgba(100,255,218,0.05)', border: '1px solid rgba(100,255,218,0.15)' }}>
+            <p className="text-sm" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{client.prenom} {client.nom}</p>
+            <p className="text-xs mt-0.5 font-mono" style={{ color: '#64FFDA' }}>{client.telephone}</p>
+          </div>
+
+          {/* Messages rapides */}
+          <div>
+            <p className="text-xs mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Messages rapides :</p>
+            <div className="flex flex-wrap gap-2">
+              {[
+                `Bonjour ${client.prenom}, votre RDV est confirmé. À bientôt !`,
+                `Bonjour ${client.prenom}, n'oubliez pas votre RDV demain. À bientôt !`,
+                `Bonjour ${client.prenom}, vos soins post-tatouage sont importants. N'hésitez pas à nous contacter.`,
+              ].map((msg, i) => (
+                <button
+                  key={i}
+                  onClick={() => setSmsMessage(msg)}
+                  className="text-xs px-2.5 py-1.5 rounded-lg transition-all"
+                  style={{ background: 'rgba(100,255,218,0.08)', border: '1px solid rgba(100,255,218,0.25)', color: '#64FFDA' }}
+                >
+                  {i === 0 ? 'Confirmation RDV' : i === 1 ? 'Rappel RDV' : 'Soins post-tatouage'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <label className="text-xs" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Message</label>
+              <span className="text-xs" style={{ color: smsMessage.length > 140 ? '#F44336' : 'var(--brand-text-muted)' }}>{smsMessage.length}/160</span>
+            </div>
+            <textarea
+              value={smsMessage}
+              onChange={e => setSmsMessage(e.target.value)}
+              maxLength={160}
+              rows={4}
+              placeholder="Saisissez votre message SMS..."
+              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none resize-none"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
+            />
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button
+              onClick={() => setShowSmsModal(false)}
+              className="flex-1 py-2.5 rounded-lg text-sm transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}
+            >
+              Annuler
+            </button>
+            <button
+              onClick={() => sendSms.mutate({ to: client.telephone, message: smsMessage, clientNom: client.nom })}
+              disabled={sendSms.isPending || !smsMessage.trim()}
+              className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'rgba(100,255,218,0.15)', border: '1px solid rgba(100,255,218,0.4)', color: '#64FFDA', fontWeight: 600, opacity: !smsMessage.trim() ? 0.5 : 1 }}
+            >
+              {sendSms.isPending ? <><Loader2 size={14} className="animate-spin" />Envoi...</> : <><MessageSquare size={14} />Envoyer le SMS</>}
             </button>
           </div>
         </div>

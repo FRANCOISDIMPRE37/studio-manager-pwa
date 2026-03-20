@@ -14,6 +14,7 @@ import {
   getSmtpConfig, upsertSmtpConfig,
   getStudioUsersByOwner, getStudioUserById, loginExistsForOwner,
   createStudioUser, updateStudioUser, deleteStudioUser,
+  getSmsConfig, upsertSmsConfig,
 } from "./db";
 
 export const appRouter = router({
@@ -550,6 +551,107 @@ export const appRouter = router({
         } catch (err: any) {
           throw new Error(`Échec d'envoi : ${err.message}`);
         }
+      }),
+  }),
+
+  // ─── Configuration et envoi SMS via Brevo ────────────────────────────────
+  sms: router({
+    // Récupérer la config SMS (clé API masquée)
+    getConfig: protectedProcedure.query(async ({ ctx }) => {
+      const config = await getSmsConfig(ctx.user.id);
+      if (!config) return null;
+      return {
+        apiKeySet: config.apiKey.length > 0,
+        apiKeyPreview: config.apiKey.length > 8 ? `${config.apiKey.slice(0, 4)}...${config.apiKey.slice(-4)}` : '****',
+        senderName: config.senderName,
+      };
+    }),
+
+    // Sauvegarder la config SMS
+    saveConfig: protectedProcedure
+      .input(z.object({
+        apiKey: z.string().min(10, 'Clé API invalide'),
+        senderName: z.string().min(1).max(11, 'Max 11 caractères').regex(/^[a-zA-Z0-9]+$/, 'Lettres et chiffres uniquement'),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        await upsertSmsConfig(ctx.user.id, { apiKey: input.apiKey, senderName: input.senderName });
+        return { success: true };
+      }),
+
+    // Envoyer un SMS via l'API Brevo
+    send: protectedProcedure
+      .input(z.object({
+        to: z.string().min(10, 'Numéro invalide'), // ex: +33612345678
+        message: z.string().min(1).max(160, 'SMS limité à 160 caractères'),
+        clientNom: z.string().optional(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmsConfig(ctx.user.id);
+        if (!config || !config.apiKey) {
+          throw new Error('Configuration SMS non configurée. Rendez-vous dans Paramètres > Configuration SMS.');
+        }
+        // Nettoyer le numéro : supprimer espaces et tirets, ajouter +33 si numéro FR
+        let phone = input.to.replace(/[\s\-\.]/g, '');
+        if (phone.startsWith('0') && phone.length === 10) {
+          phone = '+33' + phone.slice(1);
+        }
+        const salon = await getSalonSettings(ctx.user.id);
+        const sender = config.senderName || salon?.nom?.slice(0, 11) || 'Studio';
+        try {
+          const response = await fetch('https://api.brevo.com/v3/transactionalSMS/sms', {
+            method: 'POST',
+            headers: {
+              'accept': 'application/json',
+              'api-key': config.apiKey,
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+              sender: sender.slice(0, 11),
+              recipient: phone,
+              content: input.message,
+              type: 'transactional',
+            }),
+          });
+          if (!response.ok) {
+            const err = await response.json().catch(() => ({}));
+            throw new Error((err as any).message || `Erreur Brevo : ${response.status}`);
+          }
+          return { success: true, phone };
+        } catch (err: any) {
+          throw new Error(`Échec d'envoi SMS : ${err.message}`);
+        }
+      }),
+
+    // Envoyer un SMS de rappel de RDV
+    sendRappelRdv: protectedProcedure
+      .input(z.object({
+        clientNom: z.string(),
+        clientPrenom: z.string(),
+        telephone: z.string(),
+        rdvDate: z.string(),
+        rdvHeure: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmsConfig(ctx.user.id);
+        if (!config || !config.apiKey) {
+          throw new Error('Configuration SMS non configurée.');
+        }
+        const salon = await getSalonSettings(ctx.user.id);
+        const salonNom = salon?.nom || 'votre studio';
+        const message = `Bonjour ${input.clientPrenom}, rappel de votre RDV le ${input.rdvDate} à ${input.rdvHeure} chez ${salonNom}. À bientôt !`;
+        let phone = input.telephone.replace(/[\s\-\.]/g, '');
+        if (phone.startsWith('0') && phone.length === 10) phone = '+33' + phone.slice(1);
+        const sender = (config.senderName || salonNom).slice(0, 11);
+        const response = await fetch('https://api.brevo.com/v3/transactionalSMS/sms', {
+          method: 'POST',
+          headers: { 'accept': 'application/json', 'api-key': config.apiKey, 'content-type': 'application/json' },
+          body: JSON.stringify({ sender, recipient: phone, content: message, type: 'transactional' }),
+        });
+        if (!response.ok) {
+          const err = await response.json().catch(() => ({}));
+          throw new Error((err as any).message || `Erreur Brevo : ${response.status}`);
+        }
+        return { success: true, message };
       }),
   }),
 
