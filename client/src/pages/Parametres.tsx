@@ -13,6 +13,7 @@ export default function Parametres() {
   const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
     nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
     telephone: '', email: '', siret: '', nomPierceur: '', nomTatoueur: '', nomDermographe: '', logo: '',
+    siteWeb: '', mentionsLegales: '',
   });
   const logoInputRef = useRef<HTMLInputElement>(null);
 
@@ -162,6 +163,18 @@ export default function Parametres() {
               <div><label style={labelStyle}>Email</label><input type="email" style={inputStyle} value={salonForm.email} onChange={e => setSalonForm(f => ({ ...f, email: e.target.value }))} /></div>
             </div>
             <div><label style={labelStyle}>SIRET</label><input style={inputStyle} value={salonForm.siret} onChange={e => setSalonForm(f => ({ ...f, siret: e.target.value }))} /></div>
+            <div><label style={labelStyle}>Site web</label><input style={inputStyle} value={salonForm.siteWeb || ''} onChange={e => setSalonForm(f => ({ ...f, siteWeb: e.target.value }))} placeholder="https://www.monsalon.fr" /></div>
+            <div>
+              <label style={labelStyle}>Mentions légales personnalisées <span style={{ color: 'var(--brand-text-muted)', fontWeight: 400 }}>(pied de page imprimable)</span></label>
+              <textarea
+                style={{ ...inputStyle, resize: 'vertical', minHeight: 56 }}
+                value={salonForm.mentionsLegales || ''}
+                onChange={e => setSalonForm(f => ({ ...f, mentionsLegales: e.target.value }))}
+                placeholder="Ex : Agrément préfectoral n° XXX — Membre de la Fédération Française du Tatouage"
+                rows={2}
+              />
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Cette ligne apparaît dans le pied de page de toutes les fiches imprimées.</p>
+            </div>
             <div className="grid grid-cols-1 gap-3">
               <div><label style={labelStyle}>Nom du pierceur</label><input style={inputStyle} value={salonForm.nomPierceur} onChange={e => setSalonForm(f => ({ ...f, nomPierceur: e.target.value }))} /></div>
               <div><label style={labelStyle}>Nom du tatoueur</label><input style={inputStyle} value={salonForm.nomTatoueur || ''} onChange={e => setSalonForm(f => ({ ...f, nomTatoueur: e.target.value }))} /></div>

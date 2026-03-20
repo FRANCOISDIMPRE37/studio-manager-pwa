@@ -255,6 +255,9 @@ function PrintFooter({ salonInfo, docTitle }: {
           <div>Conservation : 3 ans minimum à compter de la dernière prestation (Art. L1110-4 CSP)</div>
           <div>Données protégées conformément au Règlement (UE) 2016/679 (RGPD) — Droits : Art. 15, 16, 17, 21</div>
           <div>Pour exercer vos droits : {salonInfo?.email || 'contact@salon.fr'}</div>
+          {salonInfo?.mentionsLegales && (
+            <div style={{ marginTop: 4, fontStyle: 'italic', color: '#555' }}>{salonInfo.mentionsLegales}</div>
+          )}
           <div style={{ marginTop: 4, color: '#999' }}>© {year} {salonInfo?.nom || 'Studio'} — {docTitle}</div>
         </div>
         {/* Colonne droite : numéro de page + site web */}

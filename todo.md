@@ -33,3 +33,6 @@
 - [x] Ajouter les styles CSS d'impression pour afficher le logo correctement sur papier
 - [x] Créer composant PrintFooter (numéro de page, mentions légales, site web salon)
 - [x] Intégrer PrintFooter dans DocumentForm avec styles CSS @media print (position fixe en bas)
+- [x] Ajouter champ "Mentions légales personnalisées" dans Paramètres — section Informations du salon
+- [x] Persister ce champ dans salonInfo (localStorage via AppContext)
+- [x] Intégrer la valeur dans la colonne centrale du composant PrintFooter

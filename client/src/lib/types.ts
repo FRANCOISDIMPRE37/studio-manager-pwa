@@ -103,6 +103,8 @@ export interface SalonInfo {
   nomTatoueur?: string;
   nomDermographe?: string;
   logo?: string; // base64 data URL
+  mentionsLegales?: string; // ligne libre affichée dans le pied de page imprimable
+  siteWeb?: string; // URL du site web du salon
 }
 
 // Statistiques du tableau de bord
