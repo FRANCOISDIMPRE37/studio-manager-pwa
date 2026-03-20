@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import { DocumentType, DOCUMENT_LABELS, Client } from '@/lib/types';
-import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail, Send, X } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail, Send, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import SignaturePad from '@/components/SignaturePad';
 import { trpc } from '@/lib/trpc';
@@ -2651,12 +2651,19 @@ export default function DocumentForm() {
           {/* Bouton Email */}
           <button
             onClick={handleEmail}
-            title="Envoyer par email"
+            disabled={sendDocumentEmail.isPending}
+            title={sendDocumentEmail.isPending ? 'Envoi en cours...' : 'Envoyer par email'}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
-            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+            style={{
+              color: sendDocumentEmail.isPending ? 'var(--brand-cyan)' : 'var(--brand-text-muted)',
+              border: sendDocumentEmail.isPending ? '1px solid rgba(131,208,245,0.5)' : '1px solid var(--brand-border)',
+              fontWeight: 600,
+              opacity: sendDocumentEmail.isPending ? 0.8 : 1,
+            }}
           >
-            <Mail size={15} />
-            <span className="hidden sm:inline">Email</span>
+            {sendDocumentEmail.isPending
+              ? <><Loader2 size={15} className="animate-spin" /><span className="hidden sm:inline">Envoi...</span></>
+              : <><Mail size={15} /><span className="hidden sm:inline">Email</span></>}
           </button>
           {/* Bouton Sauvegarder */}
           <button
@@ -2771,10 +2778,16 @@ export default function DocumentForm() {
                   type="submit"
                   disabled={sendDocumentEmail.isPending}
                   className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-700"
-                  style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}
+                  style={{
+                    background: sendDocumentEmail.isPending ? 'rgba(131,208,245,0.5)' : 'var(--brand-cyan)',
+                    color: 'var(--brand-navy)',
+                    fontWeight: 700,
+                    cursor: sendDocumentEmail.isPending ? 'not-allowed' : 'pointer',
+                  }}
                 >
-                  <Send size={14} />
-                  {sendDocumentEmail.isPending ? 'Envoi...' : 'Envoyer'}
+                  {sendDocumentEmail.isPending
+                    ? <><Loader2 size={14} className="animate-spin" />Envoi en cours...</>
+                    : <><Send size={14} />Envoyer</>}
                 </button>
               </div>
             </form>

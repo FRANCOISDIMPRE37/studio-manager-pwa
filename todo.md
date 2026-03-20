@@ -46,3 +46,5 @@
 - [ ] Ajouter procédure tRPC smtp.sendClientDossier côté serveur
 - [ ] Ajouter bouton "Envoyer le dossier complet" dans la fiche client
 - [ ] Modal de confirmation avec adresse email et aperçu des documents inclus
+- [ ] Ajouter retour visuel (toast succès/erreur + spinner) sur bouton Email dans DocumentForm
+- [ ] Ajouter état de chargement "Envoi en cours..." sur le bouton pendant l'envoi
