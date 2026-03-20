@@ -582,18 +582,14 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       </div>
 
       <FormSection title="3 — REPRÉSENTANT(S) LÉGAL(AUX)" />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom" value={data.nomRep || ''} onChange={v => update('nomRep', v)} required />
-        <FormField label="Prénom" value={data.prenomRep || ''} onChange={v => update('prenomRep', v)} required />
+      <div className="p-3 rounded-xl mb-3" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.2)' }}>
+        <p className="text-xs mb-1" style={{ color: 'var(--brand-cyan)' }}>Informations synchronisées automatiquement depuis le Questionnaire Médical Mineur (01)</p>
+        <p className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
+          {data.nomRep || client.nom} {data.prenomRep || client.prenom}
+        </p>
+        {data.telRep || client.telephone ? <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{data.telRep || client.telephone}</p> : null}
+        {data.lienRep ? <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Lien : {data.lienRep}</p> : null}
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Lien avec le mineur" value={data.lienRep || ''} onChange={v => update('lienRep', v)} />
-        <FormField label="Téléphone" value={data.telRep || ''} onChange={v => update('telRep', v)} type="tel" />
-      </div>
-      <p className="text-xs mb-2" style={{ color: 'var(--brand-text-muted)' }}>Qualité :</p>
-      <CheckboxField label="Père / Mère" value={data.qualitePere || false} onToggle={() => update('qualitePere', !data.qualitePere)} />
-      <CheckboxField label="Tuteur(trice) légal(e)" value={data.qualiteTuteur || false} onToggle={() => update('qualiteTuteur', !data.qualiteTuteur)} />
-      <FormField label="Autre (préciser)" value={data.qualiteAutre || ''} onChange={v => update('qualiteAutre', v)} />
 
       <FormSection title="4 — DÉCLARATIONS ET CONSENTEMENT" />
       <LegalBox>Je soussigné(e), représentant(e) légal(e) du mineur désigné ci-dessus :</LegalBox>
@@ -606,11 +602,11 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <CheckboxField label="Était présent(e) physiquement lors de la réalisation du piercing." value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
       <CheckboxField label="A donné son autorisation écrite mais n'était pas présent(e) — copie de CNI jointe." value={data.presenceEcrite || false} onToggle={() => update('presenceEcrite', !data.presenceEcrite)} />
 
-      <FormSection title="8 — PIÈCES JOINTES (à conserver avec ce document)" />
-      <CheckboxField label="Copie CNI / passeport du mineur" value={data.copieMineur || false} onToggle={() => update('copieMineur', !data.copieMineur)} />
-      <CheckboxField label="Copie CNI / passeport du représentant légal" value={data.copieRep || false} onToggle={() => update('copieRep', !data.copieRep)} />
-      <CheckboxField label="Fiche de soins post-piercing signée" value={data.ficheSoins || false} onToggle={() => update('ficheSoins', !data.ficheSoins)} />
-      <FormField label="Autre" value={data.autresPieces || ''} onChange={v => update('autresPieces', v)} />
+      <FormSection title="8 — PIÈCE D'IDENTITÉ DU MINEUR" />
+      <RadioField label="Pièce d'identité du mineur (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdMineurType || ''} onChange={v => update('pieceIdMineurType', v)} />
+      {data.pieceIdMineurType && data.pieceIdMineurType !== 'Non présentée' && (
+        <FormField label="Numéro de la pièce d'identité" value={data.pieceIdMineurNumero || ''} onChange={v => update('pieceIdMineurNumero', v)} />
+      )}
 
       <FormSection title="9 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
