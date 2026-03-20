@@ -7,7 +7,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import { DocumentType, DOCUMENT_LABELS, Client } from '@/lib/types';
-import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail, Send, X, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail, Send, X, Loader2, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 import SignaturePad from '@/components/SignaturePad';
 import { trpc } from '@/lib/trpc';
@@ -2644,6 +2644,7 @@ export default function DocumentForm() {
   });
   const [emailModal, setEmailModal] = useState(false);
   const [emailTo, setEmailTo] = useState('');
+  const [showPreview, setShowPreview] = useState(false);
 
   function handleEmail() {
     if (!client) return;
@@ -2727,6 +2728,16 @@ export default function DocumentForm() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          {/* Bouton Aperçu */}
+          <button
+            onClick={() => setShowPreview(true)}
+            title="Aperçu avant impression"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
+            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+          >
+            <Eye size={15} />
+            <span className="hidden sm:inline">Aperçu</span>
+          </button>
           {/* Bouton Imprimer */}
           <button
             onClick={handlePrint}
@@ -2819,6 +2830,136 @@ export default function DocumentForm() {
           </button>
         </div>
       </div>
+
+      {/* Modal Aperçu avant impression */}
+      {showPreview && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col"
+          style={{ background: 'rgba(0,0,0,0.92)' }}
+        >
+          {/* Barre d'outils aperçu */}
+          <div className="flex items-center justify-between px-4 py-3 flex-shrink-0" style={{ background: '#1a2540', borderBottom: '1px solid rgba(131,208,245,0.2)' }}>
+            <div className="flex items-center gap-3">
+              <Eye size={18} style={{ color: 'var(--brand-cyan)' }} />
+              <div>
+                <h3 className="text-sm font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Aperçu avant impression</h3>
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{docTitle} — {client.prenom} {client.nom}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => { setShowPreview(false); setTimeout(handlePrint, 100); }}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-700 transition-all"
+                style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}
+              >
+                <Printer size={15} />
+                Imprimer
+              </button>
+              <button
+                onClick={() => setShowPreview(false)}
+                className="p-2 rounded-lg transition-all hover:bg-white/10"
+                style={{ color: 'var(--brand-text-muted)' }}
+                title="Fermer l'aperçu"
+              >
+                <X size={18} />
+              </button>
+            </div>
+          </div>
+
+          {/* Zone de prévisualisation A4 */}
+          <div className="flex-1 overflow-auto p-6 flex justify-center" style={{ background: '#2a2a2a' }}>
+            <div
+              style={{
+                width: '210mm',
+                minHeight: '297mm',
+                background: 'white',
+                color: '#111',
+                padding: '15mm',
+                boxShadow: '0 4px 32px rgba(0,0,0,0.5)',
+                fontFamily: 'Outfit, sans-serif',
+                fontSize: '10pt',
+                lineHeight: 1.5,
+              }}
+            >
+              {/* En-tête imprimable */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: 16, borderBottom: '2px solid #0A1628', paddingBottom: 12, marginBottom: 16 }}>
+                {state.salonInfo?.logo && (
+                  <img src={state.salonInfo.logo} alt="Logo" style={{ width: 56, height: 56, objectFit: 'contain', borderRadius: 8 }} />
+                )}
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontWeight: 700, fontSize: '13pt', color: '#0A1628' }}>{state.salonInfo?.nom || 'Studio'}</div>
+                  {state.salonInfo?.adresse && <div style={{ fontSize: '9pt', color: '#555' }}>{state.salonInfo.adresse}</div>}
+                  {state.salonInfo?.telephone && <div style={{ fontSize: '9pt', color: '#555' }}>Tél : {state.salonInfo.telephone}</div>}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontWeight: 700, fontSize: '11pt', color: '#0A1628' }}>{docTitle}</div>
+                  <div style={{ fontSize: '9pt', color: '#555' }}>Client : {client.prenom} {client.nom}</div>
+                  <div style={{ fontSize: '9pt', color: '#555' }}>Date : {today}</div>
+                </div>
+              </div>
+
+              {/* Contenu du formulaire en mode preview */}
+              <div
+                className="preview-content"
+                style={{
+                  filter: 'none',
+                  WebkitPrintColorAdjust: 'exact',
+                  printColorAdjust: 'exact',
+                } as React.CSSProperties}
+              >
+                <style>{`
+                  .preview-content * { color: #111 !important; }
+                  .preview-content input, .preview-content textarea, .preview-content select {
+                    border: 1px solid #ccc !important;
+                    background: white !important;
+                    color: #111 !important;
+                    padding: 2px 6px !important;
+                    border-radius: 4px !important;
+                    font-size: 9pt !important;
+                  }
+                  .preview-content label { color: #333 !important; font-size: 9pt !important; }
+                  .preview-content h2, .preview-content h3 { color: #0A1628 !important; }
+                  .preview-content .section-divider { border-color: #0A1628 !important; }
+                  .preview-content canvas { border: 1px solid #ccc !important; background: #f9f9f9 !important; }
+                  .preview-content button { display: none !important; }
+                  .preview-content [class*="sticky"] { position: relative !important; }
+                `}</style>
+                {renderForm()}
+              </div>
+
+              {/* Pied de page */}
+              <div style={{ marginTop: 24, paddingTop: 8, borderTop: '1px solid #ccc', display: 'flex', justifyContent: 'space-between', fontSize: '8pt', color: '#666' }}>
+                <div>
+                  <div style={{ fontWeight: 600 }}>{state.salonInfo?.nom}</div>
+                  {state.salonInfo?.adresse && <div>{state.salonInfo.adresse}</div>}
+                  {state.salonInfo?.siret && <div>SIRET : {state.salonInfo.siret}</div>}
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div>Document confidentiel — RGPD Art. 15-17-21</div>
+                  {state.salonInfo?.mentionsLegales && <div style={{ fontStyle: 'italic' }}>{state.salonInfo.mentionsLegales}</div>}
+                </div>
+                <div style={{ textAlign: 'right' }}>
+                  {state.salonInfo?.siteWeb && <div>{state.salonInfo.siteWeb}</div>}
+                  <div>Société Intemporelle</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Barre de bas de page */}
+          <div className="flex items-center justify-center gap-4 px-4 py-3 flex-shrink-0" style={{ background: '#1a2540', borderTop: '1px solid rgba(131,208,245,0.2)' }}>
+            <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Vérifiez le contenu avant d'imprimer. Les couleurs et la mise en page peuvent légèrement différer selon votre navigateur.</p>
+            <button
+              onClick={() => { setShowPreview(false); setTimeout(handlePrint, 100); }}
+              className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-700 flex-shrink-0"
+              style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}
+            >
+              <Printer size={15} />
+              Lancer l'impression
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal envoi email */}
       {emailModal && (

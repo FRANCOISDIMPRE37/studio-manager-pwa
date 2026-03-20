@@ -64,3 +64,6 @@
 - [ ] Ajouter option "Activer les rappels email" dans Paramètres
 - [x] Corriger impression partielle - ajouter page-break et avoid-break sur sections
 - [x] Corriger impression noir & blanc - forcer print-color-adjust: exact
+- [x] Ajouter bouton "Aperçu" dans la barre d'outils de DocumentForm
+- [x] Créer modal PrintPreviewModal plein écran avec rendu A4 blanc du document
+- [x] Bouton "Imprimer" dans la modal pour lancer l'impression depuis l'aperçu
