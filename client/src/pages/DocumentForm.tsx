@@ -601,10 +601,8 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <LegalBox>Je soussigné(e), représentant(e) légal(e) du mineur désigné ci-dessus :</LegalBox>
       <CheckboxField label="Certifie être titulaire de l'autorité parentale / tutelle légale." value={data.decl_0 || false} onToggle={() => update('decl_0', !data.decl_0)} />
       <CheckboxField label="Autorise expressément la réalisation du piercing décrit ci-dessus." value={data.decl_1 || false} onToggle={() => update('decl_1', !data.decl_1)} />
-      <CheckboxField label="Atteste avoir pris connaissance des risques liés à cette pratique (infection, allergie, rejet)." value={data.decl_2 || false} onToggle={() => update('decl_2', !data.decl_2)} />
       <CheckboxField label="Confirme que le mineur ne présente pas de contre-indication médicale à cette intervention." value={data.decl_3 || false} onToggle={() => update('decl_3', !data.decl_3)} />
       <CheckboxField label="M'engage à faire respecter au mineur le protocole de soins post-piercing remis par le professionnel." value={data.decl_4 || false} onToggle={() => update('decl_4', !data.decl_4)} />
-      <CheckboxField label="Reconnais avoir reçu et lu la fiche de soins post-piercing." value={data.decl_5 || false} onToggle={() => update('decl_5', !data.decl_5)} />
 
       <FormSection title="6 — PRÉSENCE PENDANT LA SÉANCE" />
       <CheckboxField label="Était présent(e) physiquement lors de la réalisation du piercing." value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
