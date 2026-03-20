@@ -461,20 +461,7 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <CheckboxField label="Tuteur(trice) légal(e)" value={data.qualiteTuteur || false} onToggle={() => update('qualiteTuteur', !data.qualiteTuteur)} />
       <FormField label="Autre (préciser)" value={data.qualiteAutre || ''} onChange={v => update('qualiteAutre', v)} />
 
-      <FormSection title="4 — DESCRIPTION DU PIERCING" />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Zone percée" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
-        <FormField label="Type de bijou" value={data.typeBijou || ''} onChange={v => update('typeBijou', v)} />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Matériau du bijou" value={data.materiau || ''} onChange={v => update('materiau', v)} />
-        <FormField label="Longueur / diamètre" value={data.taille || ''} onChange={v => update('taille', v)} />
-      </div>
-      <CheckboxField label="Aucune allergie connue" value={data.aucuneAllergie || false} onToggle={() => update('aucuneAllergie', !data.aucuneAllergie)} />
-      <FormField label="Allergie(s)" value={data.allergies || ''} onChange={v => update('allergies', v)} />
-      <FormField label="Traitement médical en cours" value={data.traitements || ''} onChange={v => update('traitements', v)} />
-
-      <FormSection title="5 — DÉCLARATIONS ET CONSENTEMENT" />
+      <FormSection title="4 — DÉCLARATIONS ET CONSENTEMENT" />
       <LegalBox>Je soussigné(e), représentant(e) légal(e) du mineur désigné ci-dessus :</LegalBox>
       <CheckboxField label="Certifie être titulaire de l'autorité parentale / tutelle légale." value={data.decl_0 || false} onToggle={() => update('decl_0', !data.decl_0)} />
       <CheckboxField label="Autorise expressément la réalisation du piercing décrit ci-dessus." value={data.decl_1 || false} onToggle={() => update('decl_1', !data.decl_1)} />
