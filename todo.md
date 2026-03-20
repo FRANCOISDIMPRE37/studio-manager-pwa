@@ -31,3 +31,5 @@
 - [x] Ajouter champ téléchargement logo du salon dans Paramètres — Informations Salon
 - [x] Intégrer le logo du salon dans l'en-tête de toutes les fiches imprimables (DocumentForm.tsx)
 - [x] Ajouter les styles CSS d'impression pour afficher le logo correctement sur papier
+- [x] Créer composant PrintFooter (numéro de page, mentions légales, site web salon)
+- [x] Intégrer PrintFooter dans DocumentForm avec styles CSS @media print (position fixe en bas)

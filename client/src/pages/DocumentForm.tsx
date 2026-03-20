@@ -221,6 +221,54 @@ function PrintHeader({ salonInfo, docTitle, clientName, date }: {
   );
 }
 
+// ─── Pied de page d'impression ────────────────────────────────────────────────────
+
+function PrintFooter({ salonInfo, docTitle }: {
+  salonInfo: any;
+  docTitle: string;
+}) {
+  const year = new Date().getFullYear();
+  return (
+    <div className="print-footer" style={{ display: 'none' }}>
+      <div style={{
+        borderTop: '1px solid #ccc',
+        paddingTop: 8,
+        marginTop: 24,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-end',
+        fontSize: 9,
+        color: '#666',
+        fontFamily: 'Outfit, sans-serif',
+      }}>
+        {/* Colonne gauche : infos salon */}
+        <div style={{ flex: 1 }}>
+          <div style={{ fontWeight: 700, color: '#333' }}>{salonInfo?.nom || 'Studio'}</div>
+          {salonInfo?.adresse && <div>{salonInfo.adresse}{salonInfo.codePostal ? ` — ${salonInfo.codePostal}` : ''}{salonInfo.ville ? ` ${salonInfo.ville}` : ''}</div>}
+          {salonInfo?.telephone && <div>Téléphone : {salonInfo.telephone}</div>}
+          {salonInfo?.siret && <div>SIRET : {salonInfo.siret}</div>}
+        </div>
+        {/* Colonne centre : mentions légales */}
+        <div style={{ flex: 2, textAlign: 'center', padding: '0 12px' }}>
+          <div style={{ fontWeight: 600, color: '#333', marginBottom: 2 }}>Mentions légales</div>
+          <div>Document confidentiel — Usage exclusivement professionnel et médical</div>
+          <div>Conservation : 3 ans minimum à compter de la dernière prestation (Art. L1110-4 CSP)</div>
+          <div>Données protégées conformément au Règlement (UE) 2016/679 (RGPD) — Droits : Art. 15, 16, 17, 21</div>
+          <div>Pour exercer vos droits : {salonInfo?.email || 'contact@salon.fr'}</div>
+          <div style={{ marginTop: 4, color: '#999' }}>© {year} {salonInfo?.nom || 'Studio'} — {docTitle}</div>
+        </div>
+        {/* Colonne droite : numéro de page + site web */}
+        <div style={{ flex: 1, textAlign: 'right' }}>
+          {salonInfo?.siteWeb && <div style={{ fontWeight: 600, color: '#333' }}>{salonInfo.siteWeb}</div>}
+          <div style={{ marginTop: 4 }}>Développé par Société Intemporelle</div>
+          <div>www.intemporelle.eu</div>
+          <div className="print-page-number" style={{ marginTop: 6, fontWeight: 700, color: '#333' }}>Page <span className="page-num">1</span></div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Formulaire Questionnaire Médical Mineur ─────────────────────────────────
 
 function FormQuestionnaireMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
@@ -2375,6 +2423,11 @@ export default function DocumentForm() {
         button { display: none !important; }
         /* Afficher l'en-tête d'impression avec le logo */
         .print-header { display: block !important; margin-bottom: 20px; }
+        /* Afficher le pied de page d'impression */
+        .print-footer { display: block !important; }
+        /* Numérotation des pages via CSS counter */
+        @page { counter-increment: page; }
+        .page-num::after { content: counter(page); }
         /* Supprimer les marges excessives */
         .p-4 { padding: 8px !important; }
         /* Assurer que les canvas de signature s'impriment */
@@ -2514,6 +2567,12 @@ export default function DocumentForm() {
           date={today}
         />
         {renderForm()}
+
+        {/* Pied de page visible uniquement à l'impression */}
+        <PrintFooter
+          salonInfo={state.salonInfo}
+          docTitle={docTitle}
+        />
 
         {/* Save button at bottom */}
         <div className="mt-6 pt-4" style={{ borderTop: '1px solid var(--brand-border)' }}>
