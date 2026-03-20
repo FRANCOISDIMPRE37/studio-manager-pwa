@@ -67,3 +67,5 @@
 - [x] Ajouter bouton "Aperçu" dans la barre d'outils de DocumentForm
 - [x] Créer modal PrintPreviewModal plein écran avec rendu A4 blanc du document
 - [x] Bouton "Imprimer" dans la modal pour lancer l'impression depuis l'aperçu
+- [x] Ajouter bouton de rafraîchissement (F5) dans la sidebar/navbar de Layout.tsx
+- [x] Bouton visible sur mobile/tablette avec icône RotateCcw

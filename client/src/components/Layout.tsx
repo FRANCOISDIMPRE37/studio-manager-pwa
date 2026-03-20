@@ -7,7 +7,7 @@ import { useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import {
   LayoutDashboard, Users, Calendar, FileText, Settings,
-  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp
+  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -230,6 +230,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>{state.salonInfo.ville}</p>
             </div>
           )}
+          <button
+            onClick={() => { toast.info('Actualisation...'); window.location.reload(); }}
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5"
+            style={{ color: 'var(--brand-cyan)' }}
+            title="Actualiser l'application (F5)"
+          >
+            <RotateCcw size={16} className="flex-shrink-0" />
+            <span className="hidden md:block text-sm">Actualiser</span>
+          </button>
           <button
             onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5"
