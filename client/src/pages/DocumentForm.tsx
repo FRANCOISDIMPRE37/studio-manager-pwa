@@ -407,18 +407,9 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       <FormSection title="6 — CONSENTEMENT ÉCLAIRÉ" />
       <CheckboxField label="Être majeur(e) et avoir capacité juridique" value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
       <CheckboxField label="A répondu honnêtement" value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
-      <CheckboxField label="Informé(e) des risques" value={data.consent_informe || false} onToggle={() => update('consent_informe', !data.consent_informe)} />
-      <CheckboxField label="Reçu fiche de soins post-piercing" value={data.consent_ficheRecue || false} onToggle={() => update('consent_ficheRecue', !data.consent_ficheRecue)} />
       <CheckboxField label="Consent librement" value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
       <CheckboxField label="S'engage à respecter le protocole de soins" value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
 
-      <FormSection title="7 — DOCUMENTS REMIS" />
-      <CheckboxField label="Fiche de soins post-piercing remise" value={data.ficheRemise || false} onToggle={() => update('ficheRemise', !data.ficheRemise)} />
-      <CheckboxField label="Informations matériaux communiquées" value={data.infosMateriauxRemises || false} onToggle={() => update('infosMateriauxRemises', !data.infosMateriauxRemises)} />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="N° de traçabilité du bijou" value={data.tracabilite || ''} onChange={v => update('tracabilite', v)} />
-        <FormField label="Lot" value={data.lot || ''} onChange={v => update('lot', v)} />
-      </div>
     </>
   );
 }
