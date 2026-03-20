@@ -43,3 +43,6 @@
 - [x] Installer nodemailer + @types/nodemailer côté serveur
 - [x] Créer procédure tRPC sendEmail avec génération PDF via puppeteer/html-pdf
 - [ ] Connecter bouton "Envoyer par email" dans DocumentForm à la procédure tRPC
+- [ ] Ajouter procédure tRPC smtp.sendClientDossier côté serveur
+- [ ] Ajouter bouton "Envoyer le dossier complet" dans la fiche client
+- [ ] Modal de confirmation avec adresse email et aperçu des documents inclus

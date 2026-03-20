@@ -4,9 +4,10 @@
 import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useLocation, useParams } from 'wouter';
-import { ArrowLeft, Phone, Mail, MapPin, CreditCard, Calendar, FileText, Shield, Trash2, Archive, AlertTriangle, CheckCircle, Edit, PlusCircle } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, MapPin, CreditCard, Calendar, FileText, Shield, Trash2, Archive, AlertTriangle, CheckCircle, Edit, PlusCircle, Send, X, Loader2 } from 'lucide-react';
 import { DOCUMENT_LABELS, RGPDStatus } from '@/lib/types';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 
 const RGPD_COLORS: Record<RGPDStatus, string> = { ok: '#4CAF50', warning: '#FF9800', urgent: '#F44336', expired: '#9C27B0' };
 const RGPD_LABELS: Record<RGPDStatus, string> = { ok: 'Conforme', warning: 'Attention (90j)', urgent: 'Urgent (30j)', expired: 'Expiré' };
@@ -18,6 +19,15 @@ export default function ClientDetail() {
   const { getClientById, updateClient, deleteClient } = useApp();
   const [, navigate] = useLocation();
   const [tab, setTab] = useState<Tab>('infos');
+  const [showDossierModal, setShowDossierModal] = useState(false);
+  const [dossierEmail, setDossierEmail] = useState('');
+  const sendDossier = trpc.smtp.sendClientDossier.useMutation({
+    onSuccess: () => {
+      toast.success('Dossier envoyé avec succès !');
+      setShowDossierModal(false);
+    },
+    onError: (err) => toast.error(err.message),
+  });
 
   const client = getClientById(params.id);
 
@@ -40,6 +50,29 @@ export default function ClientDetail() {
     toast.success(client.estArchive ? 'Client désarchivé' : 'Client archivé');
   };
 
+  const handleSendDossier = () => {
+    if (!dossierEmail) { toast.error('Veuillez saisir une adresse email'); return; }
+    const docs = client!.documentsAssocies.map(docType => {
+      const doc = client!.documents?.find(d => d.type === docType);
+      return {
+        id: doc?.id || docType,
+        type: docType,
+        label: DOCUMENT_LABELS[docType] || docType,
+        signed: doc?.status === 'signed',
+        updatedAt: (doc as any)?.updatedAt,
+      };
+    });
+    sendDossier.mutate({
+      to: dossierEmail,
+      clientId: client!.id,
+      clientNom: client!.nom,
+      clientPrenom: client!.prenom,
+      clientDateNaissance: client!.dateNaissance ? new Date(client!.dateNaissance).toLocaleDateString('fr-FR') : undefined,
+      clientTelephone: client!.telephone || undefined,
+      documents: docs,
+    });
+  };
+
   const handleDelete = () => {
     if (confirm(`Supprimer définitivement ${client.prenom} ${client.nom} ? Cette action est irréversible.`)) {
       deleteClient(client.id);
@@ -56,6 +89,7 @@ export default function ClientDetail() {
   ];
 
   return (
+    <>
     <div className="flex flex-col h-full">
       {/* Header */}
       <div className="flex items-center gap-3 p-4 border-b sticky top-0 z-10" style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy)' }}>
@@ -154,6 +188,17 @@ export default function ClientDetail() {
 
         {tab === 'documents' && (
           <div className="space-y-3">
+            {/* Bouton dossier complet */}
+            {client.documentsAssocies.length > 0 && (
+              <button
+                onClick={() => { setDossierEmail(client.email || ''); setShowDossierModal(true); }}
+                className="w-full py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
+                style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.4)', color: 'var(--brand-cyan)', fontWeight: 600 }}
+              >
+                <Send size={14} />
+                Envoyer le dossier complet par email
+              </button>
+            )}
             {client.documentsAssocies.length === 0 ? (
               <div className="text-center py-12">
                 <FileText size={32} className="mx-auto mb-2 opacity-30" style={{ color: 'var(--brand-text-muted)' }} />
@@ -256,5 +301,76 @@ export default function ClientDetail() {
         )}
       </div>
     </div>
+    {/* Modal envoi dossier complet */}
+    {showDossierModal && (
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.75)' }}>
+        <div className="w-full max-w-md rounded-2xl p-6 space-y-4" style={{ background: 'var(--brand-navy)', border: '1px solid var(--brand-border)' }}>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Send size={18} style={{ color: 'var(--brand-cyan)' }} />
+              <h3 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Envoyer le dossier complet</h3>
+            </div>
+            <button onClick={() => setShowDossierModal(false)} className="p-1.5 rounded-lg hover:bg-white/10">
+              <X size={16} style={{ color: 'var(--brand-text-muted)' }} />
+            </button>
+          </div>
+
+          <div className="p-3 rounded-lg" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.15)' }}>
+            <p className="text-sm" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{client.prenom} {client.nom}</p>
+            <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>
+              {client.documentsAssocies.length} document{client.documentsAssocies.length > 1 ? 's' : ''}
+              {' — '}{client.documents?.filter(d => d.status === 'signed').length || 0} signé{(client.documents?.filter(d => d.status === 'signed').length || 0) > 1 ? 's' : ''}
+            </p>
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-xs" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Adresse email du destinataire</label>
+            <input
+              type="email"
+              value={dossierEmail}
+              onChange={e => setDossierEmail(e.target.value)}
+              placeholder="email@exemple.fr"
+              className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
+            />
+          </div>
+
+          <div className="max-h-44 overflow-y-auto space-y-1">
+            <p className="text-xs mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Documents inclus :</p>
+            {client.documentsAssocies.map(docType => {
+              const doc = client.documents?.find(d => d.type === docType);
+              const signed = doc?.status === 'signed';
+              return (
+                <div key={docType} className="flex items-center justify-between py-1.5 px-2 rounded" style={{ background: 'rgba(255,255,255,0.03)' }}>
+                  <span className="text-xs flex-1 truncate" style={{ color: 'var(--brand-text)' }}>{DOCUMENT_LABELS[docType] || docType}</span>
+                  <span className="text-xs ml-2 flex-shrink-0" style={{ color: signed ? '#4CAF50' : '#FF9800' }}>
+                    {signed ? '✓ Signé' : '○ Non signé'}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-3 pt-1">
+            <button
+              onClick={() => setShowDossierModal(false)}
+              className="flex-1 py-2.5 rounded-lg text-sm transition-all"
+              style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}
+            >
+              Annuler
+            </button>
+            <button
+              onClick={handleSendDossier}
+              disabled={sendDossier.isPending || !dossierEmail}
+              className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'rgba(131,208,245,0.15)', border: '1px solid rgba(131,208,245,0.4)', color: 'var(--brand-cyan)', fontWeight: 600, opacity: !dossierEmail ? 0.5 : 1 }}
+            >
+              {sendDossier.isPending ? <><Loader2 size={14} className="animate-spin" />Envoi...</> : <><Send size={14} />Envoyer</>}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

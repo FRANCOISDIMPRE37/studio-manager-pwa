@@ -339,6 +339,126 @@ export const appRouter = router({
           throw new Error(`Échec d'envoi : ${err.message}`);
         }
       }),
+
+    // Envoyer le dossier complet d'un client
+    sendClientDossier: protectedProcedure
+      .input(z.object({
+        to: z.string().email(),
+        clientId: z.string(),
+        clientNom: z.string(),
+        clientPrenom: z.string(),
+        clientDateNaissance: z.string().optional(),
+        clientTelephone: z.string().optional(),
+        documents: z.array(z.object({
+          id: z.string(),
+          type: z.string(),
+          label: z.string(),
+          signed: z.boolean(),
+          updatedAt: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmtpConfig(ctx.user.id);
+        if (!config || !config.user || !config.password) {
+          throw new Error('Configuration SMTP non configurée. Rendez-vous dans Paramètres > Configuration Email.');
+        }
+        const salon = await getSalonSettings(ctx.user.id);
+        const fromName = config.fromName || salon?.nom || 'Studio Manager';
+        const salonInfo = salon ? `${salon.nom || ''} — ${salon.adresse || ''} ${salon.codePostal || ''} ${salon.ville || ''}`.trim() : 'Studio Manager';
+        const dateEnvoi = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const signedDocs = input.documents.filter(d => d.signed);
+        const unsignedDocs = input.documents.filter(d => !d.signed);
+
+        const docRow = (doc: typeof input.documents[0]) => `
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0">${doc.label}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:center">
+              ${doc.signed
+                ? '<span style="color:#16a34a;font-weight:600">&#10003; Signé</span>'
+                : '<span style="color:#dc2626;font-weight:600">&#10007; Non signé</span>'}
+            </td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;color:#888;font-size:12px">
+              ${doc.updatedAt ? new Date(doc.updatedAt).toLocaleDateString('fr-FR') : '—'}
+            </td>
+          </tr>`;
+
+        const html = `
+          <div style="font-family:sans-serif;max-width:680px;margin:auto;color:#1a1a2e">
+            <!-- En-tête -->
+            <div style="background:#0A1628;padding:24px 32px;border-radius:12px 12px 0 0">
+              <h1 style="color:#83D0F5;margin:0;font-size:20px">Studio Manager</h1>
+              <p style="color:#a0aec0;margin:4px 0 0;font-size:13px">by Intemporelle — RGPD &amp; Cybersécurité</p>
+            </div>
+
+            <!-- Corps -->
+            <div style="background:#ffffff;padding:32px;border:1px solid #e2e8f0">
+              <h2 style="color:#0A1628;font-size:18px;margin-top:0">Dossier complet du client</h2>
+
+              <!-- Infos client -->
+              <table style="width:100%;border-collapse:collapse;margin-bottom:24px;background:#f8fafc;border-radius:8px">
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:40%">Nom complet</td><td style="padding:8px 16px;font-weight:600">${input.clientPrenom} ${input.clientNom}</td></tr>
+                ${input.clientDateNaissance ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Date de naissance</td><td style="padding:8px 16px">${input.clientDateNaissance}</td></tr>` : ''}
+                ${input.clientTelephone ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Téléphone</td><td style="padding:8px 16px">${input.clientTelephone}</td></tr>` : ''}
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Date d'envoi</td><td style="padding:8px 16px">${dateEnvoi}</td></tr>
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Nombre de documents</td><td style="padding:8px 16px">${input.documents.length} (${signedDocs.length} signé${signedDocs.length > 1 ? 's' : ''})</td></tr>
+              </table>
+
+              <!-- Tableau des documents -->
+              <h3 style="color:#0A1628;font-size:15px;margin-bottom:12px">Documents du dossier</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <thead>
+                  <tr style="background:#0A1628;color:#83D0F5">
+                    <th style="padding:10px 12px;text-align:left;font-weight:600">Document</th>
+                    <th style="padding:10px 12px;text-align:center;font-weight:600">Statut</th>
+                    <th style="padding:10px 12px;text-align:left;font-weight:600">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${input.documents.map(docRow).join('')}
+                </tbody>
+              </table>
+
+              ${unsignedDocs.length > 0 ? `
+              <div style="margin-top:20px;padding:12px 16px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px">
+                <p style="margin:0;font-size:13px;color:#dc2626">
+                  <strong>Attention :</strong> ${unsignedDocs.length} document${unsignedDocs.length > 1 ? 's' : ''} n'${unsignedDocs.length > 1 ? 'ont' : 'a'} pas encore été signé${unsignedDocs.length > 1 ? 's' : ''} par le client.
+                </p>
+              </div>` : `
+              <div style="margin-top:20px;padding:12px 16px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px">
+                <p style="margin:0;font-size:13px;color:#16a34a">
+                  <strong>Dossier complet :</strong> Tous les documents ont été signés par le client.
+                </p>
+              </div>`}
+            </div>
+
+            <!-- Pied de page -->
+            <div style="background:#f8fafc;padding:16px 32px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
+              <p style="margin:0;font-size:12px;color:#94a3b8">${salonInfo}</p>
+              <p style="margin:4px 0 0;font-size:11px;color:#cbd5e1">Document généré par Studio Manager by Intemporelle — Conforme RGPD</p>
+            </div>
+          </div>`;
+
+        try {
+          const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
+            auth: { user: config.user, pass: config.password },
+            tls: { rejectUnauthorized: false },
+          });
+          await transporter.sendMail({
+            from: `"${fromName}" <${config.user}>`,
+            to: input.to,
+            replyTo: config.replyTo || config.user,
+            subject: `Dossier client — ${input.clientPrenom} ${input.clientNom} — ${dateEnvoi}`,
+            html,
+          });
+          return { success: true };
+        } catch (err: any) {
+          throw new Error(`Échec d'envoi : ${err.message}`);
+        }
+      }),
   }),
 });
 
