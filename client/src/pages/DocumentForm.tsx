@@ -289,8 +289,6 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
         Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
-      <FormField label="Nom du salon" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
-
       <FormSection title="1 — IDENTITÉ DU MINEUR" />
       <div className="grid grid-cols-2 gap-3">
         <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
