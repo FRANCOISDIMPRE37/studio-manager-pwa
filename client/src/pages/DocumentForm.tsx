@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import { DocumentType, DOCUMENT_LABELS, Client } from '@/lib/types';
-import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone } from 'lucide-react';
+import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 
 // ─── Composants de formulaire ───────────────────────────────────────────────
@@ -1764,6 +1764,37 @@ export default function DocumentForm() {
   const docTitle = DOCUMENT_LABELS[docType] || docType;
   const today = new Date().toLocaleDateString('fr-FR');
 
+  function handlePrint() {
+    const style = document.createElement('style');
+    style.id = '__print_style__';
+    style.innerHTML = `
+      @media print {
+        body > div > aside,
+        .sticky { display: none !important; }
+        body { background: white !important; color: black !important; }
+        .studio-card { border: 1px solid #ccc !important; box-shadow: none !important; background: white !important; }
+        input, textarea, select { border: 1px solid #ccc !important; color: black !important; background: white !important; }
+        button { display: none !important; }
+        * { color: black !important; }
+      }
+    `;
+    document.head.appendChild(style);
+    window.print();
+    setTimeout(() => { const s = document.getElementById('__print_style__'); if (s) s.remove(); }, 1000);
+  }
+
+  function handleEmail() {
+    if (!client) return;
+    const subject = encodeURIComponent(`${docTitle} — ${client.prenom} ${client.nom}`);
+    const body = encodeURIComponent(
+      `Bonjour,\n\nVeuillez trouver ci-joint le document : ${docTitle}\n` +
+      `Client : ${client.prenom} ${client.nom}\n` +
+      `Date : ${today}\n\n` +
+      `Ce document a été généré depuis Studio Manager by Intemporelle.\n\nCordialement`
+    );
+    window.open(`mailto:${client.email || ''}?subject=${subject}&body=${body}`);
+  }
+
   const renderForm = () => {
     switch (docType) {
       case 'questionnaire_mineur':
@@ -1821,21 +1852,44 @@ export default function DocumentForm() {
             {client.prenom} {client.nom} · {today}
           </p>
         </div>
-        <button
-          onClick={handleSave}
-          disabled={isSaving}
-          className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-600 transition-all"
-          style={{
-            background: 'var(--brand-cyan)',
-            color: 'var(--brand-navy)',
-            fontWeight: 600,
-            fontFamily: 'Outfit',
-            opacity: isSaving ? 0.7 : 1,
-          }}
-        >
-          <Save size={16} />
-          {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
-        </button>
+        <div className="flex items-center gap-2">
+          {/* Bouton Imprimer */}
+          <button
+            onClick={handlePrint}
+            title="Imprimer le document"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
+            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+          >
+            <Printer size={15} />
+            <span className="hidden sm:inline">Imprimer</span>
+          </button>
+          {/* Bouton Email */}
+          <button
+            onClick={handleEmail}
+            title="Envoyer par email"
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
+            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+          >
+            <Mail size={15} />
+            <span className="hidden sm:inline">Email</span>
+          </button>
+          {/* Bouton Sauvegarder */}
+          <button
+            onClick={handleSave}
+            disabled={isSaving}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-600 transition-all"
+            style={{
+              background: 'var(--brand-cyan)',
+              color: 'var(--brand-navy)',
+              fontWeight: 600,
+              fontFamily: 'Outfit',
+              opacity: isSaving ? 0.7 : 1,
+            }}
+          >
+            <Save size={16} />
+            {isSaving ? 'Sauvegarde...' : 'Sauvegarder'}
+          </button>
+        </div>
       </div>
 
       {/* Form content */}

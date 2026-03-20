@@ -2,12 +2,12 @@
  * DESIGN: Studio Nocturne — Dashboard avec stats cards, RDV du jour, alertes RGPD
  * Cartes avec élévation au hover, badges colorés, typographie Outfit
  */
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useLocation } from 'wouter';
 import {
   Users, Calendar, AlertTriangle, Shield, ChevronRight,
-  TrendingUp, Clock, CheckCircle, XCircle, AlertCircle
+  TrendingUp, Clock, CheckCircle, XCircle, AlertCircle, Search, X
 } from 'lucide-react';
 import { RDV_TYPE_LABELS, RDV_STATUT_LABELS, RDV_STATUT_COLORS } from '@/lib/types';
 
@@ -70,6 +70,7 @@ export default function Dashboard() {
   const { state, getDashboardStats } = useApp();
   const [, navigate] = useLocation();
   const stats = getDashboardStats();
+  const [searchQuery, setSearchQuery] = useState('');
 
   const today = useMemo(() => {
     const d = new Date();
@@ -93,6 +94,22 @@ export default function Dashboard() {
 
   const todayStr = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
+  const searchResults = useMemo(() => {
+    if (!searchQuery.trim()) return [];
+    const q = searchQuery.toLowerCase().trim();
+    return state.clients
+      .filter(c => !c.estArchive)
+      .filter(c =>
+        c.nom.toLowerCase().includes(q) ||
+        c.prenom.toLowerCase().includes(q) ||
+        `${c.prenom} ${c.nom}`.toLowerCase().includes(q) ||
+        `${c.nom} ${c.prenom}`.toLowerCase().includes(q) ||
+        (c.telephone || '').includes(q) ||
+        (c.email || '').toLowerCase().includes(q)
+      )
+      .slice(0, 8);
+  }, [searchQuery, state.clients]);
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       {/* Header */}
@@ -107,6 +124,66 @@ export default function Dashboard() {
           <span className="text-xs px-2 py-1 rounded" style={{ background: 'var(--brand-rose-dim)', color: 'var(--brand-rose)', border: '1px solid var(--brand-rose)' }}>
             MODE DÉMO
           </span>
+        )}
+      </div>
+
+      {/* Barre de recherche client */}
+      <div className="relative">
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--brand-border)' }}>
+          <Search size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
+          <input
+            type="text"
+            placeholder="Rechercher un client par nom, prénom, téléphone ou email..."
+            value={searchQuery}
+            onChange={e => setSearchQuery(e.target.value)}
+            className="flex-1 bg-transparent outline-none text-sm"
+            style={{ color: 'var(--brand-text)' }}
+          />
+          {searchQuery && (
+            <button onClick={() => setSearchQuery('')} style={{ color: 'var(--brand-text-muted)' }}>
+              <X size={14} />
+            </button>
+          )}
+        </div>
+        {/* Résultats de recherche */}
+        {searchResults.length > 0 && (
+          <div
+            className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
+            style={{ background: '#0D1E38', border: '1px solid var(--brand-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+          >
+            {searchResults.map(client => (
+              <div
+                key={client.id}
+                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                onClick={() => { navigate(`/clients/${client.id}`); setSearchQuery(''); }}
+              >
+                <div
+                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-700"
+                  style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', fontWeight: 700 }}
+                >
+                  {client.prenom[0]}{client.nom[0]}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
+                    {client.prenom} {client.nom}
+                    {client.estMineur && <span className="ml-2 text-xs px-1.5 py-0.5 rounded" style={{ background: '#9C27B022', color: '#9C27B0' }}>Mineur</span>}
+                  </p>
+                  <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
+                    {client.telephone}{client.email ? ` · ${client.email}` : ''}
+                  </p>
+                </div>
+                <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
+              </div>
+            ))}
+          </div>
+        )}
+        {searchQuery.trim() && searchResults.length === 0 && (
+          <div
+            className="absolute top-full left-0 right-0 mt-1 rounded-xl px-4 py-3 z-50"
+            style={{ background: '#0D1E38', border: '1px solid var(--brand-border)' }}
+          >
+            <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Aucun client trouvé pour « {searchQuery} »</p>
+          </div>
         )}
       </div>
 
