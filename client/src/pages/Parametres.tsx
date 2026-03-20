@@ -1,9 +1,9 @@
 /*
  * DESIGN: Studio Nocturne — Page paramètres avec infos salon, PIN, RGPD
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
-import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink } from 'lucide-react';
+import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle } from 'lucide-react';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
 
@@ -22,6 +22,64 @@ export default function Parametres() {
     updateSalonInfo(salonForm);
     setEditingSalon(false);
     toast.success('Informations du salon sauvegardées');
+  };
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Compteurs pour l'export
+  const totalClients = state.clients.filter(c => !c.estArchive).length;
+  const totalArchives = state.clients.filter(c => c.estArchive).length;
+  const totalSoins = state.clients.reduce((acc, c) => acc + (c.prestations?.length || 0), 0);
+  const totalDocuments = state.clients.reduce((acc, c) => acc + (c.documents?.length || 0), 0);
+
+  const handleExport = () => {
+    const backup = {
+      version: '1.0',
+      exportDate: new Date().toISOString(),
+      salonInfo: state.salonInfo,
+      clients: state.clients,
+      rendezVous: state.rendezVous,
+    };
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const dateStr = new Date().toISOString().split('T')[0];
+    a.href = url;
+    a.download = `studio-backup-${dateStr}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Sauvegarde téléchargée avec succès');
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const backup = JSON.parse(ev.target?.result as string);
+        if (!backup.clients || !Array.isArray(backup.clients)) {
+          toast.error('Fichier de sauvegarde invalide');
+          return;
+        }
+        // Confirmation avant import
+        if (!window.confirm(`Importer ${backup.clients.length} client(s) depuis la sauvegarde du ${backup.exportDate ? new Date(backup.exportDate).toLocaleDateString('fr-FR') : 'date inconnue'} ?\n\nATTENTION : Cela remplacera toutes les données actuelles.`)) return;
+        if (backup.salonInfo) {
+          localStorage.setItem('sm_salon_info', JSON.stringify(backup.salonInfo));
+        }
+        localStorage.setItem('sm_clients', JSON.stringify(backup.clients));
+        if (backup.rendezVous) {
+          localStorage.setItem('sm_rdv', JSON.stringify(backup.rendezVous));
+        }
+        toast.success('Sauvegarde importée ! Rechargement en cours...');
+        setTimeout(() => window.location.reload(), 1500);
+      } catch {
+        toast.error('Erreur lors de la lecture du fichier');
+      }
+    };
+    reader.readAsText(file);
+    // Reset input
+    e.target.value = '';
   };
 
   const handlePinChange = (e: React.FormEvent) => {
@@ -166,6 +224,81 @@ export default function Parametres() {
               www.intemporelle.eu <ExternalLink size={10} />
             </a>
           </div>
+        </div>
+      </div>
+
+      {/* Export / Import */}
+      <div className="studio-card p-4">
+        {/* Exporter */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-1">
+            <Download size={16} style={{ color: 'var(--brand-cyan)' }} />
+            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Exporter mes données</h2>
+          </div>
+          <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Télécharge un fichier de sauvegarde complet (clients, soins, questionnaires, autorisations)</p>
+
+          {/* 4 compteurs */}
+          <div className="grid grid-cols-4 gap-2 mb-4">
+            {[
+              { icon: Users, label: 'Clients', count: totalClients, color: 'var(--brand-cyan)' },
+              { icon: Archive, label: 'Archives', count: totalArchives, color: '#a78bfa' },
+              { icon: Stethoscope, label: 'Soins', count: totalSoins, color: '#34d399' },
+              { icon: FileText, label: 'Documents', count: totalDocuments, color: '#fb923c' },
+            ].map(({ icon: Icon, label, count, color }) => (
+              <div key={label} className="rounded-lg p-3 flex flex-col items-center gap-1" style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--brand-border)' }}>
+                <Icon size={18} style={{ color }} />
+                <span className="text-lg font-700" style={{ color: 'var(--brand-text)', fontWeight: 700, lineHeight: 1 }}>{count}</span>
+                <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{label}</span>
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-600 transition-all hover:opacity-90"
+            style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 600 }}
+          >
+            <Download size={15} />
+            Télécharger la sauvegarde
+          </button>
+          <p className="text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>
+            ⚠️ Le fichier s'appelle <em>studio-backup-[date].json</em> — gardez-le précieusement !
+          </p>
+        </div>
+
+        {/* Séparateur */}
+        <div className="border-t my-4" style={{ borderColor: 'var(--brand-border)' }} />
+
+        {/* Importer */}
+        <div>
+          <div className="flex items-center gap-2 mb-1">
+            <Upload size={16} style={{ color: 'var(--brand-cyan)' }} />
+            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Importer une sauvegarde</h2>
+          </div>
+          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Restaurez vos données depuis un fichier de sauvegarde précédent</p>
+
+          <div className="flex items-start gap-2 p-3 rounded-lg mb-3" style={{ background: 'rgba(251,146,60,0.08)', border: '1px solid rgba(251,146,60,0.3)' }}>
+            <AlertTriangle size={14} style={{ color: '#fb923c', flexShrink: 0, marginTop: 1 }} />
+            <p className="text-xs" style={{ color: '#fb923c' }}>
+              <strong>L'import remplace toutes les données actuelles.</strong> Faites d'abord un export si nécessaire.
+            </p>
+          </div>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".json"
+            className="hidden"
+            onChange={handleImport}
+          />
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-600 transition-all hover:opacity-90"
+            style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontWeight: 600 }}
+          >
+            <Upload size={15} />
+            Choisir un fichier de sauvegarde
+          </button>
         </div>
       </div>
 
