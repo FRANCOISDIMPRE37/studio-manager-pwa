@@ -1605,9 +1605,7 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
       <RadioField label="Certificat de conformité UE 2020/2081 disponible" options={['Oui', 'Non']} value={data.certifEncre || 'Oui'} onChange={v => update('certifEncre', v)} />
 
       <FormSection title="5 — CONSENTEMENT ÉCLAIRÉ" />
-      <CheckboxField label="A été informé(e) des risques liés au tatouage (infection, allergie, chéloïde, décoloration)" value={data.informeRisques || false} onToggle={() => update('informeRisques', !data.informeRisques)} />
       <CheckboxField label="A répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Reçu la fiche de soins post-tatouage" value={data.recuFicheSoins || false} onToggle={() => update('recuFicheSoins', !data.recuFicheSoins)} />
       <CheckboxField label="Donne son consentement libre et éclairé pour la réalisation du tatouage" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
       <CheckboxField label="Assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
       <CheckboxField label="Confirme être majeur(e) et ne pas être sous tutelle" value={data.confirmeMajeur || false} onToggle={() => update('confirmeMajeur', !data.confirmeMajeur)} />
