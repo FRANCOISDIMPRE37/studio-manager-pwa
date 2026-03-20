@@ -2467,6 +2467,16 @@ export default function DocumentForm() {
         nomMineur: client.nom || '',
         prenomMineur: client.prenom || '',
         dateNaissanceMineur: client.dateNaissance || '',
+        // Pièce d'identité — synchronisée depuis la fiche client vers tous les formulaires
+        // Champ texte libre (Questionnaire majeur piercing)
+        pieceId: client.pieceIdentiteType || '',
+        numeroPiece: client.pieceIdentiteNumero || '',
+        // Champs radio + numéro (Questionnaire tatouage majeur, dermographe, fiche séance tatouage)
+        pieceIdType: client.pieceIdentiteType || '',
+        pieceIdNumero: client.pieceIdentiteNumero || '',
+        // Champs mineur (Questionnaire médical mineur piercing)
+        pieceIdMineurType: client.pieceIdentiteType || '',
+        pieceIdMineurNumero: client.pieceIdentiteNumero || '',
         // Champs de signature client pré-remplis
         nomClientSign: client.nom ? `${client.prenom || ''} ${client.nom}`.trim() : '',
         dateSignatureClient: today,
@@ -2490,7 +2500,9 @@ export default function DocumentForm() {
         // Forcer la resynchronisation des champs d'identité depuis le client
         const identityKeys = ['nom', 'prenom', 'dateNaissance', 'telephone', 'email', 'adresse', 'codePostal', 'ville',
           'nomClient', 'prenomClient', 'telephoneClient', 'emailClient',
-          'nomMineur', 'prenomMineur', 'dateNaissanceMineur', 'nomClientSign'];
+          'nomMineur', 'prenomMineur', 'dateNaissanceMineur', 'nomClientSign',
+          'pieceId', 'numeroPiece', 'pieceIdType', 'pieceIdNumero',
+          'pieceIdMineurType', 'pieceIdMineurNumero'];
         for (const key of identityKeys) {
           if (clientIdentity[key]) merged[key] = clientIdentity[key];
         }
