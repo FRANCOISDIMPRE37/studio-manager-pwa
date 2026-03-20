@@ -9,6 +9,7 @@ import { useApp } from '@/lib/app-context';
 import { DocumentType, DOCUMENT_LABELS, Client } from '@/lib/types';
 import { ArrowLeft, Save, CheckCircle, AlertTriangle, Info, Phone, Printer, Mail } from 'lucide-react';
 import { toast } from 'sonner';
+import SignaturePad from '@/components/SignaturePad';
 
 // ─── Composants de formulaire ───────────────────────────────────────────────
 
@@ -292,6 +293,32 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
 
       <FormSection title="7 — DECLARATION CLIENT" />
       <CheckboxField label="A répondu honnêtement au questionnaire" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
+
+      <FormSection title="8 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || data.representantNom || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureParent || ''} onChange={v => update('dateSignatureParent', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageParent || ''}
+              onChange={v => update('signatureImageParent', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du pierceur"
+              value={data.signatureImagePierceur || ''}
+              onChange={v => update('signatureImagePierceur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -406,6 +433,31 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       <CheckboxField label="Consent librement" value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
       <CheckboxField label="S'engage à respecter le protocole de soins" value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
 
+      <FormSection title="7 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client" value={data.nomClientSign || data.nom || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du pierceur"
+              value={data.signatureImagePierceur || ''}
+              onChange={v => update('signatureImagePierceur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -466,6 +518,32 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <CheckboxField label="Copie CNI / passeport du représentant légal" value={data.copieRep || false} onToggle={() => update('copieRep', !data.copieRep)} />
       <CheckboxField label="Fiche de soins post-piercing signée" value={data.ficheSoins || false} onToggle={() => update('ficheSoins', !data.ficheSoins)} />
       <FormField label="Autre" value={data.autresPieces || ''} onChange={v => update('autresPieces', v)} />
+
+      <FormSection title="9 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || data.nomRepresentant || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureParent || ''} onChange={v => update('dateSignatureParent', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageParent || ''}
+              onChange={v => update('signatureImageParent', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du pierceur"
+              value={data.signatureImagePierceur || ''}
+              onChange={v => update('signatureImagePierceur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -696,9 +774,35 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       <FormField label="Notes du professionnel" value={data.notes || ''} onChange={v => update('notes', v)} multiline />
 
       <LegalBox color="cyan">
-        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
+        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
+        Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
+
+      <FormSection title="SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du pierceur"
+              value={data.signatureImagePierceur || ''}
+              onChange={v => update('signatureImagePierceur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -769,9 +873,35 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
       <FormField label="Commentaires / observations complémentaires" value={data.observationsPostseance || ''} onChange={v => update('observationsPostseance', v)} multiline />
 
       <LegalBox>
-        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
+        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
+        Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
+
+      <FormSection title="8 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du pierceur"
+              value={data.signatureImagePierceur || ''}
+              onChange={v => update('signatureImagePierceur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -1005,6 +1135,32 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
         <em>Conservation : 5 ans minimum à compter de la dernière prestation (Art. R 1311-7 CSP + Arrêté 13/03/2009). Copie conservée par le salon. VOS DROITS RGPD — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
+
+      <FormSection title="11 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
+          <FormField label="Date" value={data.dateSignatureTatoueur || ''} onChange={v => update('dateSignatureTatoueur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du tatoueur"
+              value={data.signatureImageTatoueur || ''}
+              onChange={v => update('signatureImageTatoueur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -1119,16 +1275,26 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
       <FormField label="Autres documents remis" value={data.autresDocuments || ''} onChange={v => update('autresDocuments', v)} placeholder="Préciser si nécessaire" />
 
       <FormSection title="8 — SIGNATURE" />
-      <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du tatoueur</p>
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <FormField label="Nom du tatoueur" value={data.signatureTatoueur || ''} onChange={v => update('signatureTatoueur', v)} />
-          <div className="h-12 rounded-lg mt-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--brand-border)' }} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du tatoueur"
+              value={data.signatureImageTatoueur || ''}
+              onChange={v => update('signatureImageTatoueur', v ?? '')}
+            />
+          </div>
         </div>
-        <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du client</p>
-          <FormField label="Lu et approuvé" value={data.signatureClient || ''} onChange={v => update('signatureClient', v)} />
-          <div className="h-12 rounded-lg mt-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--brand-border)' }} />
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Lu et approuvé — Nom du client" value={data.signatureClient || ''} onChange={v => update('signatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
         </div>
       </div>
     </>
@@ -1244,6 +1410,32 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
       <CheckboxField label="Donne son consentement libre et éclairé pour la réalisation du tatouage" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
       <CheckboxField label="Assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
       <CheckboxField label="Confirme être majeur(e) et ne pas être sous tutelle" value={data.confirmeMajeur || false} onToggle={() => update('confirmeMajeur', !data.confirmeMajeur)} />
+
+      <FormSection title="6 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
+          <FormField label="Date" value={data.dateSignatureTatoueur || ''} onChange={v => update('dateSignatureTatoueur', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du tatoueur"
+              value={data.signatureImageTatoueur || ''}
+              onChange={v => update('signatureImageTatoueur', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -1364,6 +1556,32 @@ function FormQuestionnaireDermographe({ data, update, client }: { data: Record<s
       <CheckboxField label="J'ai pris connaissance des soins post-dermographie et m'engage à les respecter" value={data.engageSoinsPost || false} onToggle={() => update('engageSoinsPost', !data.engageSoinsPost)} />
       <CheckboxField label="Je consens librement et en toute connaissance de cause à la réalisation de la prestation" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
       <CheckboxField label="Je certifie que les informations médicales fournies sont exactes et complètes" value={data.certifieInfosExactes || false} onToggle={() => update('certifieInfosExactes', !data.certifieInfosExactes)} />
+
+      <FormSection title="7 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label="Date" value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du dermographe"
+              value={data.signatureImageDermographe || ''}
+              onChange={v => update('signatureImageDermographe', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -1616,6 +1834,32 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
         <em>Conservation : 5 ans minimum à compter de la dernière prestation (Art. R 1311-7 CSP + Arrêté 13/03/2009). Copie conservée par le salon. VOS DROITS RGPD — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
+
+      <FormSection title="9 — SIGNATURES" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du client"
+              value={data.signatureImageClient || ''}
+              onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label="Date" value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du dermographe"
+              value={data.signatureImageDermographe || ''}
+              onChange={v => update('signatureImageDermographe', v ?? '')}
+            />
+          </div>
+        </div>
+      </div>
     </>
   );
 }
@@ -1705,22 +1949,26 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         <div className="px-3 py-2 mb-3" style={{ background: '#1a1a1a', borderRadius: 6 }}>
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>SIGNATURES</p>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-6">
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
             <p className="text-xs font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>LE SIGNATAIRE — Lu et approuvé</p>
             <FormField label="Nom, Prénom" value={data.signataireNomSignature || ''} onChange={v => update('signataireNomSignature', v)} />
             <FormField label="Date" value={data.signataireDate || ''} onChange={v => update('signataireDate', v)} />
-            <div className="h-16 rounded-lg border-2 border-dashed flex items-center justify-center" style={{ borderColor: 'var(--brand-border)' }}>
-              <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Signature</p>
-            </div>
+            <SignaturePad
+              label="Signature du signataire"
+              value={data.signatureImageSignataire || ''}
+              onChange={v => update('signatureImageSignataire', v ?? '')}
+            />
           </div>
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
             <p className="text-xs font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>LE RESPONSABLE DU SALON</p>
             <FormField label="Nom, Prénom" value={data.responsableNomSignature || ''} onChange={v => update('responsableNomSignature', v)} />
             <FormField label="Date" value={data.responsableDate || ''} onChange={v => update('responsableDate', v)} />
-            <div className="h-16 rounded-lg border-2 border-dashed flex items-center justify-center" style={{ borderColor: 'var(--brand-border)' }}>
-              <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Signature</p>
-            </div>
+            <SignaturePad
+              label="Signature du responsable"
+              value={data.signatureImageResponsable || ''}
+              onChange={v => update('signatureImageResponsable', v ?? '')}
+            />
           </div>
         </div>
       </div>

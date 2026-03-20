@@ -21,3 +21,5 @@
 - [x] Créer le type fiche_seance_tatouage dans types.ts et Documents.tsx
 - [x] Créer FormFicheSeanceTatouage dans DocumentForm.tsx
 - [x] Étendre la recherche globale du tableau de bord aux RDV et documents
+- [x] Créer composant SignaturePad (canvas tactile + souris, effacer, base64)
+- [x] Intégrer SignaturePad sur toutes les fiches de consentement (01, 02, 03, 05, 06, 07, 08)
