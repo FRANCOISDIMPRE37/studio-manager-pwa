@@ -3,7 +3,7 @@
  * Validation: erreurs uniquement après blur (touched) ou soumission
  * Version 3 — approche touched par champ, impossible d'afficher des erreurs à l'ouverture
  */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { DocumentType, PrestationType } from '@/lib/types';
@@ -36,6 +36,10 @@ export default function AddClientModal({ onClose }: Props) {
   const { addClient, state } = useApp();
 
   // Champs du formulaire
+  const refMois = useRef<HTMLInputElement>(null);
+  const refAnnee = useRef<HTMLInputElement>(null);
+  const refTelephone = useRef<HTMLInputElement>(null);
+
   const [prenom, setPrenom] = useState('');
   const [nom, setNom] = useState('');
   const [dateJour, setDateJour] = useState('');
@@ -257,25 +261,39 @@ export default function AddClientModal({ onClose }: Props) {
                   type="number"
                   style={dateInputStyle}
                   value={dateJour}
-                  onChange={e => setDateJour(e.target.value.slice(0, 2))}
+                  onChange={e => {
+                    const v = e.target.value.slice(0, 2);
+                    setDateJour(v);
+                    if (v.length === 2) refMois.current?.focus();
+                  }}
                   onBlur={() => touch('date')}
                   placeholder="JJ"
                   min="1" max="31"
                 />
                 <input
+                  ref={refMois}
                   type="number"
                   style={dateInputStyle}
                   value={dateMois}
-                  onChange={e => setDateMois(e.target.value.slice(0, 2))}
+                  onChange={e => {
+                    const v = e.target.value.slice(0, 2);
+                    setDateMois(v);
+                    if (v.length === 2) refAnnee.current?.focus();
+                  }}
                   onBlur={() => touch('date')}
                   placeholder="MM"
                   min="1" max="12"
                 />
                 <input
+                  ref={refAnnee}
                   type="number"
                   style={dateInputStyle}
                   value={dateAnnee}
-                  onChange={e => setDateAnnee(e.target.value.slice(0, 4))}
+                  onChange={e => {
+                    const v = e.target.value.slice(0, 4);
+                    setDateAnnee(v);
+                    if (v.length === 4) refTelephone.current?.focus();
+                  }}
                   onBlur={() => touch('date')}
                   placeholder="AAAA"
                   min="1900" max={new Date().getFullYear()}
@@ -309,6 +327,7 @@ export default function AddClientModal({ onClose }: Props) {
               <div>
                 <label style={labelStyle}>Téléphone *</label>
                 <input
+                  ref={refTelephone}
                   type="tel"
                   style={getStyle('telephone')}
                   value={telephone}
