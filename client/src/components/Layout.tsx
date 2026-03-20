@@ -3,13 +3,17 @@
  * Navigation iconographique + labels, accent cyan sur élément actif
  */
 import { Link, useLocation } from 'wouter';
+import { useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import {
   LayoutDashboard, Users, Calendar, FileText, Settings,
-  LogOut, Shield, AlertTriangle, ChevronRight, ExternalLink
+  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
+import { toast } from 'sonner';
+import { exportClientsCSV, exportClientsExcel, importClientsFromFile } from '@/lib/clientExportImport';
+import { nanoid } from 'nanoid';
 
 const NAV_ITEMS = [
   { path: '/', icon: LayoutDashboard, label: 'Tableau de bord' },
@@ -21,11 +25,69 @@ const NAV_ITEMS = [
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { state, getDashboardStats, setAuthenticated } = useApp();
+  const { state, getDashboardStats, setAuthenticated, addClient } = useApp();
   const stats = getDashboardStats();
+  const importRef = useRef<HTMLInputElement>(null);
 
   const handleLogout = () => {
     setAuthenticated(false);
+  };
+
+  const handleExportCSV = () => {
+    if (!state.clients.length) { toast.error('Aucun client à exporter'); return; }
+    exportClientsCSV(state.clients);
+    toast.success(`${state.clients.length} client(s) exporté(s) en CSV`);
+  };
+
+  const handleExportExcel = () => {
+    if (!state.clients.length) { toast.error('Aucun client à exporter'); return; }
+    exportClientsExcel(state.clients);
+    toast.success(`${state.clients.length} client(s) exporté(s) en Excel`);
+  };
+
+  const handleImportFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    importClientsFromFile(
+      file,
+      ({ imported, errors }) => {
+        if (errors.length) {
+          errors.forEach(err => toast.warning(err));
+        }
+        if (!imported.length) {
+          toast.error('Aucun client valide trouvé dans le fichier');
+          return;
+        }
+        const today = new Date().toISOString().split('T')[0];
+        const daysFromNow = (n: number) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; };
+        imported.forEach(partial => {
+          addClient({
+            nom: partial.nom || '',
+            prenom: partial.prenom || '',
+            dateNaissance: partial.dateNaissance || '',
+            telephone: partial.telephone || '',
+            email: partial.email,
+            adresse: partial.adresse || '',
+            codePostal: partial.codePostal || '',
+            ville: partial.ville || '',
+            pieceIdentiteType: partial.pieceIdentiteType,
+            pieceIdentiteNumero: partial.pieceIdentiteNumero,
+            estMineur: partial.estMineur || false,
+            estArchive: partial.estArchive || false,
+            dateConsentement: partial.dateConsentement || today,
+            dateSuppressionPrevue: partial.dateSuppressionPrevue || daysFromNow(365 * 5),
+            rgpdDroitsExerces: [],
+            prestations: [],
+            documentsAssocies: [],
+            documents: [],
+            photos: [],
+          });
+        });
+        toast.success(`${imported.length} client(s) importé(s) avec succès`);
+      },
+      (msg) => toast.error(msg)
+    );
+    e.target.value = '';
   };
 
   return (
@@ -92,6 +154,39 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             );
           })}
         </nav>
+
+        {/* Export / Import clients CSV/Excel */}
+        <div className="px-1 pb-1">
+          <p className="hidden md:block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>Clients</p>
+          <input ref={importRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleImportFile} />
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
+            style={{ color: 'var(--brand-text-muted)' }}
+            title="Exporter clients CSV"
+          >
+            <FileDown size={15} className="flex-shrink-0" style={{ color: '#34d399', opacity: 0.8 }} />
+            <span className="hidden md:block text-xs truncate group-hover:text-white transition-colors">Exporter CSV</span>
+          </button>
+          <button
+            onClick={handleExportExcel}
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
+            style={{ color: 'var(--brand-text-muted)' }}
+            title="Exporter clients Excel"
+          >
+            <FileSpreadsheet size={15} className="flex-shrink-0" style={{ color: '#34d399', opacity: 0.8 }} />
+            <span className="hidden md:block text-xs truncate group-hover:text-white transition-colors">Exporter Excel</span>
+          </button>
+          <button
+            onClick={() => importRef.current?.click()}
+            className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
+            style={{ color: 'var(--brand-text-muted)' }}
+            title="Importer clients CSV/Excel"
+          >
+            <FileUp size={15} className="flex-shrink-0" style={{ color: '#fb923c', opacity: 0.8 }} />
+            <span className="hidden md:block text-xs truncate group-hover:text-white transition-colors">Importer CSV/Excel</span>
+          </button>
+        </div>
 
         {/* Liens externes */}
         <div className="px-1 pb-2 space-y-1">

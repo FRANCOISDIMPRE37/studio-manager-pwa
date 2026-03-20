@@ -14,3 +14,5 @@
 - [x] Créer FormAffichageSalon fidèle au PDF (blocs colorés rouge/bleu/vert/orange/violet/gris)
 - [x] Ajouter les deux cases dans le switch renderForm() de DocumentForm.tsx
 - [x] Ajouter 3 liens externes dans la sidebar (Intemporelle, ARS Santé, CNIL)
+- [x] Installer xlsx et créer les fonctions export CSV/Excel et import CSV/Excel clients
+- [x] Ajouter les boutons Export CSV, Export Excel, Import CSV/Excel dans la sidebar gauche
