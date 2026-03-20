@@ -3,9 +3,10 @@
  */
 import { useState, useMemo, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
-import { ChevronLeft, ChevronRight, Plus, Clock, X, Calendar, CalendarDays, CalendarRange } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Plus, Clock, X, Calendar, CalendarDays, CalendarRange, Bell, CheckCircle, AlertCircle, MinusCircle } from 'lucide-react';
 import { RendezVous, RDVType, RDVStatut, RDV_TYPE_LABELS, RDV_STATUT_LABELS, RDV_STATUT_COLORS } from '@/lib/types';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 
 type View = 'jour' | 'semaine' | 'mois';
 
@@ -485,6 +486,64 @@ export default function Agenda() {
           defaultHeure={addHeure}
         />
       )}
+
+      {/* Panneau rappels automatiques */}
+      <PanneauRappels />
+    </div>
+  );
+}
+
+// ─── Panneau Rappels Automatiques ─────────────────────────────────────────────
+function PanneauRappels() {
+  const { data, isLoading } = trpc.rappels.getStatus.useQuery(undefined, {
+    refetchInterval: 60_000,
+  });
+
+  const rappels = data?.rappels || [];
+
+  if (isLoading) return null;
+
+  return (
+    <div className="rounded-xl p-4 space-y-3" style={{ background: 'var(--brand-navy)', border: '1px solid var(--brand-border)' }}>
+      <div className="flex items-center gap-2">
+        <Bell size={16} style={{ color: 'var(--brand-cyan)' }} />
+        <h3 className="text-sm font-semibold" style={{ color: 'var(--brand-text)' }}>Rappels automatiques (24h avant RDV)</h3>
+        <span className="ml-auto text-xs px-2 py-0.5 rounded-full"
+          style={{ background: 'rgba(131,208,245,0.1)', color: 'var(--brand-cyan)' }}>
+          {rappels.filter((r: any) => r.statut === 'envoye').length} envoyé(s)
+        </span>
+      </div>
+
+      {rappels.length === 0 ? (
+        <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
+          Aucun rappel envoyé pour l'instant. Le système vérifie automatiquement toutes les heures.
+        </p>
+      ) : (
+        <div className="space-y-1.5 max-h-48 overflow-y-auto">
+          {rappels.map((r: any) => (
+            <div key={r.id} className="flex items-center gap-2 text-xs py-1.5 px-2 rounded-lg"
+              style={{ background: 'rgba(255,255,255,0.03)' }}>
+              {r.statut === 'envoye' && <CheckCircle size={13} style={{ color: '#4ade80', flexShrink: 0 }} />}
+              {r.statut === 'erreur' && <AlertCircle size={13} style={{ color: '#f87171', flexShrink: 0 }} />}
+              {r.statut === 'ignore' && <MinusCircle size={13} style={{ color: 'var(--brand-text-muted)', flexShrink: 0 }} />}
+              <span style={{ color: 'var(--brand-text)' }}>{r.clientNom || 'Client inconnu'}</span>
+              <span style={{ color: 'var(--brand-text-muted)' }}>—</span>
+              <span style={{ color: 'var(--brand-text-muted)' }}>{r.rdvDate} à {r.rdvHeure}</span>
+              {r.clientEmail && <span className="ml-auto truncate max-w-32" style={{ color: 'var(--brand-text-muted)' }}>{r.clientEmail}</span>}
+              {r.statut === 'erreur' && r.errorMessage && (
+                <span className="ml-auto text-xs" style={{ color: '#f87171' }} title={r.errorMessage}>Erreur</span>
+              )}
+              {r.statut === 'ignore' && (
+                <span className="ml-auto" style={{ color: 'var(--brand-text-muted)' }}>Pas d'email</span>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+
+      <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
+        Les rappels sont envoyés automatiquement depuis <strong style={{ color: 'var(--brand-text)' }}>societe@intemporel.tech</strong> toutes les heures.
+      </p>
     </div>
   );
 }

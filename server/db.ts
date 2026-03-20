@@ -241,3 +241,49 @@ export async function upsertSmtpConfig(userId: number, data: Omit<InsertSmtpConf
     .values({ userId, ...data })
     .onDuplicateKeyUpdate({ set: data });
 }
+
+// ============ RDV RAPPELS ============
+
+export interface RdvRappel {
+  id: string;
+  userId: number;
+  rdvId: string;
+  rdvDate: string;
+  rdvHeure: string;
+  clientNom: string | null;
+  clientEmail: string | null;
+  sentAt: number;
+  statut: 'envoye' | 'erreur' | 'ignore';
+  errorMessage: string | null;
+  createdAt: number;
+}
+
+export async function getRdvRappelsByUserId(userId: number): Promise<RdvRappel[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const [rows] = await (db as any).$client.execute(
+    'SELECT * FROM rdv_rappels WHERE userId = ? ORDER BY createdAt DESC LIMIT 50',
+    [userId]
+  );
+  return rows as RdvRappel[];
+}
+
+export async function rdvRappelExists(userId: number, rdvId: string): Promise<boolean> {
+  const db = await getDb();
+  if (!db) return false;
+  const [rows] = await (db as any).$client.execute(
+    'SELECT id FROM rdv_rappels WHERE userId = ? AND rdvId = ? AND statut = "envoye" LIMIT 1',
+    [userId, rdvId]
+  );
+  return (rows as any[]).length > 0;
+}
+
+export async function insertRdvRappel(rappel: RdvRappel): Promise<void> {
+  const db = await getDb();
+  if (!db) return;
+  await (db as any).$client.execute(
+    `INSERT INTO rdv_rappels (id, userId, rdvId, rdvDate, rdvHeure, clientNom, clientEmail, sentAt, statut, errorMessage, createdAt)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    [rappel.id, rappel.userId, rappel.rdvId, rappel.rdvDate, rappel.rdvHeure, rappel.clientNom, rappel.clientEmail, rappel.sentAt, rappel.statut, rappel.errorMessage, rappel.createdAt]
+  );
+}

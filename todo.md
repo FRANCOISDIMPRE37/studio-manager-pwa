@@ -57,3 +57,8 @@
 - [x] Ajouter vue Mois (calendrier mensuel avec badges RDV)
 - [x] Navigation précédent/suivant et bouton Aujourd'hui
 - [x] Clic sur créneau vide pour créer un RDV
+- [ ] Créer table rdv_rappels en base (rdvId, userId, sentAt, email, statut)
+- [ ] Créer job serveur planifié (setInterval toutes les heures) pour détecter RDV J+1
+- [ ] Créer procédure tRPC smtp.getRappelsStatus pour afficher l'état des rappels
+- [ ] Ajouter panneau "Rappels automatiques" dans l'Agenda avec toggle on/off
+- [ ] Ajouter option "Activer les rappels email" dans Paramètres

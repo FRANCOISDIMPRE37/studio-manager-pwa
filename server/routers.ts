@@ -549,6 +549,21 @@ export const appRouter = router({
         }
       }),
   }),
+
+  rappels: router({
+    getStatus: protectedProcedure.query(async ({ ctx }) => {
+      const db = await import('./db').then(m => m.getDb());
+      if (!db) return { rappels: [], total: 0 };
+      try {
+        const result = await (db as any).$client.query(
+          'SELECT * FROM rdv_rappels WHERE userId = ? ORDER BY createdAt DESC LIMIT 50',
+          [ctx.user.id]
+        );
+        const rows = Array.isArray(result) ? result[0] : [];
+        return { rappels: rows as any[], total: (rows as any[]).length };
+      } catch { return { rappels: [], total: 0 }; }
+    }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;

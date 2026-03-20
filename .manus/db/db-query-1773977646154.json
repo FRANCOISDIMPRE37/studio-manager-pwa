@@ -1,0 +1,9 @@
+{
+  "query": "CREATE TABLE IF NOT EXISTS rdv_rappels (\n  id VARCHAR(36) NOT NULL PRIMARY KEY,\n  userId INT NOT NULL,\n  rdvId VARCHAR(36) NOT NULL,\n  rdvDate VARCHAR(10) NOT NULL,\n  rdvHeure VARCHAR(5) NOT NULL,\n  clientNom VARCHAR(255),\n  clientEmail VARCHAR(255),\n  sentAt BIGINT NOT NULL,\n  statut ENUM('envoye', 'erreur', 'ignore') NOT NULL DEFAULT 'envoye',\n  errorMessage TEXT,\n  createdAt BIGINT NOT NULL\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute CREATE TABLE IF NOT EXISTS rdv_rappels (\n  id VARCHAR(36) NOT NULL PRIMARY KEY,\n  userId INT NOT NULL,\n  rdvId VARCHAR(36) NOT NULL,\n  rdvDate VARCHAR(10) NOT NULL,\n  rdvHeure VARCHAR(5) NOT NULL,\n  clientNom VARCHAR(255),\n  clientEmail VARCHAR(255),\n  sentAt BIGINT NOT NULL,\n  statut ENUM('envoye', 'erreur', 'ignore') NOT NULL DEFAULT 'envoye',\n  errorMessage TEXT,\n  createdAt BIGINT NOT NULL\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 144
+}
