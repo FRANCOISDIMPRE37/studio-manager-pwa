@@ -18,3 +18,6 @@
 - [x] Ajouter les boutons Export CSV, Export Excel, Import CSV/Excel dans la sidebar gauche
 - [x] Ajouter barre de recherche client en haut du tableau de bord (Dashboard.tsx)
 - [x] Ajouter boutons Imprimer et Envoyer par email dans DocumentForm.tsx
+- [x] Créer le type fiche_seance_tatouage dans types.ts et Documents.tsx
+- [x] Créer FormFicheSeanceTatouage dans DocumentForm.tsx
+- [x] Étendre la recherche globale du tableau de bord aux RDV et documents

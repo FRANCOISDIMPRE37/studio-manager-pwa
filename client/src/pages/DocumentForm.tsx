@@ -1009,6 +1009,132 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
   );
 }
 
+// ─── Formulaire Fiche de Séance Tatouage ─────────────────────────────────
+
+function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  return (
+    <>
+      <LegalBox color="green">
+        <strong>Cadre réglementaire :</strong> Arrêté du 3 décembre 2008 (traitement tatouage) • Règlement UE 2020/2081 (pigments) • Art. L.1311-1 CSP • RGPD Art. 9 (données santé)
+      </LegalBox>
+
+      <FormSection title="1 — IDENTITÉ DU CLIENT" />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Nom" value={data.nom || client.nom || ''} onChange={v => update('nom', v)} required />
+        <FormField label="Prénom" value={data.prenom || client.prenom || ''} onChange={v => update('prenom', v)} required />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Date de naissance" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} type="date" />
+        <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      </div>
+      <FormField label="Adresse" value={data.adresse || client.adresse || ''} onChange={v => update('adresse', v)} />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Code postal" value={data.codePostal || client.codePostal || ''} onChange={v => update('codePostal', v)} />
+        <FormField label="Ville" value={data.ville || client.ville || ''} onChange={v => update('ville', v)} />
+      </div>
+
+      <FormSection title="2 — INFORMATIONS SÉANCE" />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Date de la séance" value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} type="date" required />
+        <FormField label="Durée (heures)" value={data.dureeSeance || ''} onChange={v => update('dureeSeance', v)} placeholder="ex : 3h30" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Heure de début" value={data.heureDebut || ''} onChange={v => update('heureDebut', v)} type="time" />
+        <FormField label="Heure de fin" value={data.heureFin || ''} onChange={v => update('heureFin', v)} type="time" />
+      </div>
+      <FormField label="Numéro de séance" value={data.numeroSeance || ''} onChange={v => update('numeroSeance', v)} placeholder="ex : Séance 1/3" />
+      <FormField label="Tatoueur / Artiste" value={data.tatoueur || ''} onChange={v => update('tatoueur', v)} placeholder="Nom de l'artiste" required />
+
+      <FormSection title="3 — DESCRIPTION DU TATOUAGE" />
+      <FormField label="Zone(s) tatouée(s)" value={data.zones || ''} onChange={v => update('zones', v)} placeholder="ex : avant-bras gauche, épaule droite..." required />
+      <FormField label="Description du motif" value={data.motif || ''} onChange={v => update('motif', v)} multiline placeholder="Description du design, style, dimensions approximatives..." />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Dimensions (cm)" value={data.dimensions || ''} onChange={v => update('dimensions', v)} placeholder="ex : 15 x 10 cm" />
+        <RadioField label="Style" options={['Traditionnel', 'Réaliste', 'Japonais', 'Tribal', 'Aquarelle', 'Géométrique', 'Lettering', 'Autre']} value={data.style || ''} onChange={v => update('style', v)} />
+      </div>
+      <FormField label="Séance précédente (observations)" value={data.seancePrecedente || ''} onChange={v => update('seancePrecedente', v)} multiline placeholder="État de la cicatrisation, retouches nécessaires..." />
+
+      <FormSection title="4 — TRAÇABILITÉ DES ENCRES" />
+      <LegalBox color="orange">
+        <strong>Obligation légale :</strong> Arrêté du 3 déc. 2008 + Règlement UE 2020/2081 — traçabilité obligatoire de chaque encre utilisée (fabricant, référence, N° lot, date péremption). Conservation 5 ans minimum.
+      </LegalBox>
+      {[1, 2, 3, 4, 5].map(i => (
+        <div key={i} className="p-3 rounded-lg mb-2" style={{ background: 'rgba(255,152,0,0.04)', border: '1px solid rgba(255,152,0,0.15)' }}>
+          <p className="text-xs font-600 mb-2" style={{ color: '#FF9800', fontWeight: 600 }}>Encre n°{i}</p>
+          <div className="grid grid-cols-2 gap-2">
+            <FormField label="Couleur" value={data[`encre${i}_couleur`] || ''} onChange={v => update(`encre${i}_couleur`, v)} placeholder="ex : Noir, Rouge..." />
+            <FormField label="Fabricant" value={data[`encre${i}_fabricant`] || ''} onChange={v => update(`encre${i}_fabricant`, v)} placeholder="Marque" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <FormField label="Référence / Code" value={data[`encre${i}_ref`] || ''} onChange={v => update(`encre${i}_ref`, v)} placeholder="Réf. produit" />
+            <FormField label="N° de lot" value={data[`encre${i}_lot`] || ''} onChange={v => update(`encre${i}_lot`, v)} placeholder="N° lot" />
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <FormField label="Date de péremption" value={data[`encre${i}_peremption`] || ''} onChange={v => update(`encre${i}_peremption`, v)} type="date" />
+            <FormField label="Quantité utilisée (ml)" value={data[`encre${i}_quantite`] || ''} onChange={v => update(`encre${i}_quantite`, v)} placeholder="ml" />
+          </div>
+        </div>
+      ))}
+
+      <FormSection title="5 — MATÉRIEL UTILISÉ" />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Machine / Type" value={data.machine || ''} onChange={v => update('machine', v)} placeholder="ex : Rotative, Bobine, Stylo..." />
+        <FormField label="Marque de la machine" value={data.marqueMachine || ''} onChange={v => update('marqueMachine', v)} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Aiguille(s) utilisée(s)" value={data.aiguilles || ''} onChange={v => update('aiguilles', v)} placeholder="ex : 7RL, 5M1, 9M1..." />
+        <FormField label="N° lot aiguilles" value={data.lotAiguilles || ''} onChange={v => update('lotAiguilles', v)} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Péremption aiguilles" value={data.peremptionAiguilles || ''} onChange={v => update('peremptionAiguilles', v)} type="date" />
+        <FormField label="Cartouches (N° lot)" value={data.lotCartouches || ''} onChange={v => update('lotCartouches', v)} />
+      </div>
+      <FormField label="Autres consommables (gants, film, savon...)" value={data.autresConsommables || ''} onChange={v => update('autresConsommables', v)} multiline placeholder="Marque, référence, lot..." />
+
+      <FormSection title="6 — DÉROULEMENT DE LA SÉANCE" />
+      <RadioField
+        label="État de la peau avant séance"
+        options={['Excellent', 'Bon', 'Correct', 'Sensible', 'Problème signalé']}
+        value={data.etatPeau || ''}
+        onChange={v => update('etatPeau', v)}
+      />
+      <FormField label="Test d'allergie préalable" value={data.testAllergie || ''} onChange={v => update('testAllergie', v)} placeholder="Date et résultat du test patch si réalisé" />
+      <FormField label="Préparation de la zone" value={data.preparation || ''} onChange={v => update('preparation', v)} multiline placeholder="Rasage, désinfection, transfert du gabarit..." />
+      <FormField label="Observations en cours de séance" value={data.observationsSeance || ''} onChange={v => update('observationsSeance', v)} multiline placeholder="Réactions, pauses, ajustements..." />
+      <RadioField
+        label="Résultat de la séance"
+        options={['Terminée', 'Partielle — à continuer', 'Interrompue', 'Retouche nécessaire']}
+        value={data.resultatSeance || ''}
+        onChange={v => update('resultatSeance', v)}
+      />
+      <FormField label="Prochaine séance prévue" value={data.prochaineSeance || ''} onChange={v => update('prochaineSeance', v)} type="date" />
+
+      <FormSection title="7 — SOINS REMIS AU CLIENT" />
+      <LegalBox color="cyan">
+        Documents remis au client après la séance (Arrêté du 3 déc. 2008, Art. 7).
+      </LegalBox>
+      <CheckboxField label="Fiche de soins post-tatouage remise" value={!!data.fichesSoinsRemise} onToggle={() => update('fichesSoinsRemise', !data.fichesSoinsRemise)} />
+      <CheckboxField label="Informations sur les encres communiquées" value={!!data.infosEncresRemises} onToggle={() => update('infosEncresRemises', !data.infosEncresRemises)} />
+      <CheckboxField label="Conseils de cicatrisation expliqués oralement" value={!!data.conseilsOraux} onToggle={() => update('conseilsOraux', !data.conseilsOraux)} />
+      <FormField label="Autres documents remis" value={data.autresDocuments || ''} onChange={v => update('autresDocuments', v)} placeholder="Préciser si nécessaire" />
+
+      <FormSection title="8 — SIGNATURE" />
+      <div className="grid grid-cols-2 gap-4">
+        <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du tatoueur</p>
+          <FormField label="Nom du tatoueur" value={data.signatureTatoueur || ''} onChange={v => update('signatureTatoueur', v)} />
+          <div className="h-12 rounded-lg mt-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--brand-border)' }} />
+        </div>
+        <div className="p-4 rounded-xl text-center" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du client</p>
+          <FormField label="Lu et approuvé" value={data.signatureClient || ''} onChange={v => update('signatureClient', v)} />
+          <div className="h-12 rounded-lg mt-2" style={{ background: 'rgba(255,255,255,0.02)', border: '1px dashed var(--brand-border)' }} />
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Formulaire Questionnaire Médical Tatouage Majeur ────────────────────────
 
 function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
@@ -1813,6 +1939,8 @@ export default function DocumentForm() {
         return <FormConsentementSoinsTatouage data={formData} update={updateField} client={client} />;
       case 'soins_dermographe':
         return <FormSoinsDermographe data={formData} update={updateField} client={client} />;
+      case 'fiche_seance_tatouage':
+        return <FormFicheSeanceTatouage data={formData} update={updateField} client={client} />;
       case 'engagement_confidentialite':
         return <FormEngagementConfidentialite data={formData} update={updateField} client={client} />;
       case 'affichage_salon':

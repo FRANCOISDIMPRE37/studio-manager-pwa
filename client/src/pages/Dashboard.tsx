@@ -95,9 +95,11 @@ export default function Dashboard() {
   const todayStr = new Date().toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 
   const searchResults = useMemo(() => {
-    if (!searchQuery.trim()) return [];
+    if (!searchQuery.trim()) return { clients: [], rdv: [], documents: [] };
     const q = searchQuery.toLowerCase().trim();
-    return state.clients
+
+    // Recherche clients
+    const clients = state.clients
       .filter(c => !c.estArchive)
       .filter(c =>
         c.nom.toLowerCase().includes(q) ||
@@ -107,8 +109,44 @@ export default function Dashboard() {
         (c.telephone || '').includes(q) ||
         (c.email || '').toLowerCase().includes(q)
       )
-      .slice(0, 8);
-  }, [searchQuery, state.clients]);
+      .slice(0, 5);
+
+    // Recherche rendez-vous (par type, zone, notes, nom client)
+    const rdv = state.rendezVous
+      .filter(r => {
+        const client = r.clientId ? state.clients.find(c => c.id === r.clientId) : null;
+        const clientName = client ? `${client.prenom} ${client.nom}`.toLowerCase() : (r.clientNom || '').toLowerCase();
+        return (
+          clientName.includes(q) ||
+          (r.type || '').toLowerCase().includes(q) ||
+          (r.zone || '').toLowerCase().includes(q) ||
+          (r.notes || '').toLowerCase().includes(q) ||
+          (r.date || '').includes(q)
+        );
+      })
+      .slice(0, 3);
+
+    // Recherche documents (par type de document, nom client)
+    const documents: { clientId: string; clientName: string; docType: string; docLabel: string }[] = [];
+    state.clients
+      .filter(c => !c.estArchive)
+      .forEach(c => {
+        (c.documents || []).forEach((doc: any) => {
+          const label = (doc.type || '').toLowerCase();
+          const clientName = `${c.prenom} ${c.nom}`.toLowerCase();
+          if (label.includes(q) || clientName.includes(q)) {
+            documents.push({
+              clientId: c.id,
+              clientName: `${c.prenom} ${c.nom}`,
+              docType: doc.type,
+              docLabel: doc.type.replace(/_/g, ' '),
+            });
+          }
+        });
+      });
+
+    return { clients, rdv, documents: documents.slice(0, 3) };
+  }, [searchQuery, state.clients, state.rendezVous]);
 
   return (
     <div className="p-4 md:p-6 space-y-6">
@@ -133,7 +171,7 @@ export default function Dashboard() {
           <Search size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
           <input
             type="text"
-            placeholder="Rechercher un client par nom, prénom, téléphone ou email..."
+            placeholder="Rechercher un client, un rendez-vous ou un document..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
             className="flex-1 bg-transparent outline-none text-sm"
@@ -145,44 +183,112 @@ export default function Dashboard() {
             </button>
           )}
         </div>
-        {/* Résultats de recherche */}
-        {searchResults.length > 0 && (
+        {/* Résultats de recherche globale */}
+        {(searchResults.clients.length > 0 || searchResults.rdv.length > 0 || searchResults.documents.length > 0) && (
           <div
             className="absolute top-full left-0 right-0 mt-1 rounded-xl overflow-hidden z-50"
-            style={{ background: '#0D1E38', border: '1px solid var(--brand-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)' }}
+            style={{ background: '#0D1E38', border: '1px solid var(--brand-border)', boxShadow: '0 8px 32px rgba(0,0,0,0.4)', maxHeight: '420px', overflowY: 'auto' }}
           >
-            {searchResults.map(client => (
-              <div
-                key={client.id}
-                className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
-                onClick={() => { navigate(`/clients/${client.id}`); setSearchQuery(''); }}
-              >
-                <div
-                  className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-700"
-                  style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', fontWeight: 700 }}
-                >
-                  {client.prenom[0]}{client.nom[0]}
+            {/* Section Clients */}
+            {searchResults.clients.length > 0 && (
+              <>
+                <div className="px-4 py-2" style={{ background: 'rgba(131,208,245,0.06)', borderBottom: '1px solid var(--brand-border)' }}>
+                  <span className="text-xs font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Clients</span>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
-                    {client.prenom} {client.nom}
-                    {client.estMineur && <span className="ml-2 text-xs px-1.5 py-0.5 rounded" style={{ background: '#9C27B022', color: '#9C27B0' }}>Mineur</span>}
-                  </p>
-                  <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
-                    {client.telephone}{client.email ? ` · ${client.email}` : ''}
-                  </p>
+                {searchResults.clients.map(client => (
+                  <div
+                    key={client.id}
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                    onClick={() => { navigate(`/clients/${client.id}`); setSearchQuery(''); }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-700"
+                      style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', fontWeight: 700 }}
+                    >
+                      {client.prenom[0]}{client.nom[0]}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
+                        {client.prenom} {client.nom}
+                        {client.estMineur && <span className="ml-2 text-xs px-1.5 py-0.5 rounded" style={{ background: '#9C27B022', color: '#9C27B0' }}>Mineur</span>}
+                      </p>
+                      <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
+                        {client.telephone}{client.email ? ` · ${client.email}` : ''}
+                      </p>
+                    </div>
+                    <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
+                  </div>
+                ))}
+              </>
+            )}
+            {/* Section RDV */}
+            {searchResults.rdv.length > 0 && (
+              <>
+                <div className="px-4 py-2" style={{ background: 'rgba(76,175,80,0.06)', borderBottom: '1px solid var(--brand-border)', borderTop: searchResults.clients.length > 0 ? '1px solid var(--brand-border)' : undefined }}>
+                  <span className="text-xs font-600" style={{ color: '#4CAF50', fontWeight: 600 }}>Rendez-vous</span>
                 </div>
-                <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
-              </div>
-            ))}
+                {searchResults.rdv.map(rdv => {
+                  const rdvClient = rdv.clientId ? state.clients.find(c => c.id === rdv.clientId) : null;
+                  const rdvName = rdvClient ? `${rdvClient.prenom} ${rdvClient.nom}` : (rdv.clientNom || 'Client inconnu');
+                  return (
+                    <div
+                      key={rdv.id}
+                      className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                      onClick={() => { navigate('/agenda'); setSearchQuery(''); }}
+                    >
+                      <div
+                        className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                        style={{ background: 'rgba(76,175,80,0.15)', color: '#4CAF50' }}
+                      >
+                        <Calendar size={14} />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{rdvName}</p>
+                        <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
+                          {rdv.date} · {rdv.heureDebut} – {rdv.heureFin}{rdv.zone ? ` · ${rdv.zone}` : ''}
+                        </p>
+                      </div>
+                      <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
+                    </div>
+                  );
+                })}
+              </>
+            )}
+            {/* Section Documents */}
+            {searchResults.documents.length > 0 && (
+              <>
+                <div className="px-4 py-2" style={{ background: 'rgba(255,152,0,0.06)', borderBottom: '1px solid var(--brand-border)', borderTop: '1px solid var(--brand-border)' }}>
+                  <span className="text-xs font-600" style={{ color: '#FF9800', fontWeight: 600 }}>Documents</span>
+                </div>
+                {searchResults.documents.map((doc, idx) => (
+                  <div
+                    key={idx}
+                    className="flex items-center gap-3 px-4 py-3 cursor-pointer hover:bg-white/5 transition-colors"
+                    onClick={() => { navigate(`/clients/${doc.clientId}/document/${doc.docType}`); setSearchQuery(''); }}
+                  >
+                    <div
+                      className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0"
+                      style={{ background: 'rgba(255,152,0,0.15)', color: '#FF9800' }}
+                    >
+                      <Shield size={14} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{doc.clientName}</p>
+                      <p className="text-xs truncate capitalize" style={{ color: 'var(--brand-text-muted)' }}>{doc.docLabel}</p>
+                    </div>
+                    <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
+                  </div>
+                ))}
+              </>
+            )}
           </div>
         )}
-        {searchQuery.trim() && searchResults.length === 0 && (
+        {searchQuery.trim() && searchResults.clients.length === 0 && searchResults.rdv.length === 0 && searchResults.documents.length === 0 && (
           <div
             className="absolute top-full left-0 right-0 mt-1 rounded-xl px-4 py-3 z-50"
             style={{ background: '#0D1E38', border: '1px solid var(--brand-border)' }}
           >
-            <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Aucun client trouvé pour « {searchQuery} »</p>
+            <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Aucun résultat pour « {searchQuery} »</p>
           </div>
         )}
       </div>
