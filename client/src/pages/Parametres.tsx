@@ -3,7 +3,7 @@
  */
 import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
-import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, CheckCircle, XCircle, Eye, EyeOff, MessageSquare } from 'lucide-react';
+import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon } from 'lucide-react';
 import GestionUtilisateurs from './GestionUtilisateurs';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
@@ -11,15 +11,6 @@ import { trpc } from '@/lib/trpc';
 
 export default function Parametres() {
   const { state, updateSalonInfo, setAuthenticated, setPin, exitDemoMode } = useApp();
-
-  // ─── SMS Brevo ───
-  const smsConfigQuery = trpc.sms.getConfig.useQuery();
-  const smsSave = trpc.sms.saveConfig.useMutation({
-    onSuccess: () => { toast.success('Configuration SMS sauvegardée !'); smsConfigQuery.refetch(); },
-    onError: (e) => toast.error(e.message),
-  });
-  const [smsForm, setSmsForm] = useState({ apiKey: '', senderName: 'Studio' });
-  const [showSmsKey, setShowSmsKey] = useState(false);
 
   const [editingSalon, setEditingSalon] = useState(false);
   const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
@@ -252,64 +243,6 @@ export default function Parametres() {
         )}
       </div>
 
-
-      {/* Configuration SMS Brevo */}
-      <div className="studio-card p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <MessageSquare size={16} style={{ color: '#64FFDA' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Configuration SMS (Brevo)</h2>
-        </div>
-
-        {smsConfigQuery.data ? (
-          <div className="flex items-center gap-2 mb-4 p-2 rounded-lg" style={{ background: 'rgba(100,255,218,0.06)', border: '1px solid rgba(100,255,218,0.2)' }}>
-            <CheckCircle size={13} style={{ color: '#34d399' }} />
-            <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
-              SMS actif — Expéditeur : <strong style={{ color: 'var(--brand-text)' }}>{smsConfigQuery.data.senderName}</strong> · Clé : {smsConfigQuery.data.apiKeyPreview}
-            </span>
-          </div>
-        ) : (
-          <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(255,152,0,0.08)', border: '1px solid rgba(255,152,0,0.25)' }}>
-            <p className="text-xs" style={{ color: '#FF9800' }}>SMS non configuré. Créez un compte gratuit sur <a href="https://www.brevo.com" target="_blank" rel="noopener noreferrer" style={{ color: '#64FFDA', textDecoration: 'underline' }}>brevo.com</a> pour obtenir votre clé API.</p>
-          </div>
-        )}
-
-        <form onSubmit={e => { e.preventDefault(); smsSave.mutate(smsForm); }} className="space-y-3">
-          <div>
-            <label style={labelStyle}>Clé API Brevo</label>
-            <div className="relative">
-              <input
-                type={showSmsKey ? 'text' : 'password'}
-                style={{ ...inputStyle, paddingRight: '2.5rem' }}
-                value={smsForm.apiKey}
-                onChange={e => setSmsForm(f => ({ ...f, apiKey: e.target.value }))}
-                placeholder={smsConfigQuery.data?.apiKeySet ? '(laisser vide pour conserver)' : 'xkeysib-...'}
-              />
-              <button type="button" onClick={() => setShowSmsKey(v => !v)} className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--brand-text-muted)' }}>
-                {showSmsKey ? <EyeOff size={14} /> : <Eye size={14} />}
-              </button>
-            </div>
-          </div>
-          <div>
-            <label style={labelStyle}>Nom expéditeur (max 11 caractères, sans espace)</label>
-            <input
-              style={inputStyle}
-              value={smsForm.senderName}
-              onChange={e => setSmsForm(f => ({ ...f, senderName: e.target.value.replace(/[^a-zA-Z0-9]/g, '').slice(0, 11) }))}
-              placeholder="Studio"
-              maxLength={11}
-            />
-            <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Apparaîtra comme expéditeur sur le téléphone du client. Ex : Intemporel</p>
-          </div>
-          <button
-            type="submit"
-            disabled={smsSave.isPending}
-            className="w-full py-2.5 rounded-lg text-sm font-700"
-            style={{ background: 'rgba(100,255,218,0.15)', border: '1px solid rgba(100,255,218,0.4)', color: '#64FFDA', fontWeight: 700 }}
-          >
-            {smsSave.isPending ? 'Sauvegarde...' : 'Sauvegarder la configuration SMS'}
-          </button>
-        </form>
-      </div>
 
       {/* PIN */}
       <div className="studio-card p-4">
