@@ -6,7 +6,7 @@ import { Link, useLocation } from 'wouter';
 import { useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import {
-  LayoutDashboard, Users, Calendar, FileText, Settings,
+  LayoutDashboard, Users, FileText, Settings,
   LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -18,7 +18,6 @@ import { nanoid } from 'nanoid';
 const NAV_ITEMS = [
   { path: '/', icon: LayoutDashboard, label: 'Tableau de bord' },
   { path: '/clients', icon: Users, label: 'Clients' },
-  { path: '/agenda', icon: Calendar, label: 'Agenda' },
   { path: '/documents', icon: FileText, label: 'Documents' },
   { path: '/parametres', icon: Settings, label: 'Paramètres' },
 ];

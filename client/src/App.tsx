@@ -9,7 +9,6 @@ import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
-import Agenda from "./pages/Agenda";
 import Documents from "./pages/Documents";
 import Parametres from "./pages/Parametres";
 import NotFound from "./pages/NotFound";
@@ -44,7 +43,6 @@ function AppRoutes() {
         <Route path="/clients" component={Clients} />
         <Route path="/clients/:id" component={ClientDetail} />
         <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />
-        <Route path="/agenda" component={Agenda} />
         <Route path="/documents" component={Documents} />
         <Route path="/parametres" component={Parametres} />
         <Route component={NotFound} />
