@@ -179,11 +179,12 @@ function AgeVerif({ dateNaissance }: { dateNaissance: string }) {
 
 // ─── En-tête d'impression avec logo ────────────────────────────────────────────
 
-function PrintHeader({ salonInfo, docTitle, clientName, date }: {
+function PrintHeader({ salonInfo, docTitle, clientName, date, numeroClient }: {
   salonInfo: any;
   docTitle: string;
   clientName: string;
   date: string;
+  numeroClient?: string;
 }) {
   return (
     <div className="print-header" style={{ display: 'none', WebkitPrintColorAdjust: 'exact', printColorAdjust: 'exact' } as React.CSSProperties}>
@@ -213,6 +214,7 @@ function PrintHeader({ salonInfo, docTitle, clientName, date }: {
         <div style={{ textAlign: 'right', flexShrink: 0 }}>
           <div style={{ fontSize: 13, fontWeight: 700, color: '#0A1628', fontFamily: 'Outfit, sans-serif' }}>{docTitle}</div>
           <div style={{ fontSize: 11, color: '#555', marginTop: 4 }}>Client : {clientName}</div>
+          {numeroClient && <div style={{ fontSize: 11, color: '#555' }}>N° client : {numeroClient}</div>}
           <div style={{ fontSize: 11, color: '#555' }}>Date : {date}</div>
         </div>
       </div>
@@ -2800,6 +2802,7 @@ export default function DocumentForm() {
           docTitle={docTitle}
           clientName={`${client.prenom} ${client.nom}`}
           date={today}
+          numeroClient={client.numeroClient}
         />
         {renderForm()}
 

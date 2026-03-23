@@ -58,6 +58,7 @@ function ClientCard({ client, onClick }: { client: Client; onClick: () => void }
             )}
           </div>
           <p className="text-xs mt-0.5 truncate" style={{ color: 'var(--brand-text-muted)' }}>
+            {client.numeroClient && <span style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>{client.numeroClient} · </span>}
             {client.telephone}
             {lastPrestation ? ` · ${lastPrestation.type} · ${lastPrestation.zone}` : ''}
           </p>

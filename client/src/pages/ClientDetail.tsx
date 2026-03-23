@@ -110,7 +110,7 @@ export default function ClientDetail() {
             {client.estMineur && <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: '#9C27B022', color: '#9C27B0', border: '1px solid #9C27B0' }}>Mineur</span>}
             {client.estArchive && <span className="text-xs px-1.5 py-0.5 rounded flex-shrink-0" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)' }}>Archivé</span>}
           </div>
-          <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{age} ans · {client.telephone}</p>
+          <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{age} ans · {client.telephone}{client.numeroClient ? ` · ${client.numeroClient}` : ''}</p>
         </div>
         <span className="text-xs px-2 py-1 rounded font-600 flex-shrink-0" style={{ background: rgpdColor + '22', color: rgpdColor, border: `1px solid ${rgpdColor}`, fontWeight: 600 }}>
           {RGPD_LABELS[client.rgpdStatus]}
@@ -140,6 +140,7 @@ export default function ClientDetail() {
             <div className="studio-card p-4 space-y-3">
               <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Identité</p>
               {[
+                ...(client.numeroClient ? [{ icon: CreditCard, label: 'N° client', value: client.numeroClient }] : []),
                 { icon: CreditCard, label: 'Né(e) le', value: new Date(client.dateNaissance).toLocaleDateString('fr-FR') + ` (${age} ans)` },
                 { icon: Phone, label: 'Téléphone', value: client.telephone },
                 { icon: Mail, label: 'Email', value: client.email || '—' },

@@ -64,6 +64,7 @@ export interface Prestation {
 // Client principal
 export interface Client {
   id: string;
+  numeroClient?: string;
   nom: string;
   prenom: string;
   dateNaissance: string;

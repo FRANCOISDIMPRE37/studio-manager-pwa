@@ -377,9 +377,18 @@ function AppProviderInner({ children, dispatch, state }: {
       d.setFullYear(d.getFullYear() + 5);
       return fmt(d);
     })();
+    // Générer un numéro de client unique basé sur le compteur stocké
+    const nextNum = (() => {
+      const stored = localStorage.getItem('sm_client_counter');
+      const n = stored ? parseInt(stored, 10) + 1 : 1;
+      localStorage.setItem('sm_client_counter', String(n));
+      return n;
+    })();
+    const numeroClient = `CLI-${String(nextNum).padStart(4, '0')}`;
     const newClient: Client = {
       ...client,
       id: nanoid(),
+      numeroClient,
       dateCreation,
       dateSuppressionPrevue: client.dateSuppressionPrevue || dateSuppressionPrevue,
       rgpdStatus: 'ok',
