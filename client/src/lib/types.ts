@@ -89,6 +89,7 @@ export interface Client {
   dateArchivage?: string;
   dateModification?: string;
   notes?: string;
+  prestationsSouhaitees?: string[];
 }
 
 // Informations du salon

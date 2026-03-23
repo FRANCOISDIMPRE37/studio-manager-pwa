@@ -41,6 +41,25 @@ export default function AddClientModal({ onClose }: Props) {
   const [dateAnnee, setDateAnnee] = useState('');
   const [telephone, setTelephone] = useState('');
   const [email, setEmail] = useState('');
+  const [prestationsSouhaitees, setPrestationsSouhaitees] = useState<string[]>([]);
+
+  const PRESTATIONS_OPTIONS = [
+    'Oreilles',
+    'Nez',
+    'Bouche & Lèvres',
+    'Nombril',
+    'Mamelons',
+    'Arcade / Sourcil',
+    'Surface / Dermal',
+    'Tatouage',
+    'Dermographie',
+  ];
+
+  const togglePrestation = (p: string) => {
+    setPrestationsSouhaitees(prev =>
+      prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
+    );
+  };
 
 
   // Suivi des champs touchés (blur) — jamais true à l'initialisation
@@ -111,6 +130,7 @@ export default function AddClientModal({ onClose }: Props) {
       ville: '',
       pieceIdentiteType: undefined,
       pieceIdentiteNumero: undefined,
+      prestationsSouhaitees: prestationsSouhaitees.length > 0 ? prestationsSouhaitees : undefined,
       estMineur: isMineur,
       prestations: [],
       documentsAssocies: docsAssocies,
@@ -340,6 +360,34 @@ export default function AddClientModal({ onClose }: Props) {
                 />
               </div>
 
+            </div>
+          </div>
+
+          {/* PRESTATIONS SOUHAITÉES */}
+          <div>
+            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
+              Prestations souhaitées
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {PRESTATIONS_OPTIONS.map(p => {
+                const selected = prestationsSouhaitees.includes(p);
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => togglePrestation(p)}
+                    className="px-3 py-1.5 rounded-full text-xs transition-all"
+                    style={{
+                      background: selected ? 'var(--brand-cyan)' : 'rgba(255,255,255,0.05)',
+                      color: selected ? 'var(--brand-navy)' : 'var(--brand-text-muted)',
+                      border: selected ? '1px solid var(--brand-cyan)' : '1px solid var(--brand-border)',
+                      fontWeight: selected ? 700 : 500,
+                    }}
+                  >
+                    {p}
+                  </button>
+                );
+              })}
             </div>
           </div>
 

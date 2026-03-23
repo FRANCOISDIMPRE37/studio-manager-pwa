@@ -144,6 +144,24 @@ export default function ClientDetail() {
               ))}
             </div>
 
+            {/* Bloc Prestations souhaitées */}
+            {client.prestationsSouhaitees && client.prestationsSouhaitees.length > 0 && (
+              <div className="studio-card p-4">
+                <p className="text-xs font-600 uppercase tracking-wide mb-2" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Prestations souhaitées</p>
+                <div className="flex flex-wrap gap-2">
+                  {client.prestationsSouhaitees.map(p => (
+                    <span
+                      key={p}
+                      className="px-3 py-1 rounded-full text-xs"
+                      style={{ background: 'rgba(131,208,245,0.12)', color: 'var(--brand-cyan)', border: '1px solid rgba(131,208,245,0.3)', fontWeight: 600 }}
+                    >
+                      {p}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Bloc Notes */}
             <div className="studio-card p-4">
               <div className="flex items-center justify-between mb-2">
