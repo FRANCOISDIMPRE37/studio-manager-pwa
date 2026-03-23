@@ -47,9 +47,6 @@ export default function AddClientModal({ onClose }: Props) {
   const [dateAnnee, setDateAnnee] = useState('');
   const [telephone, setTelephone] = useState('');
   const [email, setEmail] = useState('');
-  const [adresse, setAdresse] = useState('');
-  const [codePostal, setCodePostal] = useState('');
-  const [ville, setVille] = useState('');
   const [pieceType, setPieceType] = useState('');
   const [pieceNumero, setPieceNumero] = useState('');
   const [prestation, setPrestation] = useState('');
@@ -120,9 +117,9 @@ export default function AddClientModal({ onClose }: Props) {
       dateNaissance: dateNaissanceISO,
       telephone: telephone.trim(),
       email: email.trim() || undefined,
-      adresse: adresse.trim(),
-      codePostal: codePostal.trim(),
-      ville: ville.trim(),
+      adresse: '',
+      codePostal: '',
+      ville: '',
       pieceIdentiteType: (pieceType as 'CNI' | 'Passeport' | 'Permis' | 'Autre') || undefined,
       pieceIdentiteNumero: pieceNumero.trim() || undefined,
       estMineur: isMineur,
@@ -353,36 +350,7 @@ export default function AddClientModal({ onClose }: Props) {
                   autoComplete="off"
                 />
               </div>
-              <div>
-                <label style={labelStyle}>Adresse</label>
-                <input
-                  style={inputBase}
-                  value={adresse}
-                  onChange={e => setAdresse(e.target.value)}
-                  autoComplete="off"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label style={labelStyle}>Code postal</label>
-                  <input
-                    style={inputBase}
-                    value={codePostal}
-                    onChange={e => setCodePostal(e.target.value)}
-                    placeholder="75000"
-                    autoComplete="off"
-                  />
-                </div>
-                <div>
-                  <label style={labelStyle}>Ville</label>
-                  <input
-                    style={inputBase}
-                    value={ville}
-                    onChange={e => setVille(e.target.value)}
-                    autoComplete="off"
-                  />
-                </div>
-              </div>
+
             </div>
           </div>
 

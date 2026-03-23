@@ -199,9 +199,7 @@ function PrintHeader({ salonInfo, docTitle, clientName, date }: {
           <div style={{ fontSize: 18, fontWeight: 700, color: '#0A1628', fontFamily: 'Outfit, sans-serif' }}>
             {salonInfo?.nom || 'Studio'}
           </div>
-          {salonInfo?.adresse && (
-            <div style={{ fontSize: 11, color: '#555', marginTop: 2 }}>{salonInfo.adresse}{salonInfo.codePostal ? ` — ${salonInfo.codePostal}` : ''}{salonInfo.ville ? ` ${salonInfo.ville}` : ''}</div>
-          )}
+
           {salonInfo?.telephone && (
             <div style={{ fontSize: 11, color: '#555' }}>Tél : {salonInfo.telephone}</div>
           )}
@@ -245,7 +243,7 @@ function PrintFooter({ salonInfo, docTitle }: {
         {/* Colonne gauche : infos salon */}
         <div style={{ flex: 1 }}>
           <div style={{ fontWeight: 700, color: '#333' }}>{salonInfo?.nom || 'Studio'}</div>
-          {salonInfo?.adresse && <div>{salonInfo.adresse}{salonInfo.codePostal ? ` — ${salonInfo.codePostal}` : ''}{salonInfo.ville ? ` ${salonInfo.ville}` : ''}</div>}
+
           {salonInfo?.telephone && <div>Téléphone : {salonInfo.telephone}</div>}
           {salonInfo?.siret && <div>SIRET : {salonInfo.siret}</div>}
         </div>
@@ -2938,7 +2936,7 @@ export default function DocumentForm() {
               <div style={{ marginTop: 24, paddingTop: 8, borderTop: '1px solid #ccc', display: 'flex', justifyContent: 'space-between', fontSize: '8pt', color: '#666' }}>
                 <div>
                   <div style={{ fontWeight: 600 }}>{state.salonInfo?.nom}</div>
-                  {state.salonInfo?.adresse && <div>{state.salonInfo.adresse}</div>}
+
                   {state.salonInfo?.siret && <div>SIRET : {state.salonInfo.siret}</div>}
                 </div>
                 <div style={{ textAlign: 'center' }}>
