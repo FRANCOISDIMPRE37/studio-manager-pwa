@@ -3,7 +3,7 @@
  */
 import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
-import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, Server, CheckCircle, XCircle, Eye, EyeOff, MessageSquare } from 'lucide-react';
+import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, CheckCircle, XCircle, Eye, EyeOff, MessageSquare } from 'lucide-react';
 import GestionUtilisateurs from './GestionUtilisateurs';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
@@ -21,41 +21,6 @@ export default function Parametres() {
   const [smsForm, setSmsForm] = useState({ apiKey: '', senderName: 'Studio' });
   const [showSmsKey, setShowSmsKey] = useState(false);
 
-  // ─── SMTP ───
-  const smtpQuery = trpc.smtp.get.useQuery();
-  const smtpSave = trpc.smtp.save.useMutation({
-    onSuccess: () => { toast.success('Configuration email sauvegardée'); smtpQuery.refetch(); },
-    onError: (e) => toast.error(e.message),
-  });
-  const smtpTest = trpc.smtp.test.useMutation({
-    onSuccess: (r) => toast.success(r.message || 'Connexion SMTP réussie !'),
-    onError: (e) => toast.error(e.message),
-  });
-  const [smtpForm, setSmtpForm] = useState({
-    host: 'smtp.ionos.fr',
-    port: 587,
-    secure: false,
-    user: '',
-    password: '',
-    fromName: '',
-    replyTo: '',
-  });
-  const [showSmtpPassword, setShowSmtpPassword] = useState(false);
-  const [smtpLoaded, setSmtpLoaded] = useState(false);
-
-  // Pré-remplir le formulaire SMTP depuis la base
-  if (smtpQuery.data && !smtpLoaded) {
-    setSmtpForm(f => ({
-      ...f,
-      host: smtpQuery.data!.host || 'smtp.ionos.fr',
-      port: smtpQuery.data!.port || 587,
-      secure: smtpQuery.data!.secure || false,
-      user: smtpQuery.data!.user || '',
-      fromName: smtpQuery.data!.fromName || '',
-      replyTo: smtpQuery.data!.replyTo || '',
-    }));
-    setSmtpLoaded(true);
-  }
   const [editingSalon, setEditingSalon] = useState(false);
   const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
     nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
@@ -287,88 +252,6 @@ export default function Parametres() {
         )}
       </div>
 
-      {/* Configuration Email SMTP */}
-      <div className="studio-card p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Server size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Configuration Email (SMTP)</h2>
-        </div>
-
-        {/* Statut actuel */}
-        {smtpQuery.data && (
-          <div className="flex items-center gap-2 mb-4 p-2 rounded-lg" style={{ background: 'rgba(131,208,245,0.08)', border: '1px solid rgba(131,208,245,0.2)' }}>
-            <CheckCircle size={13} style={{ color: '#34d399' }} />
-            <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
-              Serveur configuré : <strong style={{ color: 'var(--brand-text)' }}>{smtpQuery.data.user}</strong> via {smtpQuery.data.host}:{smtpQuery.data.port}
-            </span>
-          </div>
-        )}
-
-        <form onSubmit={e => { e.preventDefault(); smtpSave.mutate({ ...smtpForm, password: smtpForm.password || undefined }); }} className="space-y-3">
-          {/* Informations sur l'utilisateur */}
-          <p className="text-xs font-600 mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informations sur l'utilisateur</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label style={labelStyle}>Votre nom (expéditeur)</label><input style={inputStyle} value={smtpForm.fromName} onChange={e => setSmtpForm(f => ({ ...f, fromName: e.target.value }))} placeholder="Studio Intemporelle" /></div>
-            <div><label style={labelStyle}>Adresse de courrier</label><input type="email" style={inputStyle} value={smtpForm.user} onChange={e => setSmtpForm(f => ({ ...f, user: e.target.value }))} placeholder="societe@intemporel.tech" required /></div>
-          </div>
-
-          {/* Informations sur le serveur */}
-          <p className="text-xs font-600 mt-3 mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informations sur le serveur</p>
-          <div className="grid grid-cols-3 gap-3">
-            <div className="col-span-2"><label style={labelStyle}>Serveur de courrier sortant (SMTP)</label><input style={inputStyle} value={smtpForm.host} onChange={e => setSmtpForm(f => ({ ...f, host: e.target.value }))} placeholder="smtp.ionos.fr" required /></div>
-            <div><label style={labelStyle}>Port</label><input type="number" style={inputStyle} value={smtpForm.port} onChange={e => setSmtpForm(f => ({ ...f, port: parseInt(e.target.value) || 587 }))} /></div>
-          </div>
-          <div className="flex items-center gap-3">
-            <label className="flex items-center gap-2 cursor-pointer">
-              <input type="checkbox" checked={smtpForm.secure} onChange={e => setSmtpForm(f => ({ ...f, secure: e.target.checked, port: e.target.checked ? 465 : 587 }))} className="w-4 h-4 rounded" style={{ accentColor: 'var(--brand-cyan)' }} />
-              <span className="text-xs" style={{ color: 'var(--brand-text)' }}>SSL/TLS (port 465) — décoché = STARTTLS (port 587)</span>
-            </label>
-          </div>
-
-          {/* Informations de connexion */}
-          <p className="text-xs font-600 mt-3 mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.05em' }}>Informations de connexion</p>
-          <div className="grid grid-cols-2 gap-3">
-            <div><label style={labelStyle}>Nom d'utilisateur</label><input style={inputStyle} value={smtpForm.user} onChange={e => setSmtpForm(f => ({ ...f, user: e.target.value }))} placeholder="societe@intemporel.tech" /></div>
-            <div>
-              <label style={labelStyle}>Mot de passe {smtpQuery.data?.passwordSet && <span style={{ color: '#34d399' }}>(déjà configuré)</span>}</label>
-              <div className="relative">
-                <input
-                  type={showSmtpPassword ? 'text' : 'password'}
-                  style={{ ...inputStyle, paddingRight: '2.5rem' }}
-                  value={smtpForm.password}
-                  onChange={e => setSmtpForm(f => ({ ...f, password: e.target.value }))}
-                  placeholder={smtpQuery.data?.passwordSet ? '(laisser vide pour conserver)' : 'Mot de passe SMTP'}
-                />
-                <button type="button" onClick={() => setShowSmtpPassword(v => !v)} className="absolute right-2 top-1/2 -translate-y-1/2" style={{ color: 'var(--brand-text-muted)' }}>
-                  {showSmtpPassword ? <EyeOff size={14} /> : <Eye size={14} />}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div><label style={labelStyle}>Répondre à (Reply-To, optionnel)</label><input type="email" style={inputStyle} value={smtpForm.replyTo} onChange={e => setSmtpForm(f => ({ ...f, replyTo: e.target.value }))} placeholder="contact@intemporel.tech" /></div>
-
-          {/* Boutons */}
-          <div className="flex gap-3 pt-2">
-            <button
-              type="button"
-              onClick={() => smtpTest.mutate()}
-              disabled={smtpTest.isPending || !smtpQuery.data?.passwordSet}
-              className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-sm font-600 transition-all"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--brand-border)', color: smtpQuery.data?.passwordSet ? 'var(--brand-text)' : 'var(--brand-text-muted)', fontWeight: 600 }}
-            >
-              {smtpTest.isPending ? '⏳ Test...' : '🔌 Tester les paramètres'}
-            </button>
-            <button
-              type="submit"
-              disabled={smtpSave.isPending}
-              className="flex-1 py-2.5 rounded-lg text-sm font-700"
-              style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}
-            >
-              {smtpSave.isPending ? 'Sauvegarde...' : 'Sauvegarder'}
-            </button>
-          </div>
-        </form>
-      </div>
 
       {/* Configuration SMS Brevo */}
       <div className="studio-card p-4">
