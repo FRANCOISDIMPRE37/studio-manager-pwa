@@ -91,7 +91,7 @@ export default function ClientDetail() {
   const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
     { key: 'infos', label: 'Infos', icon: CreditCard },
     { key: 'documents', label: 'Documents', icon: FileText },
-    { key: 'rgpd', label: 'RGPD', icon: Shield },
+
   ];
 
   return (
@@ -112,9 +112,7 @@ export default function ClientDetail() {
           </div>
           <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{age} ans · {client.telephone}{client.numeroClient ? ` · ${client.numeroClient}` : ''}</p>
         </div>
-        <span className="text-xs px-2 py-1 rounded font-600 flex-shrink-0" style={{ background: rgpdColor + '22', color: rgpdColor, border: `1px solid ${rgpdColor}`, fontWeight: 600 }}>
-          {RGPD_LABELS[client.rgpdStatus]}
-        </span>
+
       </div>
 
       {/* Tabs */}
@@ -225,64 +223,7 @@ export default function ClientDetail() {
           </div>
         )}
 
-        {tab === 'rgpd' && (
-          <div className="space-y-4">
-            <div className="p-4 rounded-xl" style={{ background: rgpdColor + '11', border: `1px solid ${rgpdColor}33` }}>
-              <div className="flex items-center gap-2 mb-2">
-                {client.rgpdStatus === 'ok' ? <CheckCircle size={16} style={{ color: rgpdColor }} /> : <AlertTriangle size={16} style={{ color: rgpdColor }} />}
-                <span className="text-sm font-600" style={{ color: rgpdColor, fontWeight: 600 }}>{RGPD_LABELS[client.rgpdStatus]}</span>
-              </div>
-              <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
-                Suppression prévue le {suppDate.toLocaleDateString('fr-FR')}
-                {diffDays >= 0 ? ` (dans ${diffDays} jours)` : ` (dépassée de ${Math.abs(diffDays)} jours)`}
-              </p>
-            </div>
 
-            <div className="studio-card p-4 space-y-3">
-              <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Dates clés</p>
-              {[
-                { label: 'Date de création', value: client.dateCreation ? new Date(client.dateCreation).toLocaleDateString('fr-FR') : '—' },
-                { label: 'Date de consentement', value: client.dateConsentement ? new Date(client.dateConsentement).toLocaleDateString('fr-FR') : '—' },
-                { label: 'Suppression prévue', value: suppDate.toLocaleDateString('fr-FR') },
-              ].map((item, i) => (
-                <div key={i} className="flex justify-between">
-                  <span className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>{item.label}</span>
-                  <span className="text-sm" style={{ color: 'var(--brand-text)' }}>{item.value}</span>
-                </div>
-              ))}
-            </div>
-
-            {client.rgpdDroitsExerces.length > 0 && (
-              <div className="studio-card p-4">
-                <p className="text-xs font-600 uppercase tracking-wide mb-3" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Droits exercés</p>
-                <div className="space-y-2">
-                  {client.rgpdDroitsExerces.map((droit, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <span className="text-xs px-2 py-0.5 rounded capitalize" style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)' }}>{droit.type}</span>
-                      <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{new Date(droit.date).toLocaleDateString('fr-FR')}</span>
-                      {droit.note && <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>— {droit.note}</span>}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {(client.rgpdStatus === 'urgent' || client.rgpdStatus === 'expired') && (
-              <button
-                onClick={() => {
-                  const d = new Date();
-                  d.setFullYear(d.getFullYear() + 5);
-                  updateClient({ ...client, dateConsentement: new Date().toISOString().split('T')[0], dateSuppressionPrevue: d.toISOString().split('T')[0] });
-                  toast.success('Consentement renouvelé — suppression repoussée à 5 ans');
-                }}
-                className="w-full py-3 rounded-xl text-sm font-600 transition-all"
-                style={{ background: '#4CAF5022', border: '1px solid #4CAF50', color: '#4CAF50', fontWeight: 600 }}
-              >
-                Renouveler le consentement
-              </button>
-            )}
-          </div>
-        )}
       </div>
     </div>
     {/* Modal envoi dossier complet */}

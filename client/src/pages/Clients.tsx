@@ -67,17 +67,6 @@ function ClientCard({ client, onClick }: { client: Client; onClick: () => void }
           </p>
         </div>
         <div className="flex items-center gap-2 flex-shrink-0">
-          <span
-            className="text-xs px-1.5 py-0.5 rounded font-600"
-            style={{
-              background: rgpdColor + '22',
-              color: rgpdColor,
-              border: `1px solid ${rgpdColor}`,
-              fontWeight: 600,
-            }}
-          >
-            {RGPD_LABELS[client.rgpdStatus]}
-          </span>
           <ChevronRight size={14} style={{ color: 'var(--brand-text-muted)' }} />
         </div>
       </div>
@@ -101,7 +90,7 @@ export default function Clients() {
       const matchFilter =
         filter === 'all' ? !c.estArchive :
         filter === 'mineurs' ? c.estMineur && !c.estArchive :
-        filter === 'alertes' ? (c.rgpdStatus === 'urgent' || c.rgpdStatus === 'expired') && !c.estArchive :
+        filter === 'alertes' ? false :
         filter === 'archives' ? c.estArchive : true;
       return matchSearch && matchFilter;
     });
@@ -110,7 +99,7 @@ export default function Clients() {
   const FILTERS: { key: FilterType; label: string; count: number }[] = [
     { key: 'all', label: 'Tous', count: state.clients.filter(c => !c.estArchive).length },
     { key: 'mineurs', label: 'Mineurs', count: state.clients.filter(c => c.estMineur && !c.estArchive).length },
-    { key: 'alertes', label: 'Alertes', count: state.clients.filter(c => (c.rgpdStatus === 'urgent' || c.rgpdStatus === 'expired') && !c.estArchive).length },
+
     { key: 'archives', label: 'Archives', count: state.clients.filter(c => c.estArchive).length },
   ];
 
