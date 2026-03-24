@@ -499,13 +499,6 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       )}
       <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="4 — CONTACT D'URGENCE" />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom et prénom" value={data.urgenceNom || ''} onChange={v => update('urgenceNom', v)} />
-        <FormField label="Téléphone" value={data.urgenceTelephone || ''} onChange={v => update('urgenceTelephone', v)} type="tel" />
-      </div>
-      <FormField label="Lien avec le client (conjoint, parent, ami…)" value={data.urgenceLien || ''} onChange={v => update('urgenceLien', v)} />
-
       <FormSection title="6 — DECLARATION CLIENT" />
       <CheckboxField label="Être majeur(e) et avoir capacité juridique" value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
       <CheckboxField label="A répondu honnêtement" value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
