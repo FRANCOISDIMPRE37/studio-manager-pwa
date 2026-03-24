@@ -1004,21 +1004,6 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
         </div>
       )}
 
-      <FormSection title="4 — PROTOCOLE D'HYGIÈNE — CHECKLIST OPÉRATEUR" />
-      <p className="text-xs mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Avant la séance</p>
-      {['Lavage hygiénique des mains (PHA 30 sec)', 'Nettoyage-désinfection plan de travail', 'Pose champ stérile à usage unique', 'Vérification intégrité emballages stériles', 'Marquage du point de perçage'].map((item, i) => (
-        <CheckboxField key={i} label={item} value={data[`avant${i}`] || false} onToggle={() => update(`avant${i}`, !data[`avant${i}`])} />
-      ))}
-      <p className="text-xs mt-3 mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Après la séance</p>
-      {['Elimination aiguilles en DASRI (conteneur)', 'Elimination matériel usage unique souillé', 'Prédésinfection matériel réutilisable', 'Nettoyage-désinfection plan de travail', 'Retrait gants + lavage mains'].map((item, i) => (
-        <CheckboxField key={i} label={item} value={data[`apres${i}`] || false} onToggle={() => update(`apres${i}`, !data[`apres${i}`])} />
-      ))}
-
-      <FormSection title="6 — DOCUMENTS REMIS AU CLIENT" />
-      <CheckboxField label="Fiche de soins post-piercing (zone concernée)" value={data.fichesSoinsRemise || false} onToggle={() => update('fichesSoinsRemise', !data.fichesSoinsRemise)} />
-      <CheckboxField label="Informations sur les risques et contre-indications" value={data.infosRisques || false} onToggle={() => update('infosRisques', !data.infosRisques)} />
-      <CheckboxField label="Coordonnées du professionnel" value={data.coordonneesProf || false} onToggle={() => update('coordonneesProf', !data.coordonneesProf)} />
-      <CheckboxField label="Numéro d'urgence en cas de réaction" value={data.numUrgence || false} onToggle={() => update('numUrgence', !data.numUrgence)} />
 
 
 
