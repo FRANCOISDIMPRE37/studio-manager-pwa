@@ -885,7 +885,17 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         </div>
       )}
 
-      {['soins_oreilles', 'soins_mamelons'].includes(docType) && (
+      {docType === 'soins_oreilles' && (
+        <div className="mb-4">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_antiseptiques_v2_1d34e7f5.webp"
+            alt="Produits recommandés — Diaseptyl 0,5%, Physiodose sérum physiologique, compresses non-tissées"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
+          />
+        </div>
+      )}
+
+      {docType === 'soins_mamelons' && (
         <div className="mb-4 space-y-3">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/protocole_antiseptique_v2_4c7edcf4.png"
