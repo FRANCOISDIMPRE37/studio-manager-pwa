@@ -11,6 +11,43 @@ import { toast } from 'sonner';
 
 const DOCS_MINEURS: DocumentType[] = ['questionnaire_mineur', 'autorisation_parentale'];
 
+// Correspondance prestation souhaitée → documents associés
+const PRESTATION_DOCS_MAJEUR: Record<string, DocumentType[]> = {
+  'Oreilles':          ['questionnaire_majeur', 'soins_oreilles', 'fiche_seance_piercing'],
+  'Nez':               ['questionnaire_majeur', 'soins_nez', 'fiche_seance_piercing'],
+  'Bouche & Lèvres':   ['questionnaire_majeur', 'soins_bouche_levres', 'fiche_seance_piercing'],
+  'Nombril':           ['questionnaire_majeur', 'soins_nombril', 'fiche_seance_piercing'],
+  'Mamelons':          ['questionnaire_majeur', 'soins_mamelons', 'fiche_seance_piercing'],
+  'Arcade / Sourcil':  ['questionnaire_majeur', 'soins_arcade_sourcil', 'fiche_seance_piercing'],
+  'Surface / Dermal':  ['questionnaire_majeur', 'soins_surface_dermal', 'fiche_seance_piercing'],
+  'Tatouage':          ['questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'],
+  'Dermographie':      ['questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
+};
+
+const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
+  'Oreilles':          ['questionnaire_mineur', 'soins_oreilles', 'fiche_seance_piercing'],
+  'Nez':               ['questionnaire_mineur', 'soins_nez', 'fiche_seance_piercing'],
+  'Bouche & Lèvres':   ['questionnaire_mineur', 'soins_bouche_levres', 'fiche_seance_piercing'],
+  'Nombril':           ['questionnaire_mineur', 'soins_nombril', 'fiche_seance_piercing'],
+  'Mamelons':          ['questionnaire_mineur', 'soins_mamelons', 'fiche_seance_piercing'],
+  'Arcade / Sourcil':  ['questionnaire_mineur', 'soins_arcade_sourcil', 'fiche_seance_piercing'],
+  'Surface / Dermal':  ['questionnaire_mineur', 'soins_surface_dermal', 'fiche_seance_piercing'],
+  'Tatouage':          ['questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'],
+  'Dermographie':      ['questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
+};
+
+function buildDocumentsAssocies(prestations: string[], isMineur: boolean): DocumentType[] {
+  const set = new Set<DocumentType>();
+  // Toujours ajouter l'autorisation parentale pour les mineurs
+  if (isMineur) set.add('autorisation_parentale');
+  const map = isMineur ? PRESTATION_DOCS_MINEUR : PRESTATION_DOCS_MAJEUR;
+  for (const p of prestations) {
+    const docs = map[p] || [];
+    docs.forEach(d => set.add(d));
+  }
+  return Array.from(set);
+}
+
 interface Props {
   onClose: () => void;
 }
@@ -113,7 +150,7 @@ export default function AddClientModal({ onClose }: Props) {
 
     const dateNaissanceISO = `${dateAnnee}-${dateMois.padStart(2, '0')}-${dateJour.padStart(2, '0')}`;
 
-    const docsAssocies: DocumentType[] = isMineur ? [...DOCS_MINEURS] : [];
+    const docsAssocies: DocumentType[] = buildDocumentsAssocies(prestationsSouhaitees, isMineur);
 
     const d = new Date();
     d.setFullYear(d.getFullYear() + 5);
