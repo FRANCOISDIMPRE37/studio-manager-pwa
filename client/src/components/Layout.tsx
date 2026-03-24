@@ -253,7 +253,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-y-auto print:overflow-visible print:h-auto" style={{ background: 'var(--brand-navy)' }}>
+      <main className="flex-1 min-w-0 overflow-x-hidden overflow-y-auto print:overflow-visible print:h-auto" style={{ background: 'var(--brand-navy)' }}>
         <div className="page-enter">
           {children}
         </div>

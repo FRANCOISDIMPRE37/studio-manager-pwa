@@ -35,6 +35,11 @@ export const clients = mysqlTable("clients", {
   pieceIdentiteType: mysqlEnum("pieceIdentiteType", ["CNI", "Passeport", "Permis", "Autre"]),
   pieceIdentiteNumero: varchar("pieceIdentiteNumero", { length: 50 }),
   estMineur: boolean("estMineur").default(false).notNull(),
+  // Représentant légal (pour les mineurs)
+  nomRepresentantLegal: varchar("nomRepresentantLegal", { length: 100 }),
+  prenomRepresentantLegal: varchar("prenomRepresentantLegal", { length: 100 }),
+  telephoneRepresentantLegal: varchar("telephoneRepresentantLegal", { length: 20 }),
+  lienRepresentantLegal: varchar("lienRepresentantLegal", { length: 50 }),
   estArchive: boolean("estArchive").default(false).notNull(),
   dateArchivage: varchar("dateArchivage", { length: 10 }),
   dateConsentement: varchar("dateConsentement", { length: 10 }),

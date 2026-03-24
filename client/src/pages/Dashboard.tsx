@@ -193,7 +193,7 @@ export default function Dashboard() {
   }, [searchQuery, state.clients, state.rendezVous]);
 
   return (
-    <div className="p-4 md:p-6 space-y-6">
+    <div className="p-4 md:p-6 space-y-6 w-full min-w-0">
       {/* Header */}
       <div className="flex items-start justify-between">
         <div>
