@@ -6,7 +6,7 @@ import { Link, useLocation } from 'wouter';
 import { useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import {
-  LayoutDashboard, Users, FileText, Settings, Archive, Shield,
+  LayoutDashboard, Users, FileText, Settings, Archive,
   LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -20,7 +20,6 @@ const NAV_ITEMS = [
   { path: '/clients', icon: Users, label: 'Clients' },
   { path: '/documents', icon: FileText, label: 'Documents' },
   { path: '/archives', icon: Archive, label: 'Archives' },
-  { path: '/rgpd', icon: Shield, label: 'RGPD & Confidentialité' },
   { path: '/parametres', icon: Settings, label: 'Paramètres' },
 ];
 
