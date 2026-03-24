@@ -5,7 +5,40 @@ import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useLocation, useParams } from 'wouter';
 import { ArrowLeft, Phone, Mail, CreditCard, FileText, Trash2, Archive, Edit, PlusCircle, Send, X, Loader2, StickyNote, ShieldCheck, Clock, AlertTriangle, CheckCircle2, Lock } from 'lucide-react';
-import { DOCUMENT_LABELS } from '@/lib/types';
+import { DOCUMENT_LABELS, DocumentType } from '@/lib/types';
+
+// Ordre canonique des documents (01 avant 02, etc.)
+const DOC_ORDER: DocumentType[] = [
+  'questionnaire_mineur',
+  'autorisation_parentale',
+  'questionnaire_majeur',
+  'fiche_seance_piercing',
+  'soins_oreilles',
+  'soins_nez',
+  'soins_bouche_levres',
+  'soins_nombril',
+  'soins_mamelons',
+  'soins_arcade_sourcil',
+  'soins_surface_dermal',
+  'questionnaire_tatouage_majeur',
+  'consentement_soins_tatouage',
+  'fiche_seance_tatouage',
+  'questionnaire_dermographe',
+  'soins_dermographe',
+  'fiche_seance_dermographe',
+  'engagement_confidentialite',
+  'affichage_salon',
+];
+function sortDocs(docs: DocumentType[]): DocumentType[] {
+  return [...docs].sort((a, b) => {
+    const ia = DOC_ORDER.indexOf(a);
+    const ib = DOC_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return 0;
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+}
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
@@ -423,7 +456,7 @@ export default function ClientDetail() {
               </div>
             ) : (
               <div className="space-y-2">
-                {client.documentsAssocies.map(docType => {
+                {sortDocs(client.documentsAssocies).map(docType => {
                   const doc = client.documents?.find(d => d.type === docType);
                   const status = doc?.status || 'empty';
                   const statusColors = { empty: '#FF9800', filled: 'var(--brand-cyan)', signed: '#4CAF50' };
@@ -497,7 +530,7 @@ export default function ClientDetail() {
 
           <div className="max-h-44 overflow-y-auto space-y-1">
             <p className="text-xs mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 600 }}>Documents inclus :</p>
-            {client.documentsAssocies.map(docType => {
+            {sortDocs(client.documentsAssocies).map(docType => {
               const doc = client.documents?.find(d => d.type === docType);
               const signed = doc?.status === 'signed';
               return (

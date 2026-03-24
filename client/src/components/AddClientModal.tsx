@@ -38,15 +38,24 @@ const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
 
 function buildDocumentsAssocies(prestations: string[], isMineur: boolean): DocumentType[] {
   const set = new Set<DocumentType>();
-  // Toujours ajouter l'autorisation parentale pour les mineurs
-  if (isMineur) set.add('autorisation_parentale');
 
   const map = isMineur ? PRESTATION_DOCS_MINEUR : PRESTATION_DOCS_MAJEUR;
   for (const p of prestations) {
     const docs = map[p] || [];
     docs.forEach(d => set.add(d));
   }
-  return Array.from(set);
+  // Ajouter l'autorisation parentale après le questionnaire mineur (ordre 01 puis 02)
+  if (isMineur) set.add('autorisation_parentale');
+
+  // Garantir que questionnaire_mineur est toujours en premier
+  const result = Array.from(set);
+  const qmIdx = result.indexOf('questionnaire_mineur');
+  const apIdx = result.indexOf('autorisation_parentale');
+  if (qmIdx !== -1 && apIdx !== -1 && apIdx < qmIdx) {
+    result.splice(apIdx, 1);
+    result.splice(result.indexOf('questionnaire_mineur') + 1, 0, 'autorisation_parentale');
+  }
+  return result;
 }
 
 interface Props {
