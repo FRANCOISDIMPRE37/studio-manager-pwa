@@ -434,10 +434,10 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
         <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
         <FormField label="Email" value={data.email || client.email || ''} onChange={v => update('email', v)} type="email" />
       </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Pièce d'identité (CNI / Passeport)" value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
+      <RadioField label="Pièce d'identité (CNI / Passeport)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
+      {data.pieceId && data.pieceId !== 'Non présentée' && (
         <FormField label="Numéro de la pièce d'identité" value={data.numeroPiece || ''} onChange={v => update('numeroPiece', v)} />
-      </div>
+      )}
 
       <FormSection title="2 — PIERCING DEMANDÉ" />
       <div className="grid grid-cols-2 gap-3">
