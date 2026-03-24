@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import AddClientModal from '@/components/AddClientModal';
 
-type FilterType = 'all' | 'mineurs' | 'alertes' | 'archives';
+type FilterType = 'mineurs' | 'majeurs';
 
 const RGPD_COLORS: Record<RGPDStatus, string> = {
   ok: '#4CAF50', warning: '#FF9800', urgent: '#F44336', expired: '#9C27B0'
@@ -78,7 +78,7 @@ export default function Clients() {
   const { state, deleteClient } = useApp();
   const [, navigate] = useLocation();
   const [search, setSearch] = useState('');
-  const [filter, setFilter] = useState<FilterType>('all');
+  const [filter, setFilter] = useState<FilterType>('mineurs');
   const [showAddModal, setShowAddModal] = useState(false);
 
   const filtered = useMemo(() => {
@@ -88,19 +88,15 @@ export default function Clients() {
           c.telephone.includes(search)
         : true;
       const matchFilter =
-        filter === 'all' ? !c.estArchive :
         filter === 'mineurs' ? c.estMineur && !c.estArchive :
-        filter === 'alertes' ? false :
-        filter === 'archives' ? c.estArchive : true;
+        !c.estMineur && !c.estArchive;
       return matchSearch && matchFilter;
     });
   }, [state.clients, search, filter]);
 
   const FILTERS: { key: FilterType; label: string; count: number }[] = [
-    { key: 'all', label: 'Tous', count: state.clients.filter(c => !c.estArchive).length },
     { key: 'mineurs', label: 'Mineurs', count: state.clients.filter(c => c.estMineur && !c.estArchive).length },
-
-    { key: 'archives', label: 'Archives', count: state.clients.filter(c => c.estArchive).length },
+    { key: 'majeurs', label: 'Majeurs', count: state.clients.filter(c => !c.estMineur && !c.estArchive).length },
   ];
 
   return (
