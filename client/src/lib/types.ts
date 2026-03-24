@@ -177,7 +177,7 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   soins_mamelons: 'E — Soins Post-Piercing Mamelons',
   soins_arcade_sourcil: 'F — Soins Post-Piercing Arcade / Sourcil',
   soins_surface_dermal: 'G — Soins Post-Piercing Surface / Dermal',
-  soins_bouche_levres: 'C — Soins Post-Piercing Bouche & Lèvres',
+  soins_bouche_levres: 'C — Soins Post Labret',
   // Tatouage
   questionnaire_tatouage_majeur: '05 — Questionnaire Médical Tatouage Majeur',
   consentement_soins_tatouage: '06 — Consentement & Soins Post-Tatouage',

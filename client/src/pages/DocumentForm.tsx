@@ -772,7 +772,7 @@ const SOINS_DATA: Record<string, { title: string; zones: { zone: string; desc: s
     ],
   },
   soins_bouche_levres: {
-    title: 'BOUCHE & LÈVRES',
+    title: 'SOINS POST LABRET',
     zones: [
       { zone: 'Labret classique', desc: 'Centré sous la lèvre inf., horizontal. Bijou : Labret droit.', cica: '6 à 8 sem.' },
       { zone: 'Labret décalé', desc: 'À gauche ou à droite sous la lèvre inf. Bijou : Labret droit.', cica: '6 à 8 sem.' },
