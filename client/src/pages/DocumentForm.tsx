@@ -499,6 +499,17 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       )}
       <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
+      <FormSection title="4 — CONTACT D'URGENCE" />
+      <div className="flex items-start gap-2 p-3 rounded-xl mb-3" style={{ background: 'rgba(100,181,246,0.05)', border: '1px solid rgba(100,181,246,0.2)' }}>
+        <Phone size={14} style={{ color: '#64B5F6', flexShrink: 0, marginTop: 2 }} />
+        <span className="text-xs" style={{ color: '#64B5F6' }}>Personne à contacter en cas d'urgence pendant la séance</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Nom / Prénom" value={data.urgenceNom || ''} onChange={v => update('urgenceNom', v)} />
+        <FormField label="Lien avec le client" value={data.urgenceLien || ''} onChange={v => update('urgenceLien', v)} placeholder="Ex : conjoint, parent, ami" />
+      </div>
+      <FormField label="Téléphone d'urgence" value={data.urgenceTelephone || ''} onChange={v => update('urgenceTelephone', v)} type="tel" />
+
       <FormSection title="6 — DECLARATION CLIENT" />
       <CheckboxField label="Être majeur(e) et avoir capacité juridique" value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
       <CheckboxField label="A répondu honnêtement" value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
