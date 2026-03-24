@@ -108,10 +108,9 @@ const DEMO_CLIENTS: Client[] = [
     telephone: '06 34 56 78 90',
     estMineur: true,
     prestations: [{ id: 'p3', type: 'piercing', zone: 'Lobe oreille', date: daysAgo(10), description: 'Lobe droit, boucle dorée — 30€', documents: [], photos: [] }],
-    documentsAssocies: ['questionnaire_mineur', 'autorisation_parentale'],
+    documentsAssocies: ['questionnaire_mineur'],
     documents: [
       { id: 'd3', type: 'questionnaire_mineur', status: 'signed', dateCreation: daysAgo(10), dateSigned: daysAgo(10), data: {} },
-      { id: 'd4', type: 'autorisation_parentale', status: 'signed', dateCreation: daysAgo(10), dateSigned: daysAgo(10), data: {} },
     ],
     photos: [], dateCreation: daysAgo(10), dateConsentement: daysAgo(10),
     dateSuppressionPrevue: daysFromNow(365 * 5 - 10), rgpdStatus: 'ok', rgpdDroitsExerces: [], estArchive: false,

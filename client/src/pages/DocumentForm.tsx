@@ -308,10 +308,6 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
       <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
       <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <RadioField label="Pièce d'identité du mineur (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdMineurType || ''} onChange={v => update('pieceIdMineurType', v)} />
-      {data.pieceIdMineurType && data.pieceIdMineurType !== 'Non présentée' && (
-        <FormField label="Numéro de la pièce d'identité" value={data.pieceIdMineurNumero || ''} onChange={v => update('pieceIdMineurNumero', v)} />
-      )}
 
       <FormSection title="2 — PIERCING DEMANDÉ" />
       <FormField label="Zone à percer" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
@@ -583,11 +579,6 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <CheckboxField label="Était présent(e) physiquement lors de la réalisation du piercing." value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
       <CheckboxField label="A donné son autorisation écrite mais n'était pas présent(e) — copie de CNI jointe." value={data.presenceEcrite || false} onToggle={() => update('presenceEcrite', !data.presenceEcrite)} />
 
-      <FormSection title="8 — PIÈCE D'IDENTITÉ DU MINEUR" />
-      <RadioField label="Pièce d'identité du mineur (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdMineurType || ''} onChange={v => update('pieceIdMineurType', v)} />
-      {data.pieceIdMineurType && data.pieceIdMineurType !== 'Non présentée' && (
-        <FormField label="Numéro de la pièce d'identité" value={data.pieceIdMineurNumero || ''} onChange={v => update('pieceIdMineurNumero', v)} />
-      )}
 
       <FormSection title="8b — PIÈCE D'IDENTITÉ DU REPRÉSENTANT LÉGAL" />
       <RadioField label="Pièce d'identité du représentant légal (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdRepresentantType || ''} onChange={v => update('pieceIdRepresentantType', v)} />
@@ -2667,8 +2658,6 @@ export default function DocumentForm() {
         return <FormQuestionnaireMineur data={formData} update={updateField} client={client} />;
       case 'questionnaire_majeur':
         return <FormQuestionnaireMajeur data={formData} update={updateField} client={client} />;
-      case 'autorisation_parentale':
-        return <FormAutorisationParentale data={formData} update={updateField} client={client} salonInfo={state.salonInfo} />;
       case 'fiche_seance_piercing':
         return <FormFicheSeance data={formData} update={updateField} client={client} />;
       case 'questionnaire_tatouage_majeur':
