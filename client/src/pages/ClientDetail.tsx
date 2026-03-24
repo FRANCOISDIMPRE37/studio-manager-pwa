@@ -9,8 +9,10 @@ import { DOCUMENT_LABELS, DocumentType } from '@/lib/types';
 
 // Ordre canonique des documents (01 avant 02, etc.)
 const DOC_ORDER: DocumentType[] = [
+  // Mineurs (01, 02)
   'questionnaire_mineur',
   'autorisation_parentale',
+  // Majeurs piercing (03, 04, puis soins)
   'questionnaire_majeur',
   'fiche_seance_piercing',
   'soins_oreilles',
@@ -20,12 +22,15 @@ const DOC_ORDER: DocumentType[] = [
   'soins_mamelons',
   'soins_arcade_sourcil',
   'soins_surface_dermal',
+  // Tatouage
   'questionnaire_tatouage_majeur',
   'consentement_soins_tatouage',
   'fiche_seance_tatouage',
+  // Dermographie
   'questionnaire_dermographe',
   'soins_dermographe',
   'fiche_seance_dermographe',
+  // Divers
   'engagement_confidentialite',
   'affichage_salon',
 ];

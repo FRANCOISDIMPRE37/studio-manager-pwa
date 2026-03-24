@@ -3020,3 +3020,22 @@ export default function DocumentForm() {
     </div>
   );
 }
+
+// ─── Exports pour PrintAll ────────────────────────────────────────────────────
+export {
+  PrintHeader,
+  PrintFooter,
+  FormQuestionnaireMineur,
+  FormQuestionnaireMajeur,
+  FormAutorisationParentale,
+  FormSoins,
+  FormFicheSeance,
+  FormConsentementSoinsTatouage,
+  FormFicheSeanceTatouage,
+  FormQuestionnaireTatouageMajeur,
+  FormFicheSeanceDermographe,
+  FormQuestionnaireDermographe,
+  FormSoinsDermographe,
+  FormEngagementConfidentialite,
+  FormAffichageSalon,
+};
