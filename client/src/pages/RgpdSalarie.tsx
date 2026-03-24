@@ -1,25 +1,40 @@
 import { useState } from 'react';
 import { useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
-import { Shield, ChevronLeft, FileText, Users, CheckCircle, Clock, UserPlus } from 'lucide-react';
+import {
+  Shield,
+  ChevronLeft,
+  FileText,
+  Users,
+  CheckCircle,
+  Clock,
+  UserPlus,
+  X,
+} from 'lucide-react';
 import type { Client, ClientDocument } from '@/lib/types';
 
 type Tab = 'engagement' | 'salaries';
 
+const emptyForm = { prenom: '', nom: '', poste: '', telephone: '' };
+
 export default function RgpdSalarie() {
   const [, navigate] = useLocation();
-  const { state } = useApp();
+  const { state, addClient } = useApp();
   const [activeTab, setActiveTab] = useState<Tab>('engagement');
   const [selectedClientId, setSelectedClientId] = useState('');
+  const [showNewForm, setShowNewForm] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [saving, setSaving] = useState(false);
 
   const clients: Client[] = state.clients || [];
 
   const hasSignedEngagement = (client: Client): boolean => {
-    return client.documents?.some(
-      (doc: ClientDocument) =>
-        doc.type === 'engagement_confidentialite' &&
-        (doc.status === 'signed')
-    ) ?? false;
+    return (
+      client.documents?.some(
+        (doc: ClientDocument) =>
+          doc.type === 'engagement_confidentialite' && doc.status === 'signed'
+      ) ?? false
+    );
   };
 
   const getSignatureDate = (client: Client): string | null => {
@@ -34,8 +49,51 @@ export default function RgpdSalarie() {
     navigate(`/clients/${selectedClientId}/document/engagement_confidentialite`);
   };
 
+  const handleCreateSalarie = async () => {
+    if (!form.prenom.trim() || !form.nom.trim()) return;
+    setSaving(true);
+    try {
+      const today = new Date().toISOString().split('T')[0];
+      const suppression = (() => {
+        const d = new Date();
+        d.setFullYear(d.getFullYear() + 5);
+        return d.toISOString().split('T')[0];
+      })();
+      await addClient({
+        nom: form.nom.trim(),
+        prenom: form.prenom.trim(),
+        dateNaissance: '',
+        adresse: '',
+        codePostal: '',
+        ville: '',
+        telephone: form.telephone.trim(),
+        email: undefined,
+        estMineur: false,
+        prestations: [],
+        documentsAssocies: [],
+        documents: [],
+        photos: [],
+        dateConsentement: today,
+        dateSuppressionPrevue: suppression,
+        rgpdDroitsExerces: [],
+        estArchive: false,
+        notes: form.poste ? `Poste : ${form.poste.trim()}` : undefined,
+      });
+      setForm(emptyForm);
+      setShowNewForm(false);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const signedClients = clients.filter(hasSignedEngagement);
   const unsignedClients = clients.filter(c => !hasSignedEngagement(c));
+
+  const inputStyle = {
+    background: 'rgba(255,255,255,0.05)',
+    border: '1px solid var(--brand-border)',
+    color: 'var(--brand-text)',
+  };
 
   return (
     <div className="p-6 max-w-3xl mx-auto">
@@ -99,7 +157,7 @@ export default function RgpdSalarie() {
         </button>
       </div>
 
-      {/* Onglet Engagement */}
+      {/* ── Onglet Engagement ── */}
       {activeTab === 'engagement' && (
         <>
           <div
@@ -117,11 +175,7 @@ export default function RgpdSalarie() {
               value={selectedClientId}
               onChange={e => setSelectedClientId(e.target.value)}
               className="w-full rounded-lg px-3 py-2 text-sm mb-4"
-              style={{
-                background: 'rgba(255,255,255,0.05)',
-                border: '1px solid var(--brand-border)',
-                color: 'var(--brand-text)',
-              }}
+              style={inputStyle}
             >
               <option value="">-- Choisir un salarié --</option>
               {clients.map((c: Client) => (
@@ -161,11 +215,11 @@ export default function RgpdSalarie() {
         </>
       )}
 
-      {/* Onglet Salariés */}
+      {/* ── Onglet Salariés ── */}
       {activeTab === 'salaries' && (
         <div className="space-y-4">
           {/* Statistiques */}
-          <div className="grid grid-cols-2 gap-3 mb-2">
+          <div className="grid grid-cols-2 gap-3">
             <div
               className="rounded-xl p-4 flex items-center gap-3"
               style={{ background: 'rgba(34,197,94,0.08)', border: '1px solid rgba(34,197,94,0.2)' }}
@@ -195,6 +249,120 @@ export default function RgpdSalarie() {
             </div>
           </div>
 
+          {/* Bouton Nouveau salarié */}
+          {!showNewForm && (
+            <button
+              onClick={() => setShowNewForm(true)}
+              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold"
+              style={{
+                background: 'rgba(0,188,212,0.12)',
+                border: '1px dashed var(--brand-cyan)',
+                color: 'var(--brand-cyan)',
+              }}
+            >
+              <UserPlus size={16} />
+              Nouveau salarié
+            </button>
+          )}
+
+          {/* Formulaire nouveau salarié */}
+          {showNewForm && (
+            <div
+              className="rounded-xl p-5"
+              style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}
+            >
+              <div className="flex items-center justify-between mb-4">
+                <span className="font-semibold text-sm" style={{ color: 'var(--brand-cyan)' }}>
+                  Nouveau salarié
+                </span>
+                <button
+                  onClick={() => { setShowNewForm(false); setForm(emptyForm); }}
+                  style={{ color: 'var(--brand-text-muted)' }}
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-3">
+                <div>
+                  <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>
+                    Prénom *
+                  </label>
+                  <input
+                    type="text"
+                    value={form.prenom}
+                    onChange={e => setForm(f => ({ ...f, prenom: e.target.value }))}
+                    placeholder="Prénom"
+                    className="w-full rounded-lg px-3 py-2 text-sm"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>
+                    Nom *
+                  </label>
+                  <input
+                    type="text"
+                    value={form.nom}
+                    onChange={e => setForm(f => ({ ...f, nom: e.target.value }))}
+                    placeholder="Nom"
+                    className="w-full rounded-lg px-3 py-2 text-sm"
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>
+                    Poste
+                  </label>
+                  <input
+                    type="text"
+                    value={form.poste}
+                    onChange={e => setForm(f => ({ ...f, poste: e.target.value }))}
+                    placeholder="ex : Pierceur, Tatoueur…"
+                    className="w-full rounded-lg px-3 py-2 text-sm"
+                    style={inputStyle}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>
+                    Téléphone
+                  </label>
+                  <input
+                    type="tel"
+                    value={form.telephone}
+                    onChange={e => setForm(f => ({ ...f, telephone: e.target.value }))}
+                    placeholder="06 …"
+                    className="w-full rounded-lg px-3 py-2 text-sm"
+                    style={inputStyle}
+                  />
+                </div>
+              </div>
+
+              <button
+                onClick={handleCreateSalarie}
+                disabled={!form.prenom.trim() || !form.nom.trim() || saving}
+                className="w-full py-2.5 rounded-lg text-sm font-semibold"
+                style={{
+                  background:
+                    form.prenom.trim() && form.nom.trim() && !saving
+                      ? 'var(--brand-cyan)'
+                      : 'rgba(255,255,255,0.1)',
+                  color:
+                    form.prenom.trim() && form.nom.trim() && !saving
+                      ? 'var(--brand-navy)'
+                      : 'var(--brand-text-muted)',
+                  cursor:
+                    form.prenom.trim() && form.nom.trim() && !saving ? 'pointer' : 'not-allowed',
+                }}
+              >
+                {saving ? 'Enregistrement…' : 'Créer le salarié'}
+              </button>
+            </div>
+          )}
+
           {/* Liste des salariés */}
           {clients.length === 0 ? (
             <div
@@ -205,17 +373,9 @@ export default function RgpdSalarie() {
               <p className="text-sm font-medium mb-1" style={{ color: 'var(--brand-text)' }}>
                 Aucun salarié enregistré
               </p>
-              <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>
-                Ajoutez un salarié depuis la liste des clients
+              <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
+                Cliquez sur "Nouveau salarié" pour en créer un
               </p>
-              <button
-                onClick={() => navigate('/clients')}
-                className="flex items-center gap-2 mx-auto px-4 py-2 rounded-lg text-sm font-medium"
-                style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)' }}
-              >
-                <UserPlus size={15} />
-                Aller aux clients
-              </button>
             </div>
           ) : (
             <div
@@ -225,6 +385,9 @@ export default function RgpdSalarie() {
               {clients.map((client: Client, idx: number) => {
                 const isSigned = hasSignedEngagement(client);
                 const date = getSignatureDate(client);
+                const poste = client.notes?.startsWith('Poste :')
+                  ? client.notes.replace('Poste : ', '')
+                  : null;
                 return (
                   <div
                     key={client.id}
@@ -243,28 +406,28 @@ export default function RgpdSalarie() {
                   >
                     <div className="flex items-center gap-3">
                       <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold"
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
                         style={{ background: 'rgba(0,188,212,0.15)', color: 'var(--brand-cyan)' }}
                       >
                         {client.prenom?.[0]?.toUpperCase()}
                         {client.nom?.[0]?.toUpperCase()}
                       </div>
                       <div>
-                        <div
-                          className="text-sm font-medium"
-                          style={{ color: 'var(--brand-text)' }}
-                        >
+                        <div className="text-sm font-medium" style={{ color: 'var(--brand-text)' }}>
                           {client.prenom} {client.nom}
                         </div>
-                        {date && (
-                          <div className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
-                            {isSigned ? 'Signé le ' : 'Créé le '}
-                            {new Date(date).toLocaleDateString('fr-FR')}
-                          </div>
-                        )}
+                        <div className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
+                          {poste && <span className="mr-2">{poste}</span>}
+                          {date && (
+                            <span>
+                              {isSigned ? 'Signé le ' : 'Créé le '}
+                              {new Date(date).toLocaleDateString('fr-FR')}
+                            </span>
+                          )}
+                        </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 shrink-0">
                       {isSigned ? (
                         <span
                           className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
