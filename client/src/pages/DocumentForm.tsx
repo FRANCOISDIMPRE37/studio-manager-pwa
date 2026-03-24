@@ -883,7 +883,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_antiseptiques_f39582b7.webp"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_antiseptiques_v2_1d34e7f5.webp"
             alt="Produits recommandés — Diaseptyl 0,5%, Physiodose sérum physiologique, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
