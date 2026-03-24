@@ -96,14 +96,14 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     <div className="flex h-screen overflow-hidden print:block print:h-auto print:overflow-visible" style={{ background: 'var(--brand-navy)' }}>
       {/* Sidebar */}
       <aside
-        className="flex flex-col w-44 md:w-56 flex-shrink-0 border-r"
+        className="flex flex-col w-44 md:w-56 flex-shrink-0 border-r overflow-y-auto"
         style={{
           background: 'linear-gradient(180deg, #0A1628 0%, #0D1E38 100%)',
           borderColor: 'var(--brand-border)',
         }}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-3 py-4 border-b" style={{ borderColor: 'var(--brand-border)' }}>
+        <div className="flex items-center gap-3 px-3 py-4 border-b flex-shrink-0" style={{ borderColor: 'var(--brand-border)' }}>
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/logo_white_d12a3c81.svg"
             alt="Intemporelle"
@@ -127,7 +127,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Navigation */}
-        <nav className="flex-1 py-3 space-y-1 px-1 overflow-y-auto">
+        <nav className="py-3 space-y-1 px-1">
           {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
             const isActive = path === '/' ? location === '/' : location.startsWith(path);
             return (
@@ -158,7 +158,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
 
         {/* Export / Import clients CSV/Excel */}
-        <div className="px-1 pb-1">
+        <div className="px-1 pb-1 flex-shrink-0">
           <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>Clients</p>
           <input ref={importRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleImportFile} />
           <button
@@ -191,7 +191,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </div>
 
         {/* Liens externes */}
-        <div className="px-1 pb-2 space-y-1">
+        <div className="px-1 pb-2 space-y-1 flex-shrink-0">
           <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>Ressources</p>
           {[
             { href: 'https://www.intemporelle.eu/', label: 'Intemporelle' },
@@ -225,7 +225,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
 
         {/* Salon info + logout */}
-        <div className="border-t p-2" style={{ borderColor: 'var(--brand-border)' }}>
+        <div className="border-t p-2 flex-shrink-0" style={{ borderColor: 'var(--brand-border)' }}>
           {state.salonInfo && (
             <div className="block px-2 py-1 mb-1">
               <p className="text-xs font-600 truncate" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{state.salonInfo.nom}</p>
