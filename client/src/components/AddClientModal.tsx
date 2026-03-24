@@ -19,6 +19,7 @@ const PRESTATION_DOCS_MAJEUR: Record<string, DocumentType[]> = {
   'Mamelons':          ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_mamelons'],
   'Arcade / Sourcil':  ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_arcade_sourcil'],
   'Surface / Dermal':  ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_surface_dermal'],
+  'Bouche & Lèvres':   ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_bouche_levres'],
   'Tatouage':          ['questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'],
   'Dermographie':      ['questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
 };
@@ -30,6 +31,7 @@ const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
   'Mamelons':          ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_mamelons'],
   'Arcade / Sourcil':  ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_arcade_sourcil'],
   'Surface / Dermal':  ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_surface_dermal'],
+  'Bouche & Lèvres':   ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_bouche_levres'],
   'Tatouage':          ['questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'],
   'Dermographie':      ['questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
 };
@@ -99,6 +101,7 @@ export default function AddClientModal({ onClose }: Props) {
     'Mamelons',
     'Arcade / Sourcil',
     'Surface / Dermal',
+    'Bouche & Lèvres',
     'Tatouage',
     'Dermographie',
   ];

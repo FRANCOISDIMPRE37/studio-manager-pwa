@@ -17,6 +17,7 @@ const DOC_ORDER: DocumentType[] = [
   'fiche_seance_piercing',
   'soins_oreilles',
   'soins_nez',
+  'soins_bouche_levres',
   'soins_nombril',
   'soins_mamelons',
   'soins_arcade_sourcil',

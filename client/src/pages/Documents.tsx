@@ -23,10 +23,10 @@ const DOC_CATEGORIES = [
     forMineur: false,
   },
   {
-    title: 'Soins Post-Piercing (A, B, D–G)',
+    title: 'Soins Post-Piercing (A, B, C, D–G)',
     icon: Shield,
     color: '#4CAF50',
-    docs: ['soins_oreilles', 'soins_nez', 'soins_nombril', 'soins_mamelons', 'soins_arcade_sourcil', 'soins_surface_dermal'] as DocumentType[],
+    docs: ['soins_oreilles', 'soins_nez', 'soins_bouche_levres', 'soins_nombril', 'soins_mamelons', 'soins_arcade_sourcil', 'soins_surface_dermal'] as DocumentType[],
     forMineur: null,
   },
   {
