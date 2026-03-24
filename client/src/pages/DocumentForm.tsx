@@ -2436,10 +2436,36 @@ export default function DocumentForm() {
   const clientId = params.clientId;
   const docType = params.docType as DocumentType;
 
+  // Mode sans client : pas de clientId dans l'URL (route /document/:docType)
+  const isStandaloneMode = !clientId;
+
+  // Client fictif pour le mode sans client
+  const STANDALONE_CLIENT: Client = {
+    id: '__standalone__',
+    nom: '',
+    prenom: '',
+    dateNaissance: '',
+    adresse: '',
+    codePostal: '',
+    ville: '',
+    telephone: '',
+    email: '',
+    estMineur: false,
+    prestations: [],
+    documentsAssocies: [],
+    documents: [],
+    photos: [],
+    dateCreation: new Date().toISOString(),
+    dateSuppressionPrevue: '',
+    rgpdStatus: 'ok',
+    rgpdDroitsExerces: [],
+    estArchive: false,
+  };
+
   // Détection du paramètre ?print=1 dans l'URL pour impression automatique
   const autoPrint = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('print') === '1';
 
-  const client = state.clients.find(c => c.id === clientId);
+  const client = isStandaloneMode ? STANDALONE_CLIENT : state.clients.find(c => c.id === clientId);
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -2548,6 +2574,11 @@ export default function DocumentForm() {
   const signatureManquante = signatureRequise && !formData.signatureImageClient;
 
   async function handleSave() {
+    if (isStandaloneMode) {
+      // En mode standalone, on imprime directement
+      handlePrint();
+      return;
+    }
     if (!client) return;
     if (signatureManquante) {
       toast.error('La signature du client est obligatoire pour valider ce document.');
@@ -2577,7 +2608,7 @@ export default function DocumentForm() {
     }
   }
 
-  if (!client) {
+  if (!client && !isStandaloneMode) {
     return (
       <div className="p-6 text-center" style={{ color: 'var(--brand-text-muted)' }}>
         <p>Client introuvable</p>
@@ -2587,6 +2618,9 @@ export default function DocumentForm() {
       </div>
     );
   }
+
+  // À ce stade, client est toujours défini (soit un vrai client, soit STANDALONE_CLIENT)
+  const effectiveClient = client!;
 
   const docTitle = DOCUMENT_LABELS[docType] || docType;
   const today = new Date().toLocaleDateString('fr-FR');
@@ -2749,54 +2783,55 @@ export default function DocumentForm() {
   const [showPreview, setShowPreview] = useState(false);
 
   function handleEmail() {
-    if (!client) return;
-    setEmailTo(client.email || '');
+    setEmailTo(effectiveClient.email || '');
     setEmailModal(true);
   }
 
   function handleSendEmail(e: React.FormEvent) {
     e.preventDefault();
-    if (!client) return;
+    const clientName = effectiveClient.prenom || effectiveClient.nom
+      ? `${effectiveClient.prenom} ${effectiveClient.nom}`.trim()
+      : 'Client non renseigné';
     sendDocumentEmail.mutate({
       to: emailTo,
-      subject: `${docTitle} — ${client.prenom} ${client.nom}`,
+      subject: `${docTitle} — ${clientName}`,
       body: `<p>Veuillez trouver ci-dessous le résumé du document : <strong>${docTitle}</strong></p>
-             <p>Client : <strong>${client.prenom} ${client.nom}</strong><br>Date : ${today}</p>
+             <p>Client : <strong>${clientName}</strong><br>Date : ${today}</p>
              <p>Ce document a été généré depuis Studio Manager by Intemporelle.</p>`,
       documentTitle: docTitle,
-      clientNom: `${client.prenom} ${client.nom}`,
+      clientNom: clientName,
     });
   }
 
   const renderForm = () => {
     switch (docType) {
       case 'questionnaire_mineur':
-        return <FormQuestionnaireMineur data={formData} update={updateField} client={client} />;
+        return <FormQuestionnaireMineur data={formData} update={updateField} client={effectiveClient} />;
       case 'autorisation_parentale':
-        return <FormAutorisationParentale data={formData} update={updateField} client={client} salonInfo={state.salonInfo} />;
+        return <FormAutorisationParentale data={formData} update={updateField} client={effectiveClient} salonInfo={state.salonInfo} />;
       case 'questionnaire_majeur':
-        return <FormQuestionnaireMajeur data={formData} update={updateField} client={client} />;
+        return <FormQuestionnaireMajeur data={formData} update={updateField} client={effectiveClient} />;
       case 'fiche_seance_piercing':
-        return <FormFicheSeance data={formData} update={updateField} client={client} />;
+        return <FormFicheSeance data={formData} update={updateField} client={effectiveClient} />;
       case 'questionnaire_tatouage_majeur':
-        return <FormQuestionnaireTatouageMajeur data={formData} update={updateField} client={client} />;
+        return <FormQuestionnaireTatouageMajeur data={formData} update={updateField} client={effectiveClient} />;
       case 'questionnaire_dermographe':
-        return <FormQuestionnaireDermographe data={formData} update={updateField} client={client} />;
+        return <FormQuestionnaireDermographe data={formData} update={updateField} client={effectiveClient} />;
       case 'consentement_soins_tatouage':
-        return <FormConsentementSoinsTatouage data={formData} update={updateField} client={client} />;
+        return <FormConsentementSoinsTatouage data={formData} update={updateField} client={effectiveClient} />;
       case 'soins_dermographe':
-        return <FormSoinsDermographe data={formData} update={updateField} client={client} />;
+        return <FormSoinsDermographe data={formData} update={updateField} client={effectiveClient} />;
       case 'fiche_seance_tatouage':
-        return <FormFicheSeanceTatouage data={formData} update={updateField} client={client} />;
+        return <FormFicheSeanceTatouage data={formData} update={updateField} client={effectiveClient} />;
       case 'fiche_seance_dermographe':
-        return <FormFicheSeanceDermographe data={formData} update={updateField} client={client} />;
+        return <FormFicheSeanceDermographe data={formData} update={updateField} client={effectiveClient} />;
       case 'engagement_confidentialite':
-        return <FormEngagementConfidentialite data={formData} update={updateField} client={client} />;
+        return <FormEngagementConfidentialite data={formData} update={updateField} client={effectiveClient} />;
       case 'affichage_salon':
-        return <FormAffichageSalon data={formData} update={updateField} client={client} />;
+        return <FormAffichageSalon data={formData} update={updateField} client={effectiveClient} />;
       default:
         if (docType.startsWith('soins_') || docType.startsWith('cicatrisation_')) {
-          return <FormSoins docType={docType} data={formData} update={updateField} client={client} />;
+          return <FormSoins docType={docType} data={formData} update={updateField} client={effectiveClient} />;
         }
         return (
           <div className="text-center py-8" style={{ color: 'var(--brand-text-muted)' }}>
@@ -2815,7 +2850,7 @@ export default function DocumentForm() {
         borderBottom: '1px solid var(--brand-border)',
       }}>
         <button
-          onClick={() => navigate(`/clients/${clientId}`)}
+          onClick={() => isStandaloneMode ? navigate('/documents') : navigate(`/clients/${clientId}`)}
           className="p-2 rounded-lg transition-all hover:bg-white/10"
           style={{ color: 'var(--brand-text-muted)' }}
         >
@@ -2826,7 +2861,7 @@ export default function DocumentForm() {
             {docTitle}
           </h1>
           <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
-            {client.prenom} {client.nom} · {today}
+            {isStandaloneMode ? 'Sans client associé' : `${effectiveClient.prenom} ${effectiveClient.nom}`} · {today}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -2884,7 +2919,7 @@ export default function DocumentForm() {
             }}
           >
             <Save size={16} />
-            {isSaving ? 'Sauvegarde...' : signatureManquante ? 'Signature requise' : 'Sauvegarder'}
+            {isStandaloneMode ? 'Imprimer' : isSaving ? 'Sauvegarde...' : signatureManquante ? 'Signature requise' : 'Sauvegarder'}
           </button>
         </div>
       </div>
@@ -2895,9 +2930,9 @@ export default function DocumentForm() {
         <PrintHeader
           salonInfo={state.salonInfo}
           docTitle={docTitle}
-          clientName={`${client.prenom} ${client.nom}`}
+          clientName={`${effectiveClient.prenom} ${effectiveClient.nom}`}
           date={today}
-          numeroClient={client.numeroClient}
+          numeroClient={effectiveClient.numeroClient}
         />
         {renderForm()}
 
@@ -2929,7 +2964,7 @@ export default function DocumentForm() {
               cursor: signatureManquante ? 'not-allowed' : 'pointer',
             }}
           >
-            {isSaving ? 'Sauvegarde en cours...' : signatureManquante ? '✍️ Signature requise pour sauvegarder' : '✓ Sauvegarder le document'}
+            {isStandaloneMode ? '🖨️ Imprimer le document' : isSaving ? 'Sauvegarde en cours...' : signatureManquante ? '✍️ Signature requise pour sauvegarder' : '✓ Sauvegarder le document'}
           </button>
         </div>
       </div>
@@ -2946,7 +2981,7 @@ export default function DocumentForm() {
               <Eye size={18} style={{ color: 'var(--brand-cyan)' }} />
               <div>
                 <h3 className="text-sm font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Aperçu avant impression</h3>
-                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{docTitle} — {client.prenom} {client.nom}</p>
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{docTitle} — {effectiveClient.prenom} {effectiveClient.nom}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -2996,7 +3031,7 @@ export default function DocumentForm() {
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontWeight: 700, fontSize: '11pt', color: '#0A1628' }}>{docTitle}</div>
-                  <div style={{ fontSize: '9pt', color: '#555' }}>Client : {client.prenom} {client.nom}</div>
+                  <div style={{ fontSize: '9pt', color: '#555' }}>Client : {effectiveClient.prenom} {effectiveClient.nom}</div>
                   <div style={{ fontSize: '9pt', color: '#555' }}>Date : {today}</div>
                 </div>
               </div>
@@ -3082,7 +3117,7 @@ export default function DocumentForm() {
 
             <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(131,208,245,0.06)', border: '1px solid rgba(131,208,245,0.15)' }}>
               <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Document : <strong style={{ color: 'var(--brand-text)' }}>{docTitle}</strong></p>
-              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Client : <strong style={{ color: 'var(--brand-text)' }}>{client.prenom} {client.nom}</strong></p>
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Client : <strong style={{ color: 'var(--brand-text)' }}>{effectiveClient.prenom} {effectiveClient.nom}</strong></p>
             </div>
 
             <form onSubmit={handleSendEmail} className="space-y-3">

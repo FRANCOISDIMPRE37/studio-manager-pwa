@@ -80,6 +80,12 @@ export default function Documents() {
     setSelectedDoc(null);
   };
 
+  const handleOpenWithoutClient = () => {
+    if (!selectedDoc) return;
+    navigate(`/document/${selectedDoc}`);
+    setSelectedDoc(null);
+  };
+
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div>
@@ -163,7 +169,7 @@ export default function Documents() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-700 text-base" style={{ color: 'var(--brand-text)', fontWeight: 700, fontFamily: 'Outfit' }}>
-                  Choisir un client
+                  Ouvrir le document
                 </h3>
                 <p className="text-xs mt-0.5" style={{ color: 'var(--brand-text-muted)' }}>
                   {DOCUMENT_LABELS[selectedDoc]}
@@ -176,6 +182,29 @@ export default function Documents() {
               >
                 <X size={18} />
               </button>
+            </div>
+
+            {/* Bouton accès rapide sans client */}
+            <button
+              onClick={handleOpenWithoutClient}
+              className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:opacity-80"
+              style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.3)' }}
+            >
+              <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(131,208,245,0.2)' }}>
+                <FileText size={16} style={{ color: 'var(--brand-cyan)' }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Ouvrir sans client</p>
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Remplir manuellement · Impression rapide</p>
+              </div>
+              <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
+            </button>
+
+            {/* Séparateur */}
+            <div className="flex items-center gap-2">
+              <div className="h-px flex-1" style={{ background: 'var(--brand-border)' }} />
+              <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>ou choisir un client</span>
+              <div className="h-px flex-1" style={{ background: 'var(--brand-border)' }} />
             </div>
 
             {/* Recherche */}
