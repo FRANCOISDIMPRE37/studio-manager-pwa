@@ -875,6 +875,16 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       <FormSection title="INFORMATIONS COMPLÉMENTAIRES" />
       <FormField label="Notes du professionnel" value={data.notes || ''} onChange={v => update('notes', v)} multiline />
 
+      {docType === 'soins_bouche_levres' && (
+        <div className="mb-4">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_labret_6d4833b7.jpg"
+            alt="Produits recommandés Labret — Diaseptyl 15j, Eludrilpro après chaque repas 15 premiers jours, Physiodose 15 derniers jours, compresses non-tissées"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
+          />
+        </div>
+      )}
+
       {docType === 'soins_nez' && (
         <div className="mb-4">
           <img
