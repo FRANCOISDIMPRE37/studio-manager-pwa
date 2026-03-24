@@ -343,6 +343,7 @@ export default function Dashboard() {
       {/* Stats grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard icon={Users} label="Clients actifs" value={stats.clientsActifs} color="var(--brand-cyan)" />
+        <StatCard icon={Users} label="Clients majeurs" value={stats.clientsMajeurs} color="#34d399" />
         <StatCard icon={Shield} label="Clients mineurs" value={stats.clientsMineurs} color="#9C27B0" />
       </div>
 

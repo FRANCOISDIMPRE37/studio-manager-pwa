@@ -114,6 +114,7 @@ export interface SalonInfo {
 export interface DashboardStats {
   totalClients: number;
   clientsActifs: number;
+  clientsMajeurs: number;
   clientsMineurs: number;
   clientsArchives: number;
   alertesRGPD: number;

@@ -529,6 +529,7 @@ function AppProviderInner({ children, dispatch, state }: {
     return {
       totalClients: state.clients.length,
       clientsActifs: actifs.length,
+      clientsMajeurs: actifs.filter(c => !c.estMineur).length,
       clientsMineurs: actifs.filter(c => c.estMineur).length,
       clientsArchives: state.clients.filter(c => c.estArchive).length,
       alertesRGPD: actifs.filter(c => c.rgpdStatus === 'warning' || c.rgpdStatus === 'urgent').length,
