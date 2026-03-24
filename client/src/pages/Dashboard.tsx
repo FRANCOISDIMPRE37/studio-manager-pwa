@@ -20,18 +20,18 @@ function StatCard({ icon: Icon, label, value, color, sub }: {
 }) {
   return (
     <div
-      className="studio-card p-4 flex items-start gap-4"
-      style={{ cursor: 'default' }}
+      className="studio-card p-3 flex items-center gap-3"
+      style={{ cursor: 'default', minWidth: 0 }}
     >
       <div
-        className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
+        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
         style={{ background: color + '22' }}
       >
-        <Icon size={20} style={{ color }} />
+        <Icon size={18} style={{ color }} />
       </div>
-      <div className="min-w-0">
-        <p className="text-2xl font-700" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>{value}</p>
-        <p className="text-xs mt-0.5" style={{ color: 'var(--brand-text-muted)' }}>{label}</p>
+      <div style={{ minWidth: 0, flex: 1 }}>
+        <p className="text-xl font-700 leading-tight" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>{value}</p>
+        <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--brand-text-muted)', whiteSpace: 'normal', wordBreak: 'break-word' }}>{label}</p>
         {sub && <p className="text-xs mt-0.5" style={{ color }}>{sub}</p>}
       </div>
     </div>
@@ -341,10 +341,10 @@ export default function Dashboard() {
       </div>
 
       {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <div className="grid grid-cols-3 gap-3">
         <StatCard icon={Users} label="Clients actifs" value={stats.clientsActifs} color="var(--brand-cyan)" />
-        <StatCard icon={Users} label="Clients majeurs" value={stats.clientsMajeurs} color="#34d399" />
-        <StatCard icon={Shield} label="Clients mineurs" value={stats.clientsMineurs} color="#9C27B0" />
+        <StatCard icon={Users} label="Majeurs" value={stats.clientsMajeurs} color="#34d399" />
+        <StatCard icon={Shield} label="Mineurs" value={stats.clientsMineurs} color="#9C27B0" />
       </div>
 
 
