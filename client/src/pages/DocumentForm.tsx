@@ -366,17 +366,6 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
       <FormSection title="5 — AVIS DU MINEUR (obligatoire dès 12 ans)" />
       <CheckboxField label="Confirme vouloir ce piercing de son plein gré" value={data.avisMineur || false} onToggle={() => update('avisMineur', !data.avisMineur)} />
 
-      <FormSection title="5b — CONTACT D'URGENCE" />
-      <div className="flex items-start gap-2 p-3 rounded-xl mb-3" style={{ background: 'rgba(100,181,246,0.05)', border: '1px solid rgba(100,181,246,0.2)' }}>
-        <Phone size={14} style={{ color: '#64B5F6', flexShrink: 0, marginTop: 2 }} />
-        <span className="text-xs" style={{ color: '#64B5F6' }}>Personne à contacter en cas d'urgence pendant la séance</span>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom / Prénom" value={data.urgenceNom || ''} onChange={v => update('urgenceNom', v)} />
-        <FormField label="Lien avec le mineur" value={data.urgenceLien || ''} onChange={v => update('urgenceLien', v)} placeholder="Ex : mère, père, tuteur" />
-      </div>
-      <FormField label="Téléphone d'urgence" value={data.urgenceTelephone || ''} onChange={v => update('urgenceTelephone', v)} type="tel" />
-
       <FormSection title="6 — REPRÉSENTANT(S) LÉGAL/AUX" />
       <div>
         <FormField label="Représentant légal — Nom / Prénom" value={data.representantNom || ''} onChange={v => update('representantNom', v)} required />
