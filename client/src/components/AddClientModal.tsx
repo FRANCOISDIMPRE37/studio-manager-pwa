@@ -9,7 +9,7 @@ import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { DocumentType } from '@/lib/types';
 import { toast } from 'sonner';
 
-const DOCS_MINEURS: DocumentType[] = ['questionnaire_mineur'];
+const DOCS_MINEURS: DocumentType[] = ['questionnaire_mineur', 'autorisation_parentale'];
 
 // Correspondance prestation souhaitée → documents associés
 const PRESTATION_DOCS_MAJEUR: Record<string, DocumentType[]> = {
@@ -39,6 +39,7 @@ const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
 function buildDocumentsAssocies(prestations: string[], isMineur: boolean): DocumentType[] {
   const set = new Set<DocumentType>();
   // Toujours ajouter l'autorisation parentale pour les mineurs
+  if (isMineur) set.add('autorisation_parentale');
 
   const map = isMineur ? PRESTATION_DOCS_MINEUR : PRESTATION_DOCS_MAJEUR;
   for (const p of prestations) {

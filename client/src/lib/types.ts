@@ -17,6 +17,7 @@ export interface RGPDRight {
 // Types de documents
 export type DocumentType =
   | 'questionnaire_mineur'
+  | 'autorisation_parentale'
   | 'questionnaire_majeur'
   | 'fiche_seance_piercing'
   | 'soins_oreilles'
@@ -164,6 +165,7 @@ export const RDV_STATUT_COLORS: Record<RDVStatut, string> = {
 export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   // Piercing — Mineurs
   questionnaire_mineur: '01 — Questionnaire Médical Mineur (Piercing)',
+  autorisation_parentale: '02 — Autorisation Parentale',
   // Piercing — Majeurs
   questionnaire_majeur: '03 — Questionnaire Médical Majeur (Piercing)',
   fiche_seance_piercing: '04 — Fiche de Traçabilité Matériel Stérile (Piercing)',

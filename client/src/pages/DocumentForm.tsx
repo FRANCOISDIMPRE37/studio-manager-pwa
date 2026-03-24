@@ -2656,6 +2656,8 @@ export default function DocumentForm() {
     switch (docType) {
       case 'questionnaire_mineur':
         return <FormQuestionnaireMineur data={formData} update={updateField} client={client} />;
+      case 'autorisation_parentale':
+        return <FormAutorisationParentale data={formData} update={updateField} client={client} salonInfo={state.salonInfo} />;
       case 'questionnaire_majeur':
         return <FormQuestionnaireMajeur data={formData} update={updateField} client={client} />;
       case 'fiche_seance_piercing':
