@@ -20,6 +20,28 @@ export default function ClientDetail() {
   const [dossierEmail, setDossierEmail] = useState('');
   const [editingNotes, setEditingNotes] = useState(false);
   const [notesValue, setNotesValue] = useState('');
+  const [editingPrestations, setEditingPrestations] = useState(false);
+  const [prestationsTemp, setPrestationsTemp] = useState<string[]>([]);
+
+  const PRESTATIONS_OPTIONS = [
+    'Oreilles', 'Nez', 'Bouche & Lèvres', 'Nombril', 'Mamelons',
+    'Arcade / Sourcil', 'Surface / Dermal', 'Tatouage', 'Dermographie',
+  ];
+
+  const openEditPrestations = () => {
+    setPrestationsTemp(client?.prestationsSouhaitees || []);
+    setEditingPrestations(true);
+  };
+
+  const togglePrestationTemp = (p: string) => {
+    setPrestationsTemp(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
+  };
+
+  const savePrestations = () => {
+    updateClient({ ...client!, prestationsSouhaitees: prestationsTemp });
+    setEditingPrestations(false);
+    toast.success('Prestations mises à jour');
+  };
   const sendDossier = trpc.smtp.sendClientDossier.useMutation({
     onSuccess: () => {
       toast.success('Dossier envoyé avec succès !');
@@ -145,9 +167,18 @@ export default function ClientDetail() {
             </div>
 
             {/* Bloc Prestations souhaitées */}
-            {client.prestationsSouhaitees && client.prestationsSouhaitees.length > 0 && (
-              <div className="studio-card p-4">
-                <p className="text-xs font-600 uppercase tracking-wide mb-2" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Prestations souhaitées</p>
+            <div className="studio-card p-4">
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Prestations souhaitées</p>
+                <button
+                  onClick={openEditPrestations}
+                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-all"
+                  style={{ color: 'var(--brand-cyan)', background: 'rgba(131,208,245,0.08)', border: '1px solid rgba(131,208,245,0.2)' }}
+                >
+                  <Edit size={11} /> Modifier
+                </button>
+              </div>
+              {client.prestationsSouhaitees && client.prestationsSouhaitees.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {client.prestationsSouhaitees.map(p => (
                     <span
@@ -158,6 +189,59 @@ export default function ClientDetail() {
                       {p}
                     </span>
                   ))}
+                </div>
+              ) : (
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Aucune prestation sélectionnée</p>
+              )}
+            </div>
+
+            {/* Modal modification prestations */}
+            {editingPrestations && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }}>
+                <div className="w-full max-w-sm rounded-xl p-5" style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)' }}>
+                  <div className="flex items-center justify-between mb-4">
+                    <h3 className="text-sm font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Modifier les prestations</h3>
+                    <button onClick={() => setEditingPrestations(false)} className="p-1 rounded-lg hover:bg-white/10">
+                      <X size={16} style={{ color: 'var(--brand-text-muted)' }} />
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mb-5">
+                    {PRESTATIONS_OPTIONS.map(p => {
+                      const selected = prestationsTemp.includes(p);
+                      return (
+                        <button
+                          key={p}
+                          type="button"
+                          onClick={() => togglePrestationTemp(p)}
+                          className="px-3 py-1.5 rounded-full text-xs transition-all"
+                          style={{
+                            background: selected ? 'rgba(131,208,245,0.18)' : 'rgba(255,255,255,0.04)',
+                            color: selected ? 'var(--brand-cyan)' : 'var(--brand-text-muted)',
+                            border: selected ? '1px solid rgba(131,208,245,0.5)' : '1px solid var(--brand-border)',
+                            fontWeight: selected ? 700 : 400,
+                          }}
+                        >
+                          {p}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setEditingPrestations(false)}
+                      className="flex-1 py-2 rounded-lg text-sm"
+                      style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)' }}
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      onClick={savePrestations}
+                      className="flex-1 py-2 rounded-lg text-sm font-700"
+                      style={{ background: 'var(--brand-cyan)', color: '#0a1628', fontWeight: 700 }}
+                    >
+                      Enregistrer
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
