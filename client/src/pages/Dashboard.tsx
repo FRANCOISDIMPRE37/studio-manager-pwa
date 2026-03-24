@@ -14,26 +14,23 @@ import {
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 
-function StatCard({ icon: Icon, label, value, color, sub }: {
+function StatCard({ icon: Icon, label, value, color }: {
   icon: React.ElementType; label: string; value: number | string;
   color: string; sub?: string;
 }) {
   return (
     <div
-      className="studio-card p-3 flex items-center gap-3"
-      style={{ cursor: 'default', minWidth: 0 }}
+      className="studio-card flex flex-col items-center justify-center text-center"
+      style={{ cursor: 'default', padding: '12px 6px' }}
     >
       <div
-        className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+        className="w-8 h-8 rounded-lg flex items-center justify-center mb-2"
         style={{ background: color + '22' }}
       >
-        <Icon size={18} style={{ color }} />
+        <Icon size={16} style={{ color }} />
       </div>
-      <div style={{ minWidth: 0, flex: 1 }}>
-        <p className="text-xl font-700 leading-tight" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>{value}</p>
-        <p className="text-xs mt-0.5 leading-tight" style={{ color: 'var(--brand-text-muted)', whiteSpace: 'normal', wordBreak: 'break-word' }}>{label}</p>
-        {sub && <p className="text-xs mt-0.5" style={{ color }}>{sub}</p>}
-      </div>
+      <p className="font-700 leading-none" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700, fontSize: '1.5rem' }}>{value}</p>
+      <p className="mt-1 leading-tight text-center" style={{ color: 'var(--brand-text-muted)', fontSize: '0.65rem', lineHeight: '1.2' }}>{label}</p>
     </div>
   );
 }
