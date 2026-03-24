@@ -159,6 +159,36 @@ function LegalBox({ children, color = 'cyan' }: { children: React.ReactNode; col
   );
 }
 
+// ─── Bloc mentions RGPD (affiché dans tous les documents) ───────────────────
+function RgpdMentions() {
+  return (
+    <div className="mt-4 mb-2 rounded-xl text-xs" style={{
+      background: 'rgba(131,208,245,0.04)',
+      border: '1px solid rgba(131,208,245,0.15)',
+      padding: '10px 12px',
+      fontFamily: 'Outfit, sans-serif',
+      lineHeight: 1.6,
+      color: 'var(--brand-text-muted)',
+    }}>
+      <div style={{ fontWeight: 700, color: 'var(--brand-cyan)', marginBottom: 4, fontSize: 11 }}>VOS DROITS RGPD</div>
+      <div style={{ marginBottom: 4 }}>
+        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Conservation (mineurs) :</span>{' '}
+        3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux.
+      </div>
+      <div style={{ marginBottom: 4 }}>
+        Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants :{' '}
+        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition</span>{' '}
+        — Conservation : données de santé 3 ans — Pour exercer vos droits :{' '}
+        <span style={{ fontWeight: 600, color: 'var(--brand-cyan)' }}>francois-dimpre@intemporelle.eu</span>
+      </div>
+      <div>
+        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Support :</span>{' '}
+        L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil). Le salon s'engage à ne pas utiliser les données personnelles à des fins publicitaires.
+      </div>
+    </div>
+  );
+}
+
 function WarningBox({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-start gap-2 p-3 rounded-xl mb-3" style={{ background: 'rgba(244,67,54,0.05)', border: '1px solid rgba(244,67,54,0.2)' }}>
@@ -392,6 +422,7 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
       <FormSection title="7 — DECLARATION CLIENT" />
       <CheckboxField label="A répondu honnêtement au questionnaire" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
 
+      <RgpdMentions />
       <FormSection title="8 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -510,6 +541,7 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       <CheckboxField label="Consent librement" value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
       <CheckboxField label="S'engage à respecter le protocole de soins" value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
 
+      <RgpdMentions />
       <FormSection title="7 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -588,6 +620,7 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <RadioField label="Pièce d'identité du représentant légal (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdRepresentantType || ''} onChange={v => update('pieceIdRepresentantType', v)} />
       <FormField label="Numéro de la pièce d'identité" value={data.pieceIdRepresentantNumero || ''} onChange={v => update('pieceIdRepresentantNumero', v)} />
 
+      <RgpdMentions />
       <FormSection title="9 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -835,6 +868,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
+      <RgpdMentions />
       <FormSection title="SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -1020,6 +1054,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
+      <RgpdMentions />
       <FormSection title="8 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -1271,6 +1306,7 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
+      <RgpdMentions />
       <FormSection title="11 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -1530,6 +1566,7 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
       <CheckboxField label="Assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
       <CheckboxField label="Confirme être majeur(e) et ne pas être sous tutelle" value={data.confirmeMajeur || false} onToggle={() => update('confirmeMajeur', !data.confirmeMajeur)} />
 
+      <RgpdMentions />
       <FormSection title="6 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -1681,6 +1718,7 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
       <FormField label="Conseils post-séance donnés au client" value={data.conseilsPostSeance || ''} onChange={v => update('conseilsPostSeance', v)} multiline placeholder="Consignes de cicatrisation, produits recommandés, évictions..." />
       <CheckboxField label="Fiche de soins post-dermographie remise au client" value={data.ficheSoinsRemise || false} onToggle={() => update('ficheSoinsRemise', !data.ficheSoinsRemise)} />
 
+      <RgpdMentions />
       <FormSection title="8 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -1822,6 +1860,7 @@ function FormQuestionnaireDermographe({ data, update, client }: { data: Record<s
       <CheckboxField label="Je consens librement et en toute connaissance de cause à la réalisation de la prestation" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
       <CheckboxField label="Je certifie que les informations médicales fournies sont exactes et complètes" value={data.certifieInfosExactes || false} onToggle={() => update('certifieInfosExactes', !data.certifieInfosExactes)} />
 
+      <RgpdMentions />
       <FormSection title="7 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
@@ -2091,6 +2130,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
+      <RgpdMentions />
       <FormSection title="9 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
