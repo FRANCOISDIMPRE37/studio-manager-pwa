@@ -946,6 +946,22 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
           </div>
         </div>
       </div>
+
+      {/* Déclarations post-signature */}
+      <div className="mt-4 p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" className="mt-0.5 accent-cyan-400" />
+          <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
+            Je déclare avoir pris connaissance des risques liés à la pratique du piercing
+          </span>
+        </label>
+        <label className="flex items-start gap-3 cursor-pointer">
+          <input type="checkbox" className="mt-0.5 accent-cyan-400" />
+          <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
+            J’ai pu poser toutes les questions que je voulais
+          </span>
+        </label>
+      </div>
     </>
   );
 }
