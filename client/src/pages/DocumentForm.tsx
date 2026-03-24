@@ -875,12 +875,16 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       <FormSection title="INFORMATIONS COMPLÉMENTAIRES" />
       <FormField label="Notes du professionnel" value={data.notes || ''} onChange={v => update('notes', v)} multiline />
 
-      {docType === 'soins_oreilles' && (
-        <div className="mb-4">
-          <p className="text-xs font-700 mb-2" style={{ color: 'var(--brand-cyan)', fontWeight: 700 }}>PROTOCOLE ANTISEPTIQUE RECOMMANDÉ</p>
+      {['soins_oreilles', 'soins_mamelons', 'soins_arcade_sourcil'].includes(docType) && (
+        <div className="mb-4 space-y-3">
           <img
             src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/protocole_antiseptique_v2_4c7edcf4.png"
             alt="Protocole antiseptique — Après la douche : Diaseptyl 2×/jour pendant 15 jours"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
+          />
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_antiseptiques_f39582b7.webp"
+            alt="Produits recommandés — Diaseptyl 0,5%, Physiodose sérum physiologique, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
         </div>
