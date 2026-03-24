@@ -7,8 +7,7 @@ import { useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import {
   LayoutDashboard, Users, FileText, Settings, Archive, Shield,
-  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw,
-  Lock, Monitor
+  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -22,8 +21,6 @@ const NAV_ITEMS = [
   { path: '/documents', icon: FileText, label: 'Documents' },
   { path: '/archives', icon: Archive, label: 'Archives' },
   { path: '/rgpd', icon: Shield, label: 'RGPD & Confidentialité' },
-  { path: '/rgpd-salarie', icon: Lock, label: 'RGPD Salarié(s)' },
-  { path: '/affichage-salon', icon: Monitor, label: 'Affichage salon' },
   { path: '/parametres', icon: Settings, label: 'Paramètres' },
 ];
 

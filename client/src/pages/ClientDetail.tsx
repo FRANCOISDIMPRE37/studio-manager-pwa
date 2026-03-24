@@ -32,7 +32,6 @@ const DOC_ORDER: DocumentType[] = [
   // Divers
   'engagement_confidentialite',
   'affichage_salon',
-  'fiche_salarie',
 ];
 function sortDocs(docs: DocumentType[]): DocumentType[] {
   return [...docs].sort((a, b) => {
