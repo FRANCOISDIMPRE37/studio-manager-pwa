@@ -935,6 +935,16 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         </div>
       )}
 
+      {docType === 'soins_surface_dermal' && (
+        <div className="mb-4">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/surface_078104c2.jpg"
+            alt="Produits recommandés Surface — Physiodose sérum physiologique matin et soir pendant le dernier mois, compresses non-tissées"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
+          />
+        </div>
+      )}
+
       <LegalBox color="cyan">
         <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
