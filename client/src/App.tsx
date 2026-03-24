@@ -1,6 +1,7 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
+import Archives from '@/pages/Archives';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppProvider, useApp } from "./lib/app-context";
@@ -45,6 +46,7 @@ function AppRoutes() {
         <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />
         <Route path="/documents" component={Documents} />
         <Route path="/parametres" component={Parametres} />
+        <Route path="/archives" component={Archives} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

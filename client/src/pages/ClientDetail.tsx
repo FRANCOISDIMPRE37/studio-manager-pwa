@@ -4,12 +4,12 @@
 import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useLocation, useParams } from 'wouter';
-import { ArrowLeft, Phone, Mail, CreditCard, FileText, Trash2, Archive, Edit, PlusCircle, Send, X, Loader2, StickyNote } from 'lucide-react';
+import { ArrowLeft, Phone, Mail, CreditCard, FileText, Trash2, Archive, Edit, PlusCircle, Send, X, Loader2, StickyNote, ShieldCheck, Clock, AlertTriangle, CheckCircle2, Lock } from 'lucide-react';
 import { DOCUMENT_LABELS } from '@/lib/types';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
-type Tab = 'infos' | 'documents';
+type Tab = 'infos' | 'documents' | 'rgpd';
 
 export default function ClientDetail() {
   const params = useParams<{ id: string }>();
@@ -103,7 +103,7 @@ export default function ClientDetail() {
   const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
     { key: 'infos', label: 'Infos', icon: CreditCard },
     { key: 'documents', label: 'Documents', icon: FileText },
-
+    { key: 'rgpd', label: 'RGPD', icon: ShieldCheck },
   ];
 
   return (
@@ -307,6 +307,101 @@ export default function ClientDetail() {
           </>
         )}
 
+
+        {tab === 'rgpd' && (() => {
+          const now = new Date();
+          const dateCreation = new Date(client.dateCreation);
+          const dateArchivageAuto = new Date(dateCreation);
+          dateArchivageAuto.setFullYear(dateArchivageAuto.getFullYear() + 3);
+          const joursRestants = Math.ceil((dateArchivageAuto.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+          const dejaArchive = client.estArchive;
+          const expireOuBientot = joursRestants <= 30 && !dejaArchive;
+          const expire = joursRestants <= 0 && !dejaArchive;
+
+          const statusColor = dejaArchive ? '#9E9E9E' : expire ? '#F44336' : expireOuBientot ? '#FF9800' : '#4CAF50';
+          const statusLabel = dejaArchive ? 'Archivé' : expire ? 'Archivage requis' : expireOuBientot ? 'Archivage imminent' : 'Données actives';
+          const StatusIcon = dejaArchive ? Lock : expire ? AlertTriangle : expireOuBientot ? AlertTriangle : CheckCircle2;
+
+          return (
+            <div className="space-y-4">
+              {/* Statut RGPD */}
+              <div className="p-4 rounded-xl" style={{ background: statusColor + '15', border: `1px solid ${statusColor}40` }}>
+                <div className="flex items-center gap-3 mb-3">
+                  <StatusIcon size={18} style={{ color: statusColor }} />
+                  <span className="text-sm font-semibold" style={{ color: statusColor }}>{statusLabel}</span>
+                </div>
+                <div className="grid grid-cols-2 gap-3 text-xs">
+                  <div>
+                    <p style={{ color: 'var(--brand-text-muted)' }}>Date de création</p>
+                    <p className="font-semibold mt-0.5" style={{ color: 'var(--brand-text)' }}>{dateCreation.toLocaleDateString('fr-FR')}</p>
+                  </div>
+                  <div>
+                    <p style={{ color: 'var(--brand-text-muted)' }}>Archivage automatique</p>
+                    <p className="font-semibold mt-0.5" style={{ color: dejaArchive ? 'var(--brand-text-muted)' : statusColor }}>
+                      {dejaArchive ? (client.dateArchivage ? new Date(client.dateArchivage).toLocaleDateString('fr-FR') : '—') : dateArchivageAuto.toLocaleDateString('fr-FR')}
+                    </p>
+                  </div>
+                </div>
+                {!dejaArchive && (
+                  <div className="mt-3 pt-3" style={{ borderTop: '1px solid ' + statusColor + '30' }}>
+                    <div className="flex items-center gap-2">
+                      <Clock size={12} style={{ color: statusColor }} />
+                      <span className="text-xs" style={{ color: statusColor }}>
+                        {expire ? 'Délai de conservation dépassé — archivage requis' : `${joursRestants} jour${joursRestants > 1 ? 's' : ''} avant archivage automatique`}
+                      </span>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Informations RGPD */}
+              <div className="p-4 rounded-xl space-y-2" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+                <p className="text-xs uppercase tracking-wide mb-3" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Informations légales</p>
+                <div className="space-y-2 text-xs" style={{ color: 'var(--brand-text-muted)' }}>
+                  <p>• Durée de conservation : <span style={{ color: 'var(--brand-text)' }}>3 ans</span> à compter de la création du dossier</p>
+                  <p>• Base légale : <span style={{ color: 'var(--brand-text)' }}>Consentement (Art. 6.1.a RGPD)</span></p>
+                  <p>• Responsable du traitement : <span style={{ color: 'var(--brand-text)' }}>Studio de piercing / tatouage</span></p>
+                  <p>• Après archivage : les données personnelles sont anonymisées, seules les données de traçabilité médicale sont conservées</p>
+                </div>
+              </div>
+
+              {/* Droits exercés */}
+              {client.rgpdDroitsExerces && client.rgpdDroitsExerces.length > 0 && (
+                <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+                  <p className="text-xs uppercase tracking-wide mb-3" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Droits exercés</p>
+                  <div className="space-y-2">
+                    {client.rgpdDroitsExerces.map((droit, i) => (
+                      <div key={i} className="flex items-start gap-2 text-xs">
+                        <CheckCircle2 size={12} className="mt-0.5 flex-shrink-0" style={{ color: '#4CAF50' }} />
+                        <div>
+                          <span style={{ color: 'var(--brand-text)' }}>{droit.type}</span>
+                          {droit.date && <span className="ml-2" style={{ color: 'var(--brand-text-muted)' }}>— {new Date(droit.date).toLocaleDateString('fr-FR')}</span>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Actions */}
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={handleArchive}
+                  className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
+                  style={dejaArchive
+                    ? { background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }
+                    : { background: 'rgba(244,67,54,0.1)', border: '1px solid rgba(244,67,54,0.3)', color: '#F44336' }
+                  }
+                >
+                  <Archive size={14} />{dejaArchive ? 'Désarchiver' : 'Archiver maintenant'}
+                </button>
+              </div>
+              <p className="text-xs text-center" style={{ color: 'var(--brand-text-muted)' }}>
+                L'archivage anonymise les données personnelles et déplace le client dans la section Archives.
+              </p>
+            </div>
+          );
+        })()}
 
         {tab === 'documents' && (
           <div className="space-y-3">

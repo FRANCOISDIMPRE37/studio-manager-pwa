@@ -492,6 +492,38 @@ function AppProviderInner({ children, dispatch, state }: {
     }
   }, [state.isDemo, syncFromCloud]);
 
+  // Archivage automatique RGPD à 3 ans
+  useEffect(() => {
+    if (!state.isAuthenticated || state.clients.length === 0) return;
+    const now = new Date();
+    const clientsAArchiver = state.clients.filter(c => {
+      if (c.estArchive) return false;
+      const dateCreation = new Date(c.dateCreation);
+      const dateArchivageAuto = new Date(dateCreation);
+      dateArchivageAuto.setFullYear(dateArchivageAuto.getFullYear() + 3);
+      return now >= dateArchivageAuto;
+    });
+    if (clientsAArchiver.length === 0) return;
+    clientsAArchiver.forEach(c => {
+      const clientArchive: Client = {
+        ...c,
+        estArchive: true,
+        dateArchivage: now.toISOString().split('T')[0],
+        // Anonymisation des données personnelles après 3 ans
+        telephone: 'Anonymisé',
+        adresse: '',
+        codePostal: '',
+        ville: '',
+        notes: c.notes ? '[Archivé automatiquement après 3 ans]' : undefined,
+      };
+      updateClient(clientArchive);
+    });
+    if (clientsAArchiver.length > 0) {
+      console.info(`[RGPD] ${clientsAArchiver.length} client(s) archivé(s) automatiquement (délai 3 ans dépassé)`);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isAuthenticated, state.clients.length]);
+
   const getDashboardStats = useCallback((): DashboardStats => {
     const actifs = state.clients.filter(c => !c.estArchive);
     return {
