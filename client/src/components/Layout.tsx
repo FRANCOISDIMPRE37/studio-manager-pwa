@@ -8,20 +8,14 @@ import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, FileText, Settings, Archive, Shield, Info,
-  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw, BookOpen, PlayCircle, Globe
+  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw, BookOpen, PlayCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { exportClientsCSV, exportClientsExcel, importClientsFromFile } from '@/lib/clientExportImport';
 import { nanoid } from 'nanoid';
-
-const LANGUAGES = [
-  { code: 'fr', flag: '🇫🇷', label: 'FR' },
-  { code: 'en', flag: '🇬🇧', label: 'EN' },
-  { code: 'de', flag: '🇩🇪', label: 'DE' },
-  { code: 'nl', flag: '🇳🇱', label: 'NL' },
-];
+import LanguageSelector from '@/components/LanguageSelector';
 
 const NAV_ITEMS = [
   { path: '/', icon: LayoutDashboard, label: 'Tableau de bord' },
@@ -41,12 +35,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { state, getDashboardStats, setAuthenticated, addClient } = useApp();
   const stats = getDashboardStats();
   const importRef = useRef<HTMLInputElement>(null);
-  const { t, i18n } = useTranslation();
-
-  const changeLanguage = (lng: string) => {
-    i18n.changeLanguage(lng);
-    toast.success(`Langue changée : ${LANGUAGES.find(l => l.code === lng)?.flag} ${lng.toUpperCase()}`);
-  };
+  const { t } = useTranslation();
 
   const handleLogout = () => {
     setAuthenticated(false);
@@ -265,28 +254,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>{state.salonInfo.ville}</p>
             </div>
           )}
-          {/* Sélecteur de langue */}
-          <div className="flex items-center gap-1 px-3 py-2">
-            <Globe size={14} style={{ color: 'var(--brand-text-muted)' }} className="flex-shrink-0 mr-1" />
-            {LANGUAGES.map(({ code, flag, label }) => (
-              <button
-                key={code}
-                onClick={() => changeLanguage(code)}
-                className="flex items-center gap-1 px-1.5 py-0.5 rounded text-xs transition-all duration-200"
-                style={{
-                  background: i18n.language === code ? 'var(--brand-cyan)' : 'transparent',
-                  color: i18n.language === code ? '#0A1628' : 'var(--brand-text-muted)',
-                  fontWeight: i18n.language === code ? 700 : 400,
-                  border: '1px solid',
-                  borderColor: i18n.language === code ? 'var(--brand-cyan)' : 'transparent',
-                }}
-                title={label}
-              >
-                <span>{flag}</span>
-                <span>{label}</span>
-              </button>
-            ))}
-          </div>
+          {/* Sélecteur de langue — menu déroulant toutes langues européennes */}
+          <LanguageSelector />
           <button
             onClick={() => { toast.info('Actualisation...'); window.location.reload(); }}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5"
