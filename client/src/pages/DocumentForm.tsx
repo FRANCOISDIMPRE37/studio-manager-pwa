@@ -878,8 +878,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       {docType === 'soins_bouche_levres' && (
         <div className="mb-4">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/produits_labret_6d4833b7.jpg"
-            alt="Produits recommandés Labret — Diaseptyl 15j, Eludrilpro après chaque repas 15 premiers jours, Physiodose 15 derniers jours, compresses non-tissées"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/labret_soins_post_3b42e4a4.jpg"
+            alt="Soins Post Labret — Chlorhexidine matin et soir 15j, Eludril après chaque repas 15 premiers jours, Sérum Physiologique + compresses matin et soir derniers 15j"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
           <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
