@@ -48,7 +48,7 @@ const videos = [
     color: "#a855f7",
     badge: "Réseaux sociaux",
     badgeColor: "#a855f7",
-    src: `${CDN}/v3_reel_FINAL_fee962a3.mp4`,
+    src: `${CDN}/v3_reel_v2_a7092f54.mp4`,
     thumbnail: `${CDN}/ref_reel_main_99337f87.png`,
     usages: ["Instagram Reels", "TikTok", "WhatsApp"],
   },
