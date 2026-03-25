@@ -1,4 +1,4 @@
-/*
+/**
  * DESIGN: Studio Nocturne — Sidebar gauche fixe, fond bleu nuit #0A1628
  * Navigation iconographique + labels, accent cyan sur élément actif
  */
@@ -11,22 +11,10 @@ import {
   LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw, BookOpen, PlayCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import { exportClientsCSV, exportClientsExcel, importClientsFromFile } from '@/lib/clientExportImport';
 import { nanoid } from 'nanoid';
 import LanguageSelector from '@/components/LanguageSelector';
-
-const NAV_ITEMS = [
-  { path: '/', icon: LayoutDashboard, label: 'Tableau de bord' },
-  { path: '/rgpd-salarie', icon: Shield, label: 'Engagement Confidentialité' },
-  { path: '/info-client-rgpd', icon: Info, label: 'Info Client RGPD' },
-  { path: '/clients', icon: Users, label: 'Clients' },
-  { path: '/documents', icon: FileText, label: 'Documents' },
-  { path: '/archives', icon: Archive, label: 'Archives' },
-  { path: '/parametres', icon: Settings, label: 'Paramètres' },
-  { path: '/videos-demo', icon: PlayCircle, label: 'Vidéos Démo' },
-];
 
 const MODE_EMPLOI_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/mode_emploi_studio_manager_6b84fbf9.pdf';
 
@@ -37,18 +25,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const importRef = useRef<HTMLInputElement>(null);
   const { t } = useTranslation();
 
+  // Nav items using translation keys
+  const NAV_ITEMS = [
+    { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+    { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.rgpd_employee' },
+    { path: '/info-client-rgpd', icon: Info, labelKey: 'nav.client_info' },
+    { path: '/clients', icon: Users, labelKey: 'nav.clients' },
+    { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
+    { path: '/archives', icon: Archive, labelKey: 'nav.archives' },
+    { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
+    { path: '/videos-demo', icon: PlayCircle, labelKey: 'nav.videos' },
+  ];
+
   const handleLogout = () => {
     setAuthenticated(false);
   };
 
   const handleExportCSV = () => {
-    if (!state.clients.length) { toast.error('Aucun client à exporter'); return; }
+    if (!state.clients.length) { toast.error(t('common.no_data')); return; }
     exportClientsCSV(state.clients);
     toast.success(`${state.clients.length} client(s) exporté(s) en CSV`);
   };
 
   const handleExportExcel = () => {
-    if (!state.clients.length) { toast.error('Aucun client à exporter'); return; }
+    if (!state.clients.length) { toast.error(t('common.no_data')); return; }
     exportClientsExcel(state.clients);
     toast.success(`${state.clients.length} client(s) exporté(s) en Excel`);
   };
@@ -132,14 +132,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         {/* Demo badge */}
         {state.isDemo && (
           <div className="mx-2 mt-2 px-2 py-1 rounded text-center hidden md:block" style={{ background: 'var(--brand-rose-dim)', border: '1px solid var(--brand-rose)' }}>
-            <span className="text-xs font-600" style={{ color: 'var(--brand-rose)', fontWeight: 600 }}>MODE DÉMO</span>
+            <span className="text-xs font-600" style={{ color: 'var(--brand-rose)', fontWeight: 600 }}>{t('nav.mode_demo')}</span>
           </div>
         )}
 
         {/* Navigation */}
         <nav className="py-3 space-y-1 px-1">
-          {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
+          {NAV_ITEMS.map(({ path, icon: Icon, labelKey }) => {
             const isActive = path === '/' ? location === '/' : location.startsWith(path);
+            const label = t(labelKey);
             return (
               <Link key={path} href={path}>
                 <div
@@ -153,7 +154,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
                 >
                   <Icon size={18} className="flex-shrink-0" />
                   <span className="block text-sm font-500 truncate" style={{ fontWeight: 500 }}>{label}</span>
-                  {label === 'Clients' && stats.alertesUrgentes > 0 && (
+                  {labelKey === 'nav.clients' && stats.alertesUrgentes > 0 && (
                     <span
                       className="flex ml-auto items-center justify-center w-5 h-5 rounded-full text-xs font-700"
                       style={{ background: 'var(--brand-rose)', color: 'white', fontWeight: 700, fontSize: '10px' }}
@@ -175,46 +176,46 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             style={{ color: 'var(--brand-text-muted)' }}
           >
             <BookOpen size={18} className="flex-shrink-0" style={{ color: 'var(--brand-cyan)', opacity: 0.85 }} />
-            <span className="block text-sm font-500 truncate group-hover:text-white transition-colors" style={{ fontWeight: 500 }}>Mode d'emploi</span>
+            <span className="block text-sm font-500 truncate group-hover:text-white transition-colors" style={{ fontWeight: 500 }}>{t('nav.mode_emploi')}</span>
           </a>
         </nav>
 
         {/* Export / Import clients CSV/Excel */}
         <div className="px-1 pb-1 flex-shrink-0">
-          <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>Clients</p>
+          <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>{t('nav.clients_section')}</p>
           <input ref={importRef} type="file" accept=".csv,.xlsx,.xls" className="hidden" onChange={handleImportFile} />
           <button
             onClick={handleExportCSV}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
             style={{ color: 'var(--brand-text-muted)' }}
-            title="Exporter clients CSV"
+            title={t('nav.export_csv')}
           >
             <FileDown size={15} className="flex-shrink-0" style={{ color: '#34d399', opacity: 0.8 }} />
-            <span className="block text-xs truncate group-hover:text-white transition-colors">Exporter CSV</span>
+            <span className="block text-xs truncate group-hover:text-white transition-colors">{t('nav.export_csv')}</span>
           </button>
           <button
             onClick={handleExportExcel}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
             style={{ color: 'var(--brand-text-muted)' }}
-            title="Exporter clients Excel"
+            title={t('nav.export_excel')}
           >
             <FileSpreadsheet size={15} className="flex-shrink-0" style={{ color: '#34d399', opacity: 0.8 }} />
-            <span className="block text-xs truncate group-hover:text-white transition-colors">Exporter Excel</span>
+            <span className="block text-xs truncate group-hover:text-white transition-colors">{t('nav.export_excel')}</span>
           </button>
           <button
             onClick={() => importRef.current?.click()}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5 group"
             style={{ color: 'var(--brand-text-muted)' }}
-            title="Importer clients CSV/Excel"
+            title={t('nav.import_csv')}
           >
             <FileUp size={15} className="flex-shrink-0" style={{ color: '#fb923c', opacity: 0.8 }} />
-            <span className="block text-xs truncate group-hover:text-white transition-colors">Importer CSV/Excel</span>
+            <span className="block text-xs truncate group-hover:text-white transition-colors">{t('nav.import_csv')}</span>
           </button>
         </div>
 
         {/* Liens externes */}
         <div className="px-1 pb-2 space-y-1 flex-shrink-0">
-          <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>Ressources</p>
+          <p className="block px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.6 }}>{t('nav.resources')}</p>
           {[
             { href: 'https://www.intemporelle.eu/', label: 'Intemporelle' },
             { href: 'https://www.ars.sante.fr/', label: 'ARS Santé' },
@@ -240,7 +241,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <div className="flex items-center gap-2">
               <AlertTriangle size={14} style={{ color: '#F44336' }} />
               <span className="text-xs" style={{ color: '#F44336' }}>
-                {stats.alertesUrgentes} alerte{stats.alertesUrgentes > 1 ? 's' : ''} RGPD
+                {stats.alertesUrgentes} {stats.alertesUrgentes > 1 ? t('nav.rgpd_alerts') : t('nav.rgpd_alert')}
               </span>
             </div>
           </div>
@@ -260,7 +261,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             onClick={() => { toast.info('Actualisation...'); window.location.reload(); }}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5"
             style={{ color: 'var(--brand-cyan)' }}
-            title="Actualiser l'application (F5)"
+            title={t('nav.refresh')}
           >
             <RotateCcw size={16} className="flex-shrink-0" />
             <span className="block text-sm">{t('nav.refresh')}</span>
@@ -271,12 +272,12 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             style={{ color: 'var(--brand-text-muted)' }}
           >
             <LogOut size={16} className="flex-shrink-0" />
-            <span className="block text-sm">Déconnexion</span>
+            <span className="block text-sm">{t('nav.logout')}</span>
           </button>
           {/* Liens légaux */}
           <div className="flex gap-3 px-3 pt-2 pb-1 flex-wrap">
-            <Link href="/confidentialite" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>Confidentialité</Link>
-            <Link href="/mentions-legales" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>CGU / CGV</Link>
+            <Link href="/confidentialite" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>{t('nav.confidentiality')}</Link>
+            <Link href="/mentions-legales" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>{t('nav.legal_cgu')}</Link>
           </div>
         </div>
       </aside>

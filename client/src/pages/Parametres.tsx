@@ -3,6 +3,7 @@
  */
 import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
+import { useTranslation } from 'react-i18next';
 import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon } from 'lucide-react';
 import GestionUtilisateurs from './GestionUtilisateurs';
 import { SalonInfo } from '@/lib/types';
@@ -11,6 +12,7 @@ import { trpc } from '@/lib/trpc';
 
 export default function Parametres() {
   const { state, updateSalonInfo, setAuthenticated, setPin, exitDemoMode } = useApp();
+  const { t } = useTranslation();
 
   const [editingSalon, setEditingSalon] = useState(false);
   const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
@@ -41,7 +43,7 @@ export default function Parametres() {
     e.preventDefault();
     updateSalonInfo(salonForm);
     setEditingSalon(false);
-    toast.success('Informations du salon sauvegardées');
+    toast.success(t('settings.saved'));
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -123,15 +125,15 @@ export default function Parametres() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
-      <h1 className="text-xl font-700" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>Paramètres</h1>
+      <h1 className="text-xl font-700" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>{t('settings.title')}</h1>
 
       {/* Demo mode banner */}
       {state.isDemo && (
         <div className="p-4 rounded-xl" style={{ background: 'rgba(192, 57, 106, 0.1)', border: '1px solid var(--brand-rose)' }}>
-          <p className="text-sm font-600" style={{ color: 'var(--brand-rose)', fontWeight: 600 }}>Mode démo actif</p>
-          <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Les données ne sont pas sauvegardées en mode démo.</p>
+          <p className="text-sm font-600" style={{ color: 'var(--brand-rose)', fontWeight: 600 }}>{t('auth.mode_demo')}</p>
+          <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{t('settings.demo_no_save', 'Les données ne sont pas sauvegardées en mode démo.')}</p>
           <button onClick={exitDemoMode} className="mt-2 text-xs px-3 py-1.5 rounded" style={{ background: 'var(--brand-rose)', color: 'white' }}>
-            Quitter le mode démo
+            {t('settings.exit_demo', 'Quitter le mode démo')}
           </button>
         </div>
       )}
@@ -141,11 +143,11 @@ export default function Parametres() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Building2 size={16} style={{ color: 'var(--brand-cyan)' }} />
-            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Informations du salon</h2>
+            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.salon_info')}</h2>
           </div>
           {!editingSalon && (
             <button onClick={() => setEditingSalon(true)} className="text-xs px-3 py-1.5 rounded" style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', border: '1px solid var(--brand-cyan)' }}>
-              Modifier
+              {t('common.edit')}
             </button>
           )}
         </div>
@@ -153,17 +155,17 @@ export default function Parametres() {
         {editingSalon ? (
           <form onSubmit={handleSalonSave} className="space-y-3">
             <div className="grid grid-cols-2 gap-3">
-              <div><label style={labelStyle}>Nom du salon *</label><input style={inputStyle} value={salonForm.nom} onChange={e => setSalonForm(f => ({ ...f, nom: e.target.value }))} required /></div>
-              <div><label style={labelStyle}>Raison sociale</label><input style={inputStyle} value={salonForm.raisonSociale || ''} onChange={e => setSalonForm(f => ({ ...f, raisonSociale: e.target.value }))} /></div>
+              <div><label style={labelStyle}>{t('settings.salon_name')} *</label><input style={inputStyle} value={salonForm.nom} onChange={e => setSalonForm(f => ({ ...f, nom: e.target.value }))} required /></div>
+              <div><label style={labelStyle}>{t('settings.salon_legal_name', 'Raison sociale')}</label><input style={inputStyle} value={salonForm.raisonSociale || ''} onChange={e => setSalonForm(f => ({ ...f, raisonSociale: e.target.value }))} /></div>
             </div>
-            <div><label style={labelStyle}>Adresse</label><input style={inputStyle} value={salonForm.adresse} onChange={e => setSalonForm(f => ({ ...f, adresse: e.target.value }))} /></div>
+            <div><label style={labelStyle}>{t('settings.salon_address')}</label><input style={inputStyle} value={salonForm.adresse} onChange={e => setSalonForm(f => ({ ...f, adresse: e.target.value }))} /></div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label style={labelStyle}>Code postal</label><input style={inputStyle} value={salonForm.codePostal} onChange={e => setSalonForm(f => ({ ...f, codePostal: e.target.value }))} /></div>
-              <div><label style={labelStyle}>Ville</label><input style={inputStyle} value={salonForm.ville} onChange={e => setSalonForm(f => ({ ...f, ville: e.target.value }))} /></div>
+              <div><label style={labelStyle}>{t('settings.salon_postal', 'Code postal')}</label><input style={inputStyle} value={salonForm.codePostal} onChange={e => setSalonForm(f => ({ ...f, codePostal: e.target.value }))} /></div>
+              <div><label style={labelStyle}>{t('settings.salon_city')}</label><input style={inputStyle} value={salonForm.ville} onChange={e => setSalonForm(f => ({ ...f, ville: e.target.value }))} /></div>
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div><label style={labelStyle}>Téléphone</label><input type="tel" style={inputStyle} value={salonForm.telephone} onChange={e => setSalonForm(f => ({ ...f, telephone: e.target.value }))} /></div>
-              <div><label style={labelStyle}>Email</label><input type="email" style={inputStyle} value={salonForm.email} onChange={e => setSalonForm(f => ({ ...f, email: e.target.value }))} /></div>
+              <div><label style={labelStyle}>{t('settings.salon_phone')}</label><input type="tel" style={inputStyle} value={salonForm.telephone} onChange={e => setSalonForm(f => ({ ...f, telephone: e.target.value }))} /></div>
+              <div><label style={labelStyle}>{t('settings.salon_email')}</label><input type="email" style={inputStyle} value={salonForm.email} onChange={e => setSalonForm(f => ({ ...f, email: e.target.value }))} /></div>
             </div>
             <div><label style={labelStyle}>SIRET</label><input style={inputStyle} value={salonForm.siret} onChange={e => setSalonForm(f => ({ ...f, siret: e.target.value }))} /></div>
             <div><label style={labelStyle}>Site web</label><input style={inputStyle} value={salonForm.siteWeb || ''} onChange={e => setSalonForm(f => ({ ...f, siteWeb: e.target.value }))} placeholder="https://www.monsalon.fr" /></div>
@@ -218,8 +220,8 @@ export default function Parametres() {
               <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Format : PNG, JPG, SVG — max 2 Mo</p>
             </div>
             <div className="flex gap-3 pt-2">
-              <button type="button" onClick={() => setEditingSalon(false)} className="flex-1 py-2.5 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>Annuler</button>
-              <button type="submit" className="flex-1 py-2.5 rounded-lg text-sm font-700" style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}>Sauvegarder</button>
+              <button type="button" onClick={() => setEditingSalon(false)} className="flex-1 py-2.5 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>{t('common.cancel')}</button>
+              <button type="submit" className="flex-1 py-2.5 rounded-lg text-sm font-700" style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}>{t('settings.save')}</button>
             </div>
           </form>
         ) : state.salonInfo ? (
@@ -248,21 +250,21 @@ export default function Parametres() {
       <div className="studio-card p-4">
         <div className="flex items-center gap-2 mb-4">
           <Lock size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Code PIN</h2>
+          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.pin_change')}</h2>
         </div>
         <form onSubmit={handlePinChange} className="space-y-3">
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label style={labelStyle}>Nouveau PIN (4 chiffres)</label>
+              <label style={labelStyle}>{t('settings.pin_new')} (4 {t('common.digits', 'chiffres')})</label>
               <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={newPin} onChange={e => setNewPin(e.target.value)} placeholder="••••" />
             </div>
             <div>
-              <label style={labelStyle}>Confirmer le PIN</label>
+              <label style={labelStyle}>{t('settings.pin_confirm')}</label>
               <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={confirmNewPin} onChange={e => setConfirmNewPin(e.target.value)} placeholder="••••" />
             </div>
           </div>
           <button type="submit" className="w-full py-2.5 rounded-lg text-sm font-600" style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', border: '1px solid var(--brand-cyan)', fontWeight: 600 }}>
-            Modifier le code PIN
+            {t('settings.pin_change')}
           </button>
         </form>
       </div>
@@ -271,7 +273,7 @@ export default function Parametres() {
       <div className="studio-card p-4">
         <div className="flex items-center gap-2 mb-4">
           <Info size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>À propos</h2>
+          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.about')}</h2>
         </div>
         <div className="flex items-center gap-3 mb-4">
           <img src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/logo_white_d12a3c81.svg" alt="Intemporelle" className="w-10 h-10" />
@@ -300,7 +302,7 @@ export default function Parametres() {
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-1">
             <Download size={16} style={{ color: 'var(--brand-cyan)' }} />
-            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Exporter mes données</h2>
+            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.export_data')}</h2>
           </div>
           <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Télécharge un fichier de sauvegarde complet (clients, soins, questionnaires, autorisations)</p>
 
@@ -326,7 +328,7 @@ export default function Parametres() {
             style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 600 }}
           >
             <Download size={15} />
-            Télécharger la sauvegarde
+            {t('settings.export_data')}
           </button>
           <p className="text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>
             ⚠️ Le fichier s'appelle <em>studio-backup-[date].json</em> — gardez-le précieusement !
@@ -340,7 +342,7 @@ export default function Parametres() {
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Upload size={16} style={{ color: 'var(--brand-cyan)' }} />
-            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Importer une sauvegarde</h2>
+            <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.import_data')}</h2>
           </div>
           <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Restaurez vos données depuis un fichier de sauvegarde précédent</p>
 
@@ -364,7 +366,7 @@ export default function Parametres() {
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontWeight: 600 }}
           >
             <Upload size={15} />
-            Choisir un fichier de sauvegarde
+            {t('settings.import_data')}
           </button>
         </div>
       </div>
@@ -373,7 +375,7 @@ export default function Parametres() {
       <div className="studio-card p-4">
         <div className="flex items-center gap-2 mb-4">
           <Users size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Gestion des utilisateurs</h2>
+          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.user_management', 'Gestion des utilisateurs')}</h2>
         </div>
         <GestionUtilisateurs />
       </div>
@@ -385,7 +387,7 @@ export default function Parametres() {
         style={{ background: 'rgba(244, 67, 54, 0.1)', border: '1px solid rgba(244, 67, 54, 0.3)', color: '#F44336', fontWeight: 600 }}
       >
         <LogOut size={16} />
-        Se déconnecter
+        {t('nav.logout')}
       </button>
     </div>
   );

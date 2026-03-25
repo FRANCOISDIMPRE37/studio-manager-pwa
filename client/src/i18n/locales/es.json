@@ -18,7 +18,18 @@
     "refresh": "Actualizar",
     "rgpd_employee": "Acuerdo de confidencialidad",
     "client_info": "Info Cliente RGPD",
-    "archives": "Archivos"
+    "archives": "Archivos",
+    "mode_emploi": "Manual de usuario",
+    "resources": "Recursos",
+    "clients_section": "Clientes",
+    "export_csv": "Exportar CSV",
+    "export_excel": "Exportar Excel",
+    "import_csv": "Importar CSV/Excel",
+    "confidentiality": "Política de privacidad",
+    "legal_cgu": "Términos de servicio",
+    "mode_demo": "MODO DEMO",
+    "rgpd_alert": "alerta RGPD",
+    "rgpd_alerts": "alertas RGPD"
   },
   "auth": {
     "pin_title": "Crea tu código PIN",
@@ -78,7 +89,7 @@
     "birthdate": "Fecha de nacimiento",
     "address": "Dirección",
     "notes": "Notas",
-    "no_clients": "Aún no hay clientes",
+    "no_clients": "No se encontraron clientes",
     "export_csv": "Exportar CSV",
     "export_excel": "Exportar Excel",
     "import": "Importar",
@@ -99,7 +110,8 @@
     "services": "Servicios",
     "piercing_zones": "Zonas de piercing",
     "tattoo": "Tatuaje",
-    "dermography": "Dermografía"
+    "dermography": "Dermografía",
+    "create_new": "Crear nuevo cliente"
   },
   "agenda": {
     "title": "Agenda",
@@ -155,7 +167,15 @@
       "soins_post_tatouage": "Cuidados Post-Tatuaje",
       "info_client_rgpd": "Información Cliente RGPD",
       "engagement_confidentialite": "Acuerdo de Confidencialidad"
-    }
+    },
+    "subtitle": "Formularios reglamentarios y documentos RGPD",
+    "rgpd_title": "Cumplimiento RGPD",
+    "rgpd_desc": "Todos los documentos cumplen con el RGPD. Los datos recopilados se conservan un máximo de 5 años.",
+    "sheet": "formulario",
+    "open_doc": "Abrir documento",
+    "or_choose_client": "o elegir un cliente",
+    "open_without_client": "Abrir sin cliente",
+    "open_without_client_desc": "Rellenar manualmente · Impresión rápida"
   },
   "settings": {
     "title": "Configuración",
@@ -189,16 +209,25 @@
     "export_data": "Exportar datos",
     "import_data": "Importar datos",
     "mode_emploi": "Manual de usuario",
-    "about": "Acerca de"
+    "about": "Acerca de",
+    "demo_no_save": "Los datos no se guardan en modo demo.",
+    "exit_demo": "Salir del modo demo",
+    "salon_legal_name": "Razón social",
+    "salon_postal": "Código postal",
+    "user_management": "Gestión de usuarios"
   },
   "archives": {
-    "title": "Archivos",
+    "title": "Archivo RGPD",
     "no_archives": "No hay clientes archivados",
     "restore": "Restaurar",
     "delete_permanent": "Eliminar definitivamente",
     "archived_on": "Archivado el",
     "restore_confirm": "¿Restaurar este cliente?",
-    "delete_confirm": "¿Eliminar definitivamente este cliente? Esta acción es irreversible."
+    "delete_confirm": "¿Eliminar definitivamente este cliente? Esta acción es irreversible.",
+    "search": "Buscar en archivos...",
+    "no_archived": "No hay clientes archivados",
+    "archived": "Archivado",
+    "auto_archive": "Los clientes se archivarán automáticamente después de 3 años"
   },
   "rgpd": {
     "consent_title": "Consentimiento RGPD",
@@ -288,7 +317,8 @@
     "tomorrow": "Mañana",
     "days": "días",
     "months": "meses",
-    "years": "años"
+    "years": "años",
+    "digits": "dígitos"
   },
   "language": {
     "select": "Idioma",

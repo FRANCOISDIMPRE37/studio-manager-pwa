@@ -4,12 +4,14 @@
  */
 import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
+import { useTranslation } from 'react-i18next';
 import { useLocation } from 'wouter';
 import { Archive, Search, User, Calendar, Lock, RotateCcw, ChevronRight, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function Archives() {
   const { state, updateClient } = useApp();
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const [search, setSearch] = useState('');
 
@@ -48,7 +50,7 @@ export default function Archives() {
             <Archive size={18} style={{ color: 'var(--brand-cyan)' }} />
           </div>
           <div>
-            <h1 className="text-base font-bold" style={{ color: 'var(--brand-text)' }}>Archives RGPD</h1>
+            <h1 className="text-base font-bold" style={{ color: 'var(--brand-text)' }}>{t('archives.title', 'Archives RGPD')}</h1>
             <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>
               {clientsArchives.length} client{clientsArchives.length !== 1 ? 's' : ''} archivé{clientsArchives.length !== 1 ? 's' : ''}
             </p>
@@ -72,7 +74,7 @@ export default function Archives() {
             type="text"
             value={search}
             onChange={e => setSearch(e.target.value)}
-            placeholder="Rechercher dans les archives..."
+            placeholder={t('archives.search', 'Rechercher dans les archives...')}
             className="flex-1 bg-transparent text-sm outline-none"
             style={{ color: 'var(--brand-text)' }}
           />
@@ -85,7 +87,7 @@ export default function Archives() {
           <div className="text-center py-16">
             <Archive size={40} className="mx-auto mb-3 opacity-20" style={{ color: 'var(--brand-text-muted)' }} />
             <p className="text-sm font-medium" style={{ color: 'var(--brand-text-muted)' }}>
-              {search ? 'Aucun résultat' : 'Aucun client archivé'}
+              {search ? t('common.no_data') : t('archives.no_archived', 'Aucun client archivé')}
             </p>
             {!search && (
               <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)', opacity: 0.6 }}>
@@ -125,7 +127,7 @@ export default function Archives() {
                         </span>
                       )}
                       <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: 'rgba(158,158,158,0.1)', color: '#9E9E9E', border: '1px solid rgba(158,158,158,0.3)' }}>
-                        Archivé
+                        {t('archives.archived', 'Archivé')}
                       </span>
                     </div>
                     <div className="flex flex-wrap gap-x-3 gap-y-0.5 mt-1">

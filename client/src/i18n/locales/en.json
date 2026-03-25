@@ -15,7 +15,18 @@
     "legal": "Legal Notice",
     "privacy": "Privacy Policy",
     "logout": "Logout",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "mode_emploi": "User Manual",
+    "resources": "Resources",
+    "clients_section": "Clients",
+    "export_csv": "Export CSV",
+    "export_excel": "Export Excel",
+    "import_csv": "Import CSV/Excel",
+    "confidentiality": "Privacy Policy",
+    "legal_cgu": "Terms of Service",
+    "mode_demo": "DEMO MODE",
+    "rgpd_alert": "GDPR alert",
+    "rgpd_alerts": "GDPR alerts"
   },
   "auth": {
     "pin_title": "Create your PIN code",
@@ -54,10 +65,11 @@
     "birthdate": "Date of birth",
     "address": "Address",
     "notes": "Notes",
-    "no_clients": "No clients yet",
+    "no_clients": "No clients found",
     "export_csv": "Export CSV",
     "export_excel": "Export Excel",
-    "import": "Import"
+    "import": "Import",
+    "create_new": "Create new client"
   },
   "agenda": {
     "title": "Calendar",
@@ -93,7 +105,15 @@
       "rgpd": "GDPR & Compliance",
       "medical": "Medical",
       "parental": "Parental consent"
-    }
+    },
+    "subtitle": "Regulatory forms and GDPR documents",
+    "rgpd_title": "GDPR Compliance",
+    "rgpd_desc": "All documents comply with GDPR. Collected data is retained for a maximum of 5 years. Clients can exercise their rights of access, rectification and erasure at any time.",
+    "sheet": "form",
+    "open_doc": "Open document",
+    "or_choose_client": "or choose a client",
+    "open_without_client": "Open without client",
+    "open_without_client_desc": "Fill in manually · Quick print"
   },
   "settings": {
     "title": "Settings",
@@ -113,7 +133,12 @@
     "smtp_ssl": "SSL/TLS",
     "save": "Save",
     "saved": "Saved!",
-    "language": "Language"
+    "language": "Language",
+    "demo_no_save": "Data is not saved in demo mode.",
+    "exit_demo": "Exit demo mode",
+    "salon_legal_name": "Legal name",
+    "salon_postal": "Postal code",
+    "user_management": "User management"
   },
   "common": {
     "save": "Save",
@@ -146,7 +171,8 @@
     "notes": "Notes",
     "required": "Required",
     "optional": "Optional",
-    "coming_soon": "Feature coming soon"
+    "coming_soon": "Feature coming soon",
+    "digits": "digits"
   },
   "rgpd": {
     "consent_title": "GDPR Consent",
@@ -161,5 +187,12 @@
     "en": "English",
     "de": "Deutsch",
     "nl": "Nederlands"
+  },
+  "archives": {
+    "title": "GDPR Archives",
+    "search": "Search archives...",
+    "no_archived": "No archived clients",
+    "archived": "Archived",
+    "auto_archive": "Clients will be automatically archived after 3 years"
   }
 }

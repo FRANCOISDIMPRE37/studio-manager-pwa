@@ -4,6 +4,7 @@
  */
 import { useState, useEffect } from 'react';
 import { useApp } from '@/lib/app-context';
+import { useTranslation } from 'react-i18next';
 import { Shield, Delete, Eye, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,6 +12,7 @@ import { toast } from 'sonner';
 
 export default function Login() {
   const { state, setAuthenticated, enterDemoMode, verifyPin, setPin, hasPin } = useApp();
+  const { t } = useTranslation();
   const [pin, setLocalPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [isCreatingPin, setIsCreatingPin] = useState(false);
@@ -38,11 +40,11 @@ export default function Login() {
             if (newPin === confirmPin) {
               setPin(confirmPin);
               setAuthenticated(true);
-              toast.success('Code PIN créé avec succès');
+              toast.success(t('auth.pin_created', 'Code PIN créé avec succès'));
             } else {
               setShake(true);
               setTimeout(() => { setShake(false); setLocalPin(''); setConfirmPin(''); }, 600);
-              toast.error('Les codes PIN ne correspondent pas');
+              toast.error(t('auth.pin_mismatch'));
             }
           }
         }
@@ -58,7 +60,7 @@ export default function Login() {
             } else {
               setShake(true);
               setTimeout(() => { setShake(false); setLocalPin(''); }, 600);
-              toast.error('Code PIN incorrect');
+              toast.error(t('auth.pin_error'));
             }
           }, 200);
         }
@@ -74,9 +76,9 @@ export default function Login() {
 
   const getTitle = () => {
     if (isCreatingPin) {
-      return confirmPin ? 'Confirmez votre code PIN' : 'Créez votre code PIN';
+      return confirmPin ? t('auth.pin_confirm') : t('auth.pin_title');
     }
-    return 'Entrez votre code PIN';
+    return t('auth.pin_enter');
   };
 
   return (
@@ -196,7 +198,7 @@ export default function Login() {
           className="mt-6 text-sm transition-all duration-200 hover:opacity-100 opacity-60"
           style={{ color: 'var(--brand-text-muted)' }}
         >
-          Essayer en mode démo →
+          {t('auth.demo_mode')} →
         </button>
       </div>
     </div>

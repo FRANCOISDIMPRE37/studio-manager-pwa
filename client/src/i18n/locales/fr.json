@@ -12,13 +12,24 @@
     "photos": "Photos",
     "videos": "Vidéos Démo",
     "settings": "Paramètres",
-    "legal": "Mentions légales",
+    "legal": "CGU / CGV",
     "privacy": "Confidentialité",
     "logout": "Déconnexion",
     "refresh": "Actualiser",
     "rgpd_employee": "Engagement Confidentialité",
     "client_info": "Info Client RGPD",
-    "archives": "Archives"
+    "archives": "Archives",
+    "mode_emploi": "Mode d'emploi",
+    "resources": "Ressources",
+    "clients_section": "Clients",
+    "export_csv": "Exporter CSV",
+    "export_excel": "Exporter Excel",
+    "import_csv": "Importer CSV/Excel",
+    "confidentiality": "Confidentialité",
+    "mode_demo": "MODE DÉMO",
+    "rgpd_alert": "alerte RGPD",
+    "rgpd_alerts": "alertes RGPD",
+    "legal_cgu": "CGU / CGV"
   },
   "auth": {
     "pin_title": "Créez votre code PIN",
@@ -78,7 +89,7 @@
     "birthdate": "Date de naissance",
     "address": "Adresse",
     "notes": "Notes",
-    "no_clients": "Aucun client pour le moment",
+    "no_clients": "Aucun client trouvé",
     "export_csv": "Exporter CSV",
     "export_excel": "Exporter Excel",
     "import": "Importer",
@@ -99,7 +110,8 @@
     "services": "Services",
     "piercing_zones": "Zones de piercing",
     "tattoo": "Tatouage",
-    "dermography": "Dermographie"
+    "dermography": "Dermographie",
+    "create_new": "Créer un nouveau client"
   },
   "agenda": {
     "title": "Agenda",
@@ -155,7 +167,15 @@
       "soins_post_tatouage": "Soins Post-Tatouage",
       "info_client_rgpd": "Information Client RGPD",
       "engagement_confidentialite": "Engagement de Confidentialité"
-    }
+    },
+    "subtitle": "Fiches réglementaires et formulaires RGPD",
+    "rgpd_title": "Conformité RGPD",
+    "rgpd_desc": "Tous les documents sont conformes au RGPD. Les données collectées sont conservées 5 ans maximum. Les clients peuvent exercer leurs droits d'accès, rectification et effacement à tout moment.",
+    "sheet": "fiche",
+    "open_doc": "Ouvrir le document",
+    "or_choose_client": "ou choisir un client",
+    "open_without_client": "Ouvrir sans client",
+    "open_without_client_desc": "Remplir manuellement · Impression rapide"
   },
   "settings": {
     "title": "Paramètres",
@@ -189,16 +209,25 @@
     "export_data": "Exporter les données",
     "import_data": "Importer les données",
     "mode_emploi": "Mode d'emploi",
-    "about": "À propos"
+    "about": "À propos",
+    "demo_no_save": "Les données ne sont pas sauvegardées en mode démo.",
+    "exit_demo": "Quitter le mode démo",
+    "salon_legal_name": "Raison sociale",
+    "salon_postal": "Code postal",
+    "user_management": "Gestion des utilisateurs"
   },
   "archives": {
-    "title": "Archives",
+    "title": "Archives RGPD",
     "no_archives": "Aucun client archivé",
     "restore": "Restaurer",
     "delete_permanent": "Supprimer définitivement",
     "archived_on": "Archivé le",
     "restore_confirm": "Restaurer ce client ?",
-    "delete_confirm": "Supprimer définitivement ce client ? Cette action est irréversible."
+    "delete_confirm": "Supprimer définitivement ce client ? Cette action est irréversible.",
+    "search": "Rechercher dans les archives...",
+    "no_archived": "Aucun client archivé",
+    "archived": "Archivé",
+    "auto_archive": "Les clients seront archivés automatiquement après 3 ans"
   },
   "rgpd": {
     "consent_title": "Consentement RGPD",
@@ -288,7 +317,8 @@
     "tomorrow": "Demain",
     "days": "jours",
     "months": "mois",
-    "years": "ans"
+    "years": "ans",
+    "digits": "chiffres"
   },
   "language": {
     "select": "Langue",

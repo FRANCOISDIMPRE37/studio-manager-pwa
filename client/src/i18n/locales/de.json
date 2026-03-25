@@ -15,7 +15,18 @@
     "legal": "Impressum",
     "privacy": "Datenschutz",
     "logout": "Abmelden",
-    "refresh": "Aktualisieren"
+    "refresh": "Aktualisieren",
+    "mode_emploi": "Benutzerhandbuch",
+    "resources": "Ressourcen",
+    "clients_section": "Kunden",
+    "export_csv": "CSV exportieren",
+    "export_excel": "Excel exportieren",
+    "import_csv": "CSV/Excel importieren",
+    "confidentiality": "Datenschutz",
+    "legal_cgu": "AGB",
+    "mode_demo": "DEMO-MODUS",
+    "rgpd_alert": "DSGVO-Warnung",
+    "rgpd_alerts": "DSGVO-Warnungen"
   },
   "auth": {
     "pin_title": "PIN-Code erstellen",
@@ -54,10 +65,11 @@
     "birthdate": "Geburtsdatum",
     "address": "Adresse",
     "notes": "Notizen",
-    "no_clients": "Noch keine Kunden",
+    "no_clients": "Keine Kunden gefunden",
     "export_csv": "CSV exportieren",
     "export_excel": "Excel exportieren",
-    "import": "Importieren"
+    "import": "Importieren",
+    "create_new": "Neuen Kunden erstellen"
   },
   "agenda": {
     "title": "Kalender",
@@ -93,7 +105,15 @@
       "rgpd": "DSGVO & Compliance",
       "medical": "Medizinisch",
       "parental": "Elterliche Einwilligung"
-    }
+    },
+    "subtitle": "Regulatorische Formulare und DSGVO-Dokumente",
+    "rgpd_title": "DSGVO-Konformität",
+    "rgpd_desc": "Alle Dokumente entsprechen der DSGVO. Gesammelte Daten werden maximal 5 Jahre aufbewahrt.",
+    "sheet": "Formular",
+    "open_doc": "Dokument öffnen",
+    "or_choose_client": "oder Kunden auswählen",
+    "open_without_client": "Ohne Kunden öffnen",
+    "open_without_client_desc": "Manuell ausfüllen · Schnelldruck"
   },
   "settings": {
     "title": "Einstellungen",
@@ -113,7 +133,12 @@
     "smtp_ssl": "SSL/TLS",
     "save": "Speichern",
     "saved": "Gespeichert!",
-    "language": "Sprache"
+    "language": "Sprache",
+    "demo_no_save": "Daten werden im Demo-Modus nicht gespeichert.",
+    "exit_demo": "Demo-Modus beenden",
+    "salon_legal_name": "Firmenname",
+    "salon_postal": "Postleitzahl",
+    "user_management": "Benutzerverwaltung"
   },
   "common": {
     "save": "Speichern",
@@ -146,7 +171,8 @@
     "notes": "Notizen",
     "required": "Pflichtfeld",
     "optional": "Optional",
-    "coming_soon": "Funktion demnächst verfügbar"
+    "coming_soon": "Funktion demnächst verfügbar",
+    "digits": "Ziffern"
   },
   "rgpd": {
     "consent_title": "DSGVO-Einwilligung",
@@ -161,5 +187,12 @@
     "en": "English",
     "de": "Deutsch",
     "nl": "Nederlands"
+  },
+  "archives": {
+    "title": "DSGVO-Archiv",
+    "search": "Archive durchsuchen...",
+    "no_archived": "Keine archivierten Kunden",
+    "archived": "Archiviert",
+    "auto_archive": "Kunden werden nach 3 Jahren automatisch archiviert"
   }
 }

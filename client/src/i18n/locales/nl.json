@@ -15,7 +15,18 @@
     "legal": "Juridische kennisgeving",
     "privacy": "Privacybeleid",
     "logout": "Uitloggen",
-    "refresh": "Vernieuwen"
+    "refresh": "Vernieuwen",
+    "mode_emploi": "Gebruikershandleiding",
+    "resources": "Bronnen",
+    "clients_section": "Klanten",
+    "export_csv": "CSV exporteren",
+    "export_excel": "Excel exporteren",
+    "import_csv": "CSV/Excel importeren",
+    "confidentiality": "Privacybeleid",
+    "legal_cgu": "Gebruiksvoorwaarden",
+    "mode_demo": "DEMO-MODUS",
+    "rgpd_alert": "AVG-waarschuwing",
+    "rgpd_alerts": "AVG-waarschuwingen"
   },
   "auth": {
     "pin_title": "Maak uw PIN-code aan",
@@ -54,10 +65,11 @@
     "birthdate": "Geboortedatum",
     "address": "Adres",
     "notes": "Notities",
-    "no_clients": "Nog geen klanten",
+    "no_clients": "Geen klanten gevonden",
     "export_csv": "CSV exporteren",
     "export_excel": "Excel exporteren",
-    "import": "Importeren"
+    "import": "Importeren",
+    "create_new": "Nieuwe klant aanmaken"
   },
   "agenda": {
     "title": "Agenda",
@@ -93,7 +105,15 @@
       "rgpd": "AVG & Compliance",
       "medical": "Medisch",
       "parental": "Ouderlijke toestemming"
-    }
+    },
+    "subtitle": "Regelgevende formulieren en AVG-documenten",
+    "rgpd_title": "AVG-naleving",
+    "rgpd_desc": "Alle documenten voldoen aan de AVG. Verzamelde gegevens worden maximaal 5 jaar bewaard.",
+    "sheet": "formulier",
+    "open_doc": "Document openen",
+    "or_choose_client": "of kies een klant",
+    "open_without_client": "Openen zonder klant",
+    "open_without_client_desc": "Handmatig invullen · Snel afdrukken"
   },
   "settings": {
     "title": "Instellingen",
@@ -113,7 +133,12 @@
     "smtp_ssl": "SSL/TLS",
     "save": "Opslaan",
     "saved": "Opgeslagen!",
-    "language": "Taal"
+    "language": "Taal",
+    "demo_no_save": "Gegevens worden niet opgeslagen in de demomodus.",
+    "exit_demo": "Demomodus verlaten",
+    "salon_legal_name": "Handelsnaam",
+    "salon_postal": "Postcode",
+    "user_management": "Gebruikersbeheer"
   },
   "common": {
     "save": "Opslaan",
@@ -146,7 +171,8 @@
     "notes": "Notities",
     "required": "Verplicht",
     "optional": "Optioneel",
-    "coming_soon": "Functie binnenkort beschikbaar"
+    "coming_soon": "Functie binnenkort beschikbaar",
+    "digits": "cijfers"
   },
   "rgpd": {
     "consent_title": "AVG-toestemming",
@@ -161,5 +187,12 @@
     "en": "English",
     "de": "Deutsch",
     "nl": "Nederlands"
+  },
+  "archives": {
+    "title": "AVG-archief",
+    "search": "Archief doorzoeken...",
+    "no_archived": "Geen gearchiveerde klanten",
+    "archived": "Gearchiveerd",
+    "auto_archive": "Klanten worden na 3 jaar automatisch gearchiveerd"
   }
 }

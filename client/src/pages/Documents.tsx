@@ -2,6 +2,7 @@
  * DESIGN: Studio Nocturne — Page documents avec sélecteur de client et navigation vers formulaires
  */
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FileText, Eye, Shield, User, Baby, ChevronRight, Search, X } from 'lucide-react';
 import { DOCUMENT_LABELS, DocumentType } from '@/lib/types';
 import { useApp } from '@/lib/app-context';
@@ -54,6 +55,7 @@ const DOC_CATEGORIES = [
 
 export default function Documents() {
   const { state } = useApp();
+  const { t } = useTranslation();
   const [, navigate] = useLocation();
   const [selectedDoc, setSelectedDoc] = useState<DocumentType | null>(null);
   const [clientSearch, setClientSearch] = useState('');
@@ -89,8 +91,8 @@ export default function Documents() {
   return (
     <div className="p-4 md:p-6 space-y-6">
       <div>
-        <h1 className="text-xl font-700" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>Documents</h1>
-        <p className="text-sm mt-1" style={{ color: 'var(--brand-text-muted)' }}>Fiches réglementaires et formulaires RGPD</p>
+        <h1 className="text-xl font-700" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>{t('documents.title')}</h1>
+        <p className="text-sm mt-1" style={{ color: 'var(--brand-text-muted)' }}>{t('documents.subtitle', 'Fiches réglementaires et formulaires RGPD')}</p>
       </div>
 
       {/* Info RGPD */}
@@ -98,10 +100,9 @@ export default function Documents() {
         <div className="flex items-start gap-3">
           <Shield size={18} style={{ color: 'var(--brand-cyan)', flexShrink: 0, marginTop: 2 }} />
           <div>
-            <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Conformité RGPD</p>
+            <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>{t('documents.rgpd_title', 'Conformité RGPD')}</p>
             <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>
-              Tous les documents sont conformes au RGPD. Les données collectées sont conservées 5 ans maximum.
-              Les clients peuvent exercer leurs droits d'accès, rectification et effacement à tout moment.
+              {t('documents.rgpd_desc', 'Tous les documents sont conformes au RGPD. Les données collectées sont conservées 5 ans maximum. Les clients peuvent exercer leurs droits d\'accès, rectification et effacement à tout moment.')}
             </p>
           </div>
         </div>
@@ -116,7 +117,7 @@ export default function Documents() {
             </div>
             <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{cat.title}</h2>
             <span className="text-xs px-1.5 py-0.5 rounded ml-auto" style={{ background: cat.color + '22', color: cat.color }}>
-              {cat.docs.length} fiche{cat.docs.length > 1 ? 's' : ''}
+              {cat.docs.length} {t('documents.sheet', 'fiche')}{cat.docs.length > 1 ? 's' : ''}
             </span>
           </div>
           <div className="space-y-2">
@@ -140,7 +141,7 @@ export default function Documents() {
                   title="Ouvrir pour un client"
                 >
                   <Eye size={12} />
-                  Ouvrir
+                  {t('common.view', 'Ouvrir')}
                 </button>
               </div>
             ))}
@@ -169,7 +170,7 @@ export default function Documents() {
             <div className="flex items-center justify-between">
               <div>
                 <h3 className="font-700 text-base" style={{ color: 'var(--brand-text)', fontWeight: 700, fontFamily: 'Outfit' }}>
-                  Ouvrir le document
+                  {t('documents.open_doc', 'Ouvrir le document')}
                 </h3>
                 <p className="text-xs mt-0.5" style={{ color: 'var(--brand-text-muted)' }}>
                   {DOCUMENT_LABELS[selectedDoc]}
@@ -194,8 +195,8 @@ export default function Documents() {
                 <FileText size={16} style={{ color: 'var(--brand-cyan)' }} />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Ouvrir sans client</p>
-                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Remplir manuellement · Impression rapide</p>
+                <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>{t('documents.open_without_client', 'Ouvrir sans client')}</p>
+                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{t('documents.open_without_client_desc', 'Remplir manuellement · Impression rapide')}</p>
               </div>
               <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
             </button>
@@ -203,7 +204,7 @@ export default function Documents() {
             {/* Séparateur */}
             <div className="flex items-center gap-2">
               <div className="h-px flex-1" style={{ background: 'var(--brand-border)' }} />
-              <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>ou choisir un client</span>
+              <span className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{t('documents.or_choose_client', 'ou choisir un client')}</span>
               <div className="h-px flex-1" style={{ background: 'var(--brand-border)' }} />
             </div>
 
@@ -212,7 +213,7 @@ export default function Documents() {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--brand-text-muted)' }} />
               <input
                 type="text"
-                placeholder="Rechercher un client..."
+                placeholder={t('common.search') + '...'}
                 value={clientSearch}
                 onChange={e => setClientSearch(e.target.value)}
                 autoFocus
@@ -230,13 +231,13 @@ export default function Documents() {
               {filteredClients.length === 0 ? (
                 <div className="text-center py-8" style={{ color: 'var(--brand-text-muted)' }}>
                   <User size={32} className="mx-auto mb-2 opacity-30" />
-                  <p className="text-sm">Aucun client trouvé</p>
+                  <p className="text-sm">{t('clients.no_clients', 'Aucun client trouvé')}</p>
                   <button
                     onClick={() => navigate('/clients')}
                     className="mt-3 text-xs underline"
                     style={{ color: 'var(--brand-cyan)' }}
                   >
-                    Créer un nouveau client
+                    {t('clients.create_new', 'Créer un nouveau client')}
                   </button>
                 </div>
               ) : (
