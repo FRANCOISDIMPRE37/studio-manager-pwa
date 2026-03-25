@@ -69,3 +69,21 @@
 - [x] Bouton "Imprimer" dans la modal pour lancer l'impression depuis l'aperçu
 - [x] Ajouter bouton de rafraîchissement (F5) dans la sidebar/navbar de Layout.tsx
 - [x] Bouton visible sur mobile/tablette avec icône RotateCcw
+
+## Commercialisation & Multi-tenant
+- [ ] Ajouter table `studios` dans schema.ts (profil commercial de chaque studio)
+- [ ] Ajouter table `subscriptions` dans schema.ts (abonnements Stripe)
+- [ ] Ajouter table `invitations` dans schema.ts (codes d'accès pour nouveaux studios)
+- [ ] Migrer toutes les procédures tRPC pour filtrer par studioId
+- [ ] Créer page d'inscription en ligne pour nouveaux studios
+- [ ] Créer page d'onboarding (configuration initiale du studio)
+- [ ] Intégrer Stripe pour abonnements mensuels (Solo 29€, Studio 49€, Multi-sites 99€)
+- [ ] Créer page de gestion des abonnements (upgrade, annulation, factures)
+- [ ] Créer panneau admin super-admin (gestion de tous les studios)
+- [ ] Créer landing page de vente (présentation, tarifs, CTA)
+- [ ] Rédiger CGU (Conditions Générales d'Utilisation)
+- [ ] Rédiger CGV (Conditions Générales de Vente)
+- [ ] Rédiger Politique de confidentialité RGPD
+- [ ] Rédiger Contrat DPA (Data Processing Agreement)
+- [ ] Rédiger Mentions légales
+- [ ] Préparer guide de migration vers OVHcloud HDS

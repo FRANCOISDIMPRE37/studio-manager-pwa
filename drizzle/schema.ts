@@ -189,3 +189,71 @@ export const smsConfig = mysqlTable("sms_config", {
 
 export type SmsConfig = typeof smsConfig.$inferSelect;
 export type InsertSmsConfig = typeof smsConfig.$inferInsert;
+
+/**
+ * Table des studios (profil commercial de chaque studio client)
+ * Chaque utilisateur propriétaire a un studio associé
+ */
+export const studios = mysqlTable("studios", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(), // FK vers users.id
+  nom: varchar("nom", { length: 200 }).notNull().default("Mon Studio"),
+  slug: varchar("slug", { length: 100 }).notNull().unique(), // identifiant URL unique ex: studio-dupont
+  raisonSociale: varchar("raisonSociale", { length: 200 }),
+  siret: varchar("siret", { length: 20 }),
+  adresse: text("adresse"),
+  codePostal: varchar("codePostal", { length: 10 }),
+  ville: varchar("ville", { length: 100 }),
+  telephone: varchar("telephone", { length: 20 }),
+  email: varchar("email", { length: 320 }),
+  logoUrl: text("logoUrl"),
+  planType: mysqlEnum("planType", ["trial", "solo", "studio", "multi"]).default("trial").notNull(),
+  trialEndsAt: timestamp("trialEndsAt"),
+  actif: boolean("actif").default(true).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Studio = typeof studios.$inferSelect;
+export type InsertStudio = typeof studios.$inferInsert;
+
+/**
+ * Table des abonnements Stripe
+ */
+export const subscriptions = mysqlTable("subscriptions", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(),
+  studioId: int("studioId").notNull(),
+  stripeCustomerId: varchar("stripeCustomerId", { length: 100 }),
+  stripeSubscriptionId: varchar("stripeSubscriptionId", { length: 100 }),
+  stripePriceId: varchar("stripePriceId", { length: 100 }),
+  planType: mysqlEnum("planType", ["solo", "studio", "multi"]).notNull(),
+  status: mysqlEnum("status", ["active", "past_due", "canceled", "trialing", "unpaid"]).default("trialing").notNull(),
+  currentPeriodStart: timestamp("currentPeriodStart"),
+  currentPeriodEnd: timestamp("currentPeriodEnd"),
+  cancelAtPeriodEnd: boolean("cancelAtPeriodEnd").default(false).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Subscription = typeof subscriptions.$inferSelect;
+export type InsertSubscription = typeof subscriptions.$inferInsert;
+
+/**
+ * Table des invitations (codes d'accès pour nouveaux studios)
+ */
+export const invitations = mysqlTable("invitations", {
+  id: int("id").autoincrement().primaryKey(),
+  code: varchar("code", { length: 64 }).notNull().unique(), // code unique d'invitation
+  email: varchar("email", { length: 320 }), // email destinataire (optionnel)
+  planType: mysqlEnum("planType", ["trial", "solo", "studio", "multi"]).default("trial").notNull(),
+  trialDays: int("trialDays").default(30).notNull(),
+  usedByUserId: int("usedByUserId"), // null = pas encore utilisé
+  usedAt: timestamp("usedAt"),
+  expiresAt: timestamp("expiresAt"),
+  createdByUserId: int("createdByUserId").notNull(), // super-admin qui a créé l'invitation
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Invitation = typeof invitations.$inferSelect;
+export type InsertInvitation = typeof invitations.$inferInsert;

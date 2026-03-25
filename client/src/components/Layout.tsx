@@ -267,6 +267,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             <LogOut size={16} className="flex-shrink-0" />
             <span className="block text-sm">Déconnexion</span>
           </button>
+          {/* Liens légaux */}
+          <div className="flex gap-3 px-3 pt-2 pb-1 flex-wrap">
+            <Link href="/confidentialite" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>Confidentialité</Link>
+            <Link href="/mentions-legales" className="text-xs hover:underline" style={{ color: 'var(--brand-text-muted)', fontSize: '10px' }}>CGU / CGV</Link>
+          </div>
         </div>
       </aside>
 

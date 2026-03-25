@@ -43,6 +43,13 @@
       "when": 1774390612173,
       "tag": "0005_sharp_crusher_hogan",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "5",
+      "when": 1774406135272,
+      "tag": "0006_wandering_morgan_stark",
+      "breakpoints": true
     }
   ]
 }
