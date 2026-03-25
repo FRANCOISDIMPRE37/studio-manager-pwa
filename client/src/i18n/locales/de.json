@@ -26,7 +26,9 @@
     "legal_cgu": "AGB",
     "mode_demo": "DEMO-MODUS",
     "rgpd_alert": "DSGVO-Warnung",
-    "rgpd_alerts": "DSGVO-Warnungen"
+    "rgpd_alerts": "DSGVO-Warnungen",
+    "section_rgpd": "DSGVO",
+    "section_admin": "Verwaltung"
   },
   "auth": {
     "pin_title": "PIN-Code erstellen",

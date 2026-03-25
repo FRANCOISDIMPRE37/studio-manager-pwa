@@ -29,7 +29,9 @@
     "legal_cgu": "Términos de servicio",
     "mode_demo": "MODO DEMO",
     "rgpd_alert": "alerta RGPD",
-    "rgpd_alerts": "alertas RGPD"
+    "rgpd_alerts": "alertas RGPD",
+    "section_rgpd": "RGPD",
+    "section_admin": "Administración"
   },
   "auth": {
     "pin_title": "Crea tu código PIN",

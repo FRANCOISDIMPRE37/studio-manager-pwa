@@ -26,14 +26,30 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
 
   // Nav items using translation keys
-  const NAV_ITEMS = [
-    { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
-    { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.rgpd_employee' },
-    { path: '/info-client-rgpd', icon: Info, labelKey: 'nav.client_info' },
-    { path: '/clients', icon: Users, labelKey: 'nav.clients' },
-    { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
-    { path: '/archives', icon: Archive, labelKey: 'nav.archives' },
-    { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
+  // Navigation organisée par sections
+  const NAV_SECTIONS = [
+    {
+      sectionKey: null, // pas de label de section pour la première
+      items: [
+        { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
+        { path: '/clients', icon: Users, labelKey: 'nav.clients' },
+        { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
+      ],
+    },
+    {
+      sectionKey: 'nav.section_rgpd',
+      items: [
+        { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.rgpd_employee' },
+        { path: '/info-client-rgpd', icon: Info, labelKey: 'nav.client_info' },
+        { path: '/archives', icon: Archive, labelKey: 'nav.archives' },
+      ],
+    },
+    {
+      sectionKey: 'nav.section_admin',
+      items: [
+        { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
+      ],
+    },
   ];
 
   const handleLogout = () => {
@@ -135,48 +151,59 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </div>
         )}
 
-        {/* Navigation */}
-        <nav className="py-3 space-y-1 px-1">
-          {NAV_ITEMS.map(({ path, icon: Icon, labelKey }) => {
-            const isActive = path === '/' ? location === '/' : location.startsWith(path);
-            const label = t(labelKey);
-            return (
-              <Link key={path} href={path}>
-                <div
-                  className={cn(
-                    'flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 cursor-pointer group',
-                    isActive
-                      ? 'nav-item-active'
-                      : 'hover:bg-white/5'
-                  )}
-                  style={isActive ? { color: 'var(--brand-cyan)' } : { color: 'var(--brand-text-muted)' }}
-                >
-                  <Icon size={18} className="flex-shrink-0" />
-                  <span className="block text-sm font-500 truncate" style={{ fontWeight: 500 }}>{label}</span>
-                  {labelKey === 'nav.clients' && stats.alertesUrgentes > 0 && (
-                    <span
-                      className="flex ml-auto items-center justify-center w-5 h-5 rounded-full text-xs font-700"
-                      style={{ background: 'var(--brand-rose)', color: 'white', fontWeight: 700, fontSize: '10px' }}
-                    >
-                      {stats.alertesUrgentes}
-                    </span>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+        {/* Navigation par sections */}
+        <nav className="py-3 px-1">
+          {NAV_SECTIONS.map((section, sIdx) => (
+            <div key={sIdx} className={sIdx > 0 ? 'mt-3 pt-3 border-t' : ''} style={sIdx > 0 ? { borderColor: 'var(--brand-border)' } : {}}>
+              {section.sectionKey && (
+                <p className="px-3 text-xs uppercase tracking-wider mb-1" style={{ color: 'var(--brand-text-muted)', fontSize: '9px', opacity: 0.5, fontWeight: 600 }}>
+                  {t(section.sectionKey)}
+                </p>
+              )}
+              <div className="space-y-0.5">
+                {section.items.map(({ path, icon: Icon, labelKey }) => {
+                  const isActive = path === '/' ? location === '/' : location.startsWith(path);
+                  const label = t(labelKey);
+                  return (
+                    <Link key={path} href={path}>
+                      <div
+                        className={cn(
+                          'flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 cursor-pointer group',
+                          isActive ? 'nav-item-active' : 'hover:bg-white/5'
+                        )}
+                        style={isActive ? { color: 'var(--brand-cyan)' } : { color: 'var(--brand-text-muted)' }}
+                      >
+                        <Icon size={18} className="flex-shrink-0" />
+                        <span className="block text-sm font-500 truncate" style={{ fontWeight: 500 }}>{label}</span>
+                        {labelKey === 'nav.clients' && stats.alertesUrgentes > 0 && (
+                          <span
+                            className="flex ml-auto items-center justify-center w-5 h-5 rounded-full text-xs font-700"
+                            style={{ background: 'var(--brand-rose)', color: 'white', fontWeight: 700, fontSize: '10px' }}
+                          >
+                            {stats.alertesUrgentes}
+                          </span>
+                        )}
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          ))}
 
-          {/* Mode d'emploi */}
-          <a
-            href={MODE_EMPLOI_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 hover:bg-white/5 group"
-            style={{ color: 'var(--brand-text-muted)' }}
-          >
-            <BookOpen size={18} className="flex-shrink-0" style={{ color: 'var(--brand-cyan)', opacity: 0.85 }} />
-            <span className="block text-sm font-500 truncate group-hover:text-white transition-colors" style={{ fontWeight: 500 }}>{t('nav.mode_emploi')}</span>
-          </a>
+          {/* Mode d'emploi — séparé en bas de nav */}
+          <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--brand-border)' }}>
+            <a
+              href={MODE_EMPLOI_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-200 hover:bg-white/5 group"
+              style={{ color: 'var(--brand-text-muted)' }}
+            >
+              <BookOpen size={18} className="flex-shrink-0" style={{ color: 'var(--brand-cyan)', opacity: 0.85 }} />
+              <span className="block text-sm font-500 truncate group-hover:text-white transition-colors" style={{ fontWeight: 500 }}>{t('nav.mode_emploi')}</span>
+            </a>
+          </div>
         </nav>
 
         {/* Export / Import clients CSV/Excel */}

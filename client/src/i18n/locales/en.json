@@ -26,7 +26,9 @@
     "legal_cgu": "Terms of Service",
     "mode_demo": "DEMO MODE",
     "rgpd_alert": "GDPR alert",
-    "rgpd_alerts": "GDPR alerts"
+    "rgpd_alerts": "GDPR alerts",
+    "section_rgpd": "GDPR",
+    "section_admin": "Administration"
   },
   "auth": {
     "pin_title": "Create your PIN code",

@@ -29,7 +29,9 @@
     "mode_demo": "MODE DÉMO",
     "rgpd_alert": "alerte RGPD",
     "rgpd_alerts": "alertes RGPD",
-    "legal_cgu": "CGU / CGV"
+    "legal_cgu": "CGU / CGV",
+    "section_rgpd": "RGPD",
+    "section_admin": "Administration"
   },
   "auth": {
     "pin_title": "Créez votre code PIN",
