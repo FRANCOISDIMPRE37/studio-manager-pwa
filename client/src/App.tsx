@@ -18,6 +18,7 @@ import AffichageSalon from '@/pages/AffichageSalon';
 import RgpdSalarie from "@/pages/RgpdSalarie";
 import PolitiqueConfidentialite from "@/pages/PolitiqueConfidentialite";
 import MentionsLegales from "@/pages/MentionsLegales";
+import VideosDemoPage from "@/pages/VideosDemoPage";
 
 function AppRoutes() {
   const { state } = useApp();
@@ -56,6 +57,7 @@ function AppRoutes() {
           <Route path="/info-client-rgpd" component={AffichageSalon} />
         <Route path="/confidentialite" component={PolitiqueConfidentialite} />
         <Route path="/mentions-legales" component={MentionsLegales} />
+        <Route path="/videos-demo" component={VideosDemoPage} />
         <Route component={NotFound} />
       </Switch>
     </Layout>

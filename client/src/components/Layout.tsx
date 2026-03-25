@@ -7,7 +7,7 @@ import { Link, useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import {
   LayoutDashboard, Users, FileText, Settings, Archive, Shield, Info,
-  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw, BookOpen
+  LogOut, AlertTriangle, ExternalLink, FileSpreadsheet, FileDown, FileUp, RotateCcw, BookOpen, PlayCircle
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,7 @@ const NAV_ITEMS = [
   { path: '/documents', icon: FileText, label: 'Documents' },
   { path: '/archives', icon: Archive, label: 'Archives' },
   { path: '/parametres', icon: Settings, label: 'Paramètres' },
+  { path: '/videos-demo', icon: PlayCircle, label: 'Vidéos Démo' },
 ];
 
 const MODE_EMPLOI_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/mode_emploi_studio_manager_6b84fbf9.pdf';
