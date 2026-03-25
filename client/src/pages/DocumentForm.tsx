@@ -4,6 +4,7 @@
  * Typographie: Outfit
  */
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useParams, useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import { DocumentType, DOCUMENT_LABELS, Client } from '@/lib/types';
@@ -813,39 +814,60 @@ const SOINS_DATA: Record<string, { title: string; zones: { zone: string; desc: s
 };
 
 function FormSoins({ docType, data, update, client }: { docType: string; data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
-  const soins = SOINS_DATA[docType];
-  if (!soins) return <p style={{ color: 'var(--brand-text-muted)' }}>Fiche de soins non disponible pour ce type.</p>;
+  const { t } = useTranslation();
+  const soinsKeyMap: Record<string, string> = {
+    soins_oreilles: 'oreilles',
+    soins_nez: 'nez',
+    soins_nombril: 'nombril',
+    soins_mamelons: 'mamelons',
+    soins_arcade_sourcil: 'arcade_sourcil',
+    soins_surface_dermal: 'surface_dermal',
+    soins_bouche_levres: 'bouche_levres',
+  };
+  const soinsKey = soinsKeyMap[docType];
+  const fallback = SOINS_DATA[docType];
+  const soinsTitle = soinsKey ? t(`soins.${soinsKey}.title`, fallback?.title || '') : (fallback?.title || '');
+  const soinsZones = soinsKey
+    ? (t(`soins.${soinsKey}.zones`, { returnObjects: true }) as { zone: string; desc: string; cica: string }[])
+    : (fallback?.zones || []);
+  const soinsFaire = soinsKey
+    ? (t(`soins.${soinsKey}.faire`, { returnObjects: true }) as string[])
+    : (fallback?.faire || []);
+  const soinsEviter = soinsKey
+    ? (t(`soins.${soinsKey}.eviter`, { returnObjects: true }) as string[])
+    : (fallback?.eviter || []);
+  if (!fallback && !soinsKey) return <p style={{ color: 'var(--brand-text-muted)' }}>Fiche de soins non disponible pour ce type.</p>;
 
   return (
     <>
       <div className="p-4 rounded-xl mb-4 text-center" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.2)' }}>
-        <p className="text-base font-700" style={{ color: 'var(--brand-cyan)', fontWeight: 700, fontFamily: 'Outfit' }}>FICHE DE SOINS — {soins.title}</p>
-        <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Document à remettre au client après chaque séance</p>
+        <p className="text-base font-700" style={{ color: 'var(--brand-cyan)', fontWeight: 700, fontFamily: 'Outfit' }}>{t('soins.fiche_title', 'FICHE DE SOINS')} — {soinsTitle}</p>
+        <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{t('soins.doc_subtitle', 'Document à remettre au client après chaque séance')}</p>
       </div>
 
-      <FormSection title="IDENTITÉ DU CLIENT" />
+      <FormSection title={t('soins.identity_section', 'IDENTITÉ DU CLIENT')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom(s)" value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name', 'Nom de famille')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name', 'Prénom(s)')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
       </div>
-      <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <FormField label={t('forms.dob', 'Date de naissance (JJ/MM/AAAA)')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
-      <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <FormSection title="INFORMATIONS PRESTATION" />
-      <FormField label="Zone percée / traitée" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
+      <FormField label={t('forms.phone', 'Téléphone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      <FormSection title={t('soins.prestation_section', 'INFORMATIONS PRESTATION')} />
+      <FormField label={t('soins.zone_piercing_label', 'Zone percée / traitée')} value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
 
-      <FormSection title={`ZONES DE PIERCING — ${soins.title}`} />
+      <FormSection title={`${t('soins.zones_section', 'ZONES DE PIERCING')} — ${soinsTitle}`} />
       <div className="overflow-x-auto mb-4">
         <table className="w-full text-xs" style={{ borderCollapse: 'collapse' }}>
           <thead>
             <tr style={{ background: 'rgba(131,208,245,0.1)' }}>
-              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>Zone</th>
-              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>Description & Bijou</th>
-              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>Cicatrisation</th>
+              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>{t('soins.zone_col', 'Zone')}</th>
+              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>{t('soins.desc_col', 'Description & Bijou')}</th>
+              <th className="p-2 text-left" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>{t('soins.cica_col', 'Cicatrisation')}</th>
             </tr>
           </thead>
           <tbody>
-            {soins.zones.map((z, i) => (
+            {(Array.isArray(soinsZones) ? soinsZones : []).map((z: any, i: number) => (
               <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
                 <td className="p-2 font-600" style={{ color: 'var(--brand-text)', border: '1px solid var(--brand-border)', fontWeight: 600 }}>{z.zone}</td>
                 <td className="p-2" style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)' }}>{z.desc}</td>
@@ -856,17 +878,17 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         </table>
       </div>
 
-      <FormSection title="PROTOCOLE DE SOINS QUOTIDIENS" />
+      <FormSection title={t('soins.protocol_section', 'PROTOCOLE DE SOINS QUOTIDIENS')} />
       <div className="grid grid-cols-2 gap-4 mb-4">
         <div className="p-3 rounded-xl" style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)' }}>
-          <p className="text-xs font-700 mb-2" style={{ color: '#4CAF50', fontWeight: 700 }}>✓ À FAIRE</p>
-          {soins.faire.map((item, i) => (
+          <p className="text-xs font-700 mb-2" style={{ color: '#4CAF50', fontWeight: 700 }}>{t('soins.todo_label', '✓ À FAIRE')}</p>
+          {(Array.isArray(soinsFaire) ? soinsFaire : []).map((item: string, i: number) => (
             <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
           ))}
         </div>
         <div className="p-3 rounded-xl" style={{ background: 'rgba(244,67,54,0.05)', border: '1px solid rgba(244,67,54,0.2)' }}>
-          <p className="text-xs font-700 mb-2" style={{ color: '#F44336', fontWeight: 700 }}>✗ À ÉVITER</p>
-          {soins.eviter.map((item, i) => (
+          <p className="text-xs font-700 mb-2" style={{ color: '#F44336', fontWeight: 700 }}>{t('soins.avoid_label', '✗ À ÉVITER')}</p>
+          {(Array.isArray(soinsEviter) ? soinsEviter : []).map((item: string, i: number) => (
             <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
           ))}
         </div>
@@ -882,7 +904,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins Post Labret — Chlorhexidine matin et soir 15j, Eludril après chaque repas 15 premiers jours, Sérum Physiologique + compresses matin et soir derniers 15j"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -893,7 +915,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Nez — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -904,7 +926,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins Post Nombril — Chlorhexidine matin et soir 2 semaines, Sérum Physiologique matin et soir 6 semaines, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -915,7 +937,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -926,7 +948,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -948,7 +970,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Surface/Dermal — Sérum Physiologique matin et soir 1 mois, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -989,13 +1011,13 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         <label className="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" className="mt-0.5 accent-cyan-400" />
           <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
-            Je déclare avoir pris connaissance des risques liés à la pratique du piercing
+            {t('soins.declaration_1', 'Je déclare avoir pris connaissance des risques liés à la pratique du piercing')}
           </span>
         </label>
         <label className="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" className="mt-0.5 accent-cyan-400" />
           <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
-            J’ai pu poser toutes les questions que je voulais
+            {t('soins.declaration_2', "J'ai pu poser toutes les questions que je voulais")}
           </span>
         </label>
       </div>

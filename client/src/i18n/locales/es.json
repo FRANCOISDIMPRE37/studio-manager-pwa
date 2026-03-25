@@ -361,5 +361,285 @@
     "tatouage": "Tatuaje (05-07)",
     "dermographie": "Dermografía (08-10)",
     "rgpd": "RGPD & Confidencialidad (11-12)"
+  },
+  "soins": {
+    "fiche_title": "HOJA DE CUIDADOS",
+    "doc_subtitle": "Documento a entregar al cliente después de cada sesión",
+    "identity_section": "IDENTIDAD DEL CLIENTE",
+    "prestation_section": "INFORMACIÓN DEL SERVICIO",
+    "zone_piercing_label": "Zona perforada / tratada",
+    "zones_section": "ZONAS DE PIERCING",
+    "protocol_section": "PROTOCOLO DE CUIDADOS DIARIOS",
+    "todo_label": "✓ QUÉ HACER",
+    "avoid_label": "✗ QUÉ EVITAR",
+    "zone_col": "Zona",
+    "desc_col": "Descripción & Joya",
+    "cica_col": "Cicatrización",
+    "trademark": "Marca registrada — uso descriptivo únicamente, sin afiliación comercial",
+    "declaration_1": "Declaro haber sido informado/a de los riesgos asociados al piercing",
+    "declaration_2": "Pude hacer todas las preguntas que quería",
+    "oreilles": {
+      "title": "OREJAS",
+      "zones": [
+        {
+          "zone": "Lóbulo estándar",
+          "desc": "Parte carnosa del lóbulo. Joya: Pendiente, aro.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Lóbulo alto",
+          "desc": "Parte superior del lóbulo. Joya: Pendiente, aro.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Hélix",
+          "desc": "Borde superior del cartílago. Joya: Aro, pendiente.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Anti-hélix",
+          "desc": "Pliegue interior del cartílago. Joya: Barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Trago",
+          "desc": "Pequeña protuberancia frente al canal. Joya: Labret, aro.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Anti-trago",
+          "desc": "Protuberancia opuesta al trago. Joya: Aro, barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Concha",
+          "desc": "Concha central del cartílago. Joya: Aro grande, barbell.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Pliegue más interno. Joya: Aro, herradura.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Pliegue interno superior. Joya: Barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Doble perforación unida por una barra. Joya: Barbell recto largo.",
+          "cica": "6 a 12 meses"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Secar con una compresa estéril no tejida.",
+        "Dormir sobre una almohada de viaje para evitar presión.",
+        "Mantener el cabello recogido las primeras semanas."
+      ],
+      "eviter": [
+        "Piscina, mar, baño durante la cicatrización.",
+        "Auriculares, teléfono apoyado sobre el piercing.",
+        "Tocar o girar la joya.",
+        "Cambiar la joya antes de la cicatrización completa."
+      ]
+    },
+    "nez": {
+      "title": "NARIZ",
+      "zones": [
+        {
+          "zone": "Fosa nasal",
+          "desc": "Lado de la fosa nasal. Joya: Clavo, aro.",
+          "cica": "4 a 6 meses"
+        },
+        {
+          "zone": "Septum",
+          "desc": "Tabique nasal (parte carnosa). Joya: Herradura, aro.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Puente de la nariz entre los ojos. Joya: Barbell recto.",
+          "cica": "8 a 12 semanas"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Secar con una compresa estéril.",
+        "Sonarse la nariz con cuidado sin mover la joya."
+      ],
+      "eviter": [
+        "Gafas que presionen sobre la zona perforada.",
+        "Sonarse la nariz con fuerza.",
+        "Maquillaje en la zona.",
+        "Tocar o manipular la joya."
+      ]
+    },
+    "nombril": {
+      "title": "OMBLIGO",
+      "zones": [
+        {
+          "zone": "Ombligo superior",
+          "desc": "Borde superior del ombligo. Joya: Barbell curvo (banana bell).",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Ombligo inferior",
+          "desc": "Borde inferior del ombligo. Joya: Barbell curvo.",
+          "cica": "6 a 12 meses"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Usar ropa holgada y transpirable.",
+        "Secar bien después de la ducha.",
+        "Evitar cinturones o elásticos que aprieten la zona."
+      ],
+      "eviter": [
+        "Piscina, mar, baño durante la cicatrización.",
+        "Ropa demasiado ajustada en la zona.",
+        "Deporte intenso las primeras semanas.",
+        "Cremas o aceites en la zona."
+      ]
+    },
+    "mamelons": {
+      "title": "PEZONES",
+      "zones": [
+        {
+          "zone": "Pezón horizontal",
+          "desc": "Cruce horizontal del pezón. Joya: Barbell recto.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Pezón vertical",
+          "desc": "Cruce vertical del pezón. Joya: Barbell recto.",
+          "cica": "6 a 12 meses"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Usar sujetador deportivo sin costuras irritantes.",
+        "Secar bien después de la ducha."
+      ],
+      "eviter": [
+        "Sujetador con aros o materiales rugosos.",
+        "Deportes de contacto o actividades con rozamiento.",
+        "Piscina, mar, baño durante la cicatrización.",
+        "Manipulación o presión en la zona."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "CEJA",
+      "zones": [
+        {
+          "zone": "Arco superciliar",
+          "desc": "Borde del arco superciliar. Joya: Barbell curvo, aro.",
+          "cica": "6 a 9 meses"
+        },
+        {
+          "zone": "Anti-ceja",
+          "desc": "Bajo el ojo, superficie. Joya: Surface bar.",
+          "cica": "6 a 12 meses"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Secar con una compresa estéril.",
+        "Vigilar signos de rechazo (adelgazamiento de la piel)."
+      ],
+      "eviter": [
+        "Maquillaje cerca de la zona perforada.",
+        "Gafas que presionen sobre el piercing.",
+        "Tocar o manipular la joya."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Microdermal",
+          "desc": "Anclaje único bajo la piel. Joya: Cabeza decorativa sobre ancla.",
+          "cica": "1 a 3 meses"
+        },
+        {
+          "zone": "Surface bar",
+          "desc": "Barra que atraviesa un pliegue de piel. Joya: Surface bar.",
+          "cica": "6 a 18 meses"
+        }
+      ],
+      "faire": [
+        "Limpiar 2×/día con solución salina NaCl 0,9%.",
+        "Proteger la zona de golpes y rozamientos.",
+        "Vigilar signos de rechazo o migración."
+      ],
+      "eviter": [
+        "Ropa que roce en la zona.",
+        "Deportes de contacto las primeras semanas.",
+        "Tocar o manipular la joya."
+      ]
+    },
+    "bouche_levres": {
+      "title": "CUIDADOS POST LABRET",
+      "zones": [
+        {
+          "zone": "Labret clásico",
+          "desc": "Centrado bajo labio inferior, horizontal. Joya: Labret recto.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Labret descentrado",
+          "desc": "Izquierda o derecha bajo labio inferior. Joya: Labret recto.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Labret vertical",
+          "desc": "Cruza verticalmente el centro del labio inferior. Joya: Barbell curvo.",
+          "cica": "6 a 9 meses"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Sobre labio superior, lado izquierdo. Joya: Labret recto.",
+          "cica": "8 a 10 semanas"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Sobre labio superior, lado derecho. Joya: Labret recto.",
+          "cica": "8 a 10 semanas"
+        },
+        {
+          "zone": "Lengua (Midline)",
+          "desc": "Centro de la lengua, vertical. El más común. Joya: Barbell largo.",
+          "cica": "4 a 6 semanas"
+        },
+        {
+          "zone": "Frenillo lingual",
+          "desc": "Membrana bajo la lengua. Discreto, poco doloroso. Joya: Aro / curvo.",
+          "cica": "4 semanas"
+        },
+        {
+          "zone": "Smiley (Frenillo superior)",
+          "desc": "Frenillo del labio superior — visible al sonreír. Joya: Aro, herradura.",
+          "cica": "4 a 8 semanas"
+        }
+      ],
+      "faire": [
+        "Enjuagar la boca con enjuague bucal SIN ALCOHOL después de cada comida.",
+        "Limpiar el exterior (labret, medusa, Monroe…) 2×/día con NaCl 0,9%.",
+        "Comer frío o tibio los primeros días para reducir la inflamación.",
+        "Reemplazar la joya larga por una corta cuando desaparezca la inflamación (día 10-14).",
+        "Usar titanio de grado implante o bioplástico para proteger dientes y encías.",
+        "Cepillado suave 2×/día sin frotar la joya."
+      ],
+      "eviter": [
+        "Alcohol, tabaco, alimentos picantes o muy ácidos las primeras 2-3 semanas.",
+        "Contacto oral (besos, etc.) durante la cicatrización.",
+        "Jugar con la joya — riesgo de fractura dental y recesión gingival.",
+        "Compartir vasos, cubiertos o cepillos de dientes.",
+        "Conservar la joya larga inicial demasiado tiempo (daño dental).",
+        "Piscina, mar, deportes de contacto en fase aguda.",
+        "Cambiar la joya uno mismo antes de la cicatrización completa."
+      ]
+    }
   }
 }

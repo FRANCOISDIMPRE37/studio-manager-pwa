@@ -225,5 +225,295 @@
     "tatouage": "Tattoo (05-07)",
     "dermographie": "Dermography (08-10)",
     "rgpd": "GDPR & Confidentiality (11-12)"
+  },
+  "soins": {
+    "fiche_title": "CARE SHEET",
+    "doc_subtitle": "Document to be given to the client after each session",
+    "identity_section": "CLIENT IDENTITY",
+    "prestation_section": "SERVICE INFORMATION",
+    "zone_piercing_label": "Pierced / treated area",
+    "zones_section": "PIERCING ZONES",
+    "protocol_section": "DAILY CARE PROTOCOL",
+    "todo_label": "✓ TO DO",
+    "avoid_label": "✗ TO AVOID",
+    "zone_col": "Zone",
+    "desc_col": "Description & Jewelry",
+    "cica_col": "Healing",
+    "trademark": "Registered trademark — descriptive use only, no commercial affiliation",
+    "declaration_1": "I declare that I have been informed of the risks associated with piercing",
+    "declaration_2": "I was able to ask all the questions I wanted",
+    "oreilles": {
+      "title": "EARS",
+      "zones": [
+        {
+          "zone": "Standard lobe",
+          "desc": "Fleshy part of the lobe. Jewelry: Stud, ring.",
+          "cica": "6 to 8 weeks"
+        },
+        {
+          "zone": "High lobe",
+          "desc": "Upper part of the lobe. Jewelry: Stud, ring.",
+          "cica": "6 to 8 weeks"
+        },
+        {
+          "zone": "Helix",
+          "desc": "Upper edge of the cartilage. Jewelry: Ring, stud.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Anti-helix",
+          "desc": "Inner fold of the cartilage. Jewelry: Curved barbell.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Tragus",
+          "desc": "Small protrusion in front of the canal. Jewelry: Labret, ring.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Anti-tragus",
+          "desc": "Protrusion opposite the tragus. Jewelry: Ring, curved barbell.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Conch",
+          "desc": "Central shell of the cartilage. Jewelry: Large ring, barbell.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Innermost fold. Jewelry: Ring, horseshoe.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Upper inner fold. Jewelry: Curved barbell.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Double perforation connected by a bar. Jewelry: Long straight barbell.",
+          "cica": "6 to 12 months"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Dry with a sterile non-woven compress.",
+        "Sleep on a travel pillow to avoid pressure.",
+        "Keep hair tied back for the first weeks."
+      ],
+      "eviter": [
+        "Swimming pool, sea, bath during healing.",
+        "Headphones, phone pressing on the piercing.",
+        "Touching or rotating the jewelry.",
+        "Changing jewelry before complete healing."
+      ]
+    },
+    "nez": {
+      "title": "NOSE",
+      "zones": [
+        {
+          "zone": "Nostril",
+          "desc": "Side of the nostril. Jewelry: Stud, ring.",
+          "cica": "4 to 6 months"
+        },
+        {
+          "zone": "Septum",
+          "desc": "Nasal septum (fleshy part). Jewelry: Horseshoe, ring.",
+          "cica": "6 to 8 weeks"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Bridge of the nose between the eyes. Jewelry: Straight barbell.",
+          "cica": "8 to 12 weeks"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Dry with a sterile compress.",
+        "Blow nose gently without moving the jewelry."
+      ],
+      "eviter": [
+        "Glasses pressing on the pierced area.",
+        "Blowing nose forcefully.",
+        "Makeup on the area.",
+        "Touching or manipulating the jewelry."
+      ]
+    },
+    "nombril": {
+      "title": "NAVEL",
+      "zones": [
+        {
+          "zone": "Upper navel",
+          "desc": "Upper edge of the navel. Jewelry: Curved barbell (banana bell).",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Lower navel",
+          "desc": "Lower edge of the navel. Jewelry: Curved barbell.",
+          "cica": "6 to 12 months"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Wear loose, breathable clothing.",
+        "Dry thoroughly after showering.",
+        "Avoid belts or elastic waistbands pressing on the area."
+      ],
+      "eviter": [
+        "Swimming pool, sea, bath during healing.",
+        "Tight clothing on the area.",
+        "Intense sport in the first weeks.",
+        "Creams or oils on the area."
+      ]
+    },
+    "mamelons": {
+      "title": "NIPPLES",
+      "zones": [
+        {
+          "zone": "Horizontal nipple",
+          "desc": "Horizontal crossing of the nipple. Jewelry: Straight barbell.",
+          "cica": "6 to 12 months"
+        },
+        {
+          "zone": "Vertical nipple",
+          "desc": "Vertical crossing of the nipple. Jewelry: Straight barbell.",
+          "cica": "6 to 12 months"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Wear a sports bra without irritating seams.",
+        "Dry thoroughly after showering."
+      ],
+      "eviter": [
+        "Bra with underwires or rough materials.",
+        "Contact sports or activities with friction.",
+        "Swimming pool, sea, bath during healing.",
+        "Manipulation or pressure on the area."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "EYEBROW",
+      "zones": [
+        {
+          "zone": "Eyebrow arcade",
+          "desc": "Edge of the eyebrow ridge. Jewelry: Curved barbell, ring.",
+          "cica": "6 to 9 months"
+        },
+        {
+          "zone": "Anti-eyebrow",
+          "desc": "Below the eye, surface. Jewelry: Surface bar.",
+          "cica": "6 to 12 months"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Dry with a sterile compress.",
+        "Watch for signs of rejection (skin thinning)."
+      ],
+      "eviter": [
+        "Makeup near the pierced area.",
+        "Glasses pressing on the piercing.",
+        "Touching or manipulating the jewelry."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Microdermal",
+          "desc": "Single anchor under the skin. Jewelry: Decorative head on anchor.",
+          "cica": "1 to 3 months"
+        },
+        {
+          "zone": "Surface bar",
+          "desc": "Bar crossing a skin fold. Jewelry: Surface bar.",
+          "cica": "6 to 18 months"
+        }
+      ],
+      "faire": [
+        "Clean 2×/day with saline solution NaCl 0.9%.",
+        "Protect the area from shocks and friction.",
+        "Watch for signs of rejection or migration."
+      ],
+      "eviter": [
+        "Clothing rubbing on the area.",
+        "Contact sports in the first weeks.",
+        "Touching or manipulating the jewelry."
+      ]
+    },
+    "bouche_levres": {
+      "title": "POST LABRET CARE",
+      "zones": [
+        {
+          "zone": "Classic labret",
+          "desc": "Centered below lower lip, horizontal. Jewelry: Straight labret.",
+          "cica": "6 to 8 weeks"
+        },
+        {
+          "zone": "Off-center labret",
+          "desc": "Left or right below lower lip. Jewelry: Straight labret.",
+          "cica": "6 to 8 weeks"
+        },
+        {
+          "zone": "Vertical labret",
+          "desc": "Crosses the center of the lower lip vertically. Jewelry: Curved barbell.",
+          "cica": "6 to 9 months"
+        },
+        {
+          "zone": "Ashley",
+          "desc": "Centered lower lip — 1 ball visible, 1 inside. Jewelry: Flatback.",
+          "cica": "6 to 9 months"
+        },
+        {
+          "zone": "Medusa / Philtrum",
+          "desc": "Centered above upper lip, in the philtrum. Jewelry: Straight labret.",
+          "cica": "6 to 9 months"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Above upper lip, left side. Jewelry: Straight labret.",
+          "cica": "8 to 10 weeks"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Above upper lip, right side. Jewelry: Straight labret.",
+          "cica": "8 to 10 weeks"
+        },
+        {
+          "zone": "Tongue (Midline)",
+          "desc": "Center of tongue, vertical. Most common. Jewelry: Long barbell.",
+          "cica": "4 to 6 weeks"
+        },
+        {
+          "zone": "Tongue Web",
+          "desc": "Membrane under the tongue. Discreet, low pain. Jewelry: Ring / curved.",
+          "cica": "4 weeks"
+        },
+        {
+          "zone": "Smiley (Upper frenulum)",
+          "desc": "Upper lip frenulum — visible when smiling. Jewelry: Ring, horseshoe.",
+          "cica": "4 to 8 weeks"
+        }
+      ],
+      "faire": [
+        "Rinse mouth with ALCOHOL-FREE mouthwash after each meal.",
+        "Clean the outside (labret, medusa, Monroe…) 2×/day with NaCl 0.9% saline.",
+        "Eat cold or lukewarm food in the first days to reduce swelling.",
+        "Replace the long jewelry with a short one once swelling subsides (Day 10-14).",
+        "Use implant-grade titanium or bioplastic jewelry to protect teeth and gums.",
+        "Gentle brushing 2×/day without rubbing the jewelry."
+      ],
+      "eviter": [
+        "Alcohol, tobacco, spicy or very acidic foods for the first 2-3 weeks.",
+        "Oral contact (kissing, etc.) during healing.",
+        "Playing with the jewelry — risk of tooth fracture and gum recession.",
+        "Sharing glasses, cutlery, or toothbrushes.",
+        "Keeping the initial long jewelry too long (dental damage).",
+        "Swimming pool, sea, contact sports in the acute phase.",
+        "Changing jewelry yourself before complete healing."
+      ]
+    }
   }
 }

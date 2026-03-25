@@ -382,5 +382,305 @@
     "tatouage": "Tatouage (05-07)",
     "dermographie": "Dermographie (08-10)",
     "rgpd": "RGPD & Confidentialité (11-12)"
+  },
+  "soins": {
+    "fiche_title": "FICHE DE SOINS",
+    "doc_subtitle": "Document à remettre au client après chaque séance",
+    "identity_section": "IDENTITÉ DU CLIENT",
+    "prestation_section": "INFORMATIONS PRESTATION",
+    "zone_piercing_label": "Zone percée / traitée",
+    "zones_section": "ZONES DE PIERCING",
+    "protocol_section": "PROTOCOLE DE SOINS QUOTIDIENS",
+    "todo_label": "✓ À FAIRE",
+    "avoid_label": "✗ À ÉVITER",
+    "zone_col": "Zone",
+    "desc_col": "Description & Bijou",
+    "cica_col": "Cicatrisation",
+    "trademark": "Marque déposée — usage descriptif uniquement, sans affiliation commerciale",
+    "declaration_1": "Je déclare avoir pris connaissance des risques liés à la pratique du piercing",
+    "declaration_2": "J'ai pu poser toutes les questions que je voulais",
+    "oreilles": {
+      "title": "OREILLES",
+      "zones": [
+        {
+          "zone": "Lobe standard",
+          "desc": "Partie charnue du lobe. Bijou : Tige, anneau.",
+          "cica": "6 à 8 sem."
+        },
+        {
+          "zone": "Lobe haute",
+          "desc": "Partie supérieure du lobe. Bijou : Tige, anneau.",
+          "cica": "6 à 8 sem."
+        },
+        {
+          "zone": "Hélix",
+          "desc": "Bord supérieur du cartilage. Bijou : Anneau, tige.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Anti-hélix",
+          "desc": "Repli intérieur du cartilage. Bijou : Barbell courbé.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Tragus",
+          "desc": "Petite saillie devant le conduit. Bijou : Labret, anneau.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Anti-tragus",
+          "desc": "Saillie opposée au tragus. Bijou : Anneau, barbell courbé.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Conch",
+          "desc": "Coquille centrale du cartilage. Bijou : Anneau large, barbell.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Repli le plus interne. Bijou : Anneau, fer à cheval.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Repli supérieur interne. Bijou : Barbell courbé.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Double perforation reliée par une barre. Bijou : Barbell droit long.",
+          "cica": "6 à 12 mois"
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Sécher avec une compresse stérile non-tissée.",
+        "Dormir sur une oreillette de voyage pour éviter la pression.",
+        "Garder les cheveux attachés les premières semaines."
+      ],
+      "eviter": [
+        "Piscine, mer, bain pendant la cicatrisation.",
+        "Casque audio, téléphone appuyant sur le piercing.",
+        "Toucher ou tourner le bijou.",
+        "Changer le bijou avant cicatrisation complète."
+      ]
+    },
+    "nez": {
+      "title": "NEZ",
+      "zones": [
+        {
+          "zone": "Narine",
+          "desc": "Côté de la narine. Bijou : Clou, anneau.",
+          "cica": "4 à 6 mois"
+        },
+        {
+          "zone": "Septum",
+          "desc": "Cloison nasale (partie charnue). Bijou : Fer à cheval, anneau.",
+          "cica": "6 à 8 sem."
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Arête du nez entre les yeux. Bijou : Barbell droit.",
+          "cica": "8 à 12 sem."
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Sécher avec une compresse stérile.",
+        "Moucher délicatement sans déplacer le bijou."
+      ],
+      "eviter": [
+        "Lunettes appuyant sur la zone percée.",
+        "Se moucher violemment.",
+        "Maquillage sur la zone.",
+        "Toucher ou manipuler le bijou."
+      ]
+    },
+    "nombril": {
+      "title": "NOMBRIL",
+      "zones": [
+        {
+          "zone": "Nombril supérieur",
+          "desc": "Bord supérieur du nombril. Bijou : Barbell courbé (banana bell).",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Nombril inférieur",
+          "desc": "Bord inférieur du nombril. Bijou : Barbell courbé.",
+          "cica": "6 à 12 mois"
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Porter des vêtements amples et respirants.",
+        "Sécher soigneusement après la douche.",
+        "Éviter les ceintures ou élastiques serrant la zone."
+      ],
+      "eviter": [
+        "Piscine, mer, bain pendant la cicatrisation.",
+        "Vêtements trop serrés sur la zone.",
+        "Sport intense les premières semaines.",
+        "Crèmes ou huiles sur la zone."
+      ]
+    },
+    "mamelons": {
+      "title": "MAMELONS",
+      "zones": [
+        {
+          "zone": "Mamelon horizontal",
+          "desc": "Traversée horizontale du mamelon. Bijou : Barbell droit.",
+          "cica": "6 à 12 mois"
+        },
+        {
+          "zone": "Mamelon vertical",
+          "desc": "Traversée verticale du mamelon. Bijou : Barbell droit.",
+          "cica": "6 à 12 mois"
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Porter un soutien-gorge de sport sans coutures irritantes.",
+        "Sécher soigneusement après la douche."
+      ],
+      "eviter": [
+        "Soutien-gorge avec armatures ou matières rugueuses.",
+        "Sport de contact ou activités avec frottements.",
+        "Piscine, mer, bain pendant la cicatrisation.",
+        "Manipulation ou pression sur la zone."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "ARCADE SOURCILIÈRE",
+      "zones": [
+        {
+          "zone": "Arcade sourcilière",
+          "desc": "Bord de l'arcade sourcilière. Bijou : Barbell courbé, anneau.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Anti-sourcil",
+          "desc": "Sous l'œil, surface. Bijou : Surface bar.",
+          "cica": "6 à 12 mois"
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Sécher avec une compresse stérile.",
+        "Surveiller les signes de rejet (amincissement de la peau)."
+      ],
+      "eviter": [
+        "Maquillage près de la zone percée.",
+        "Lunettes appuyant sur le piercing.",
+        "Toucher ou manipuler le bijou."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Microdermal",
+          "desc": "Ancrage unique sous la peau. Bijou : Tête décorative sur ancre.",
+          "cica": "1 à 3 mois"
+        },
+        {
+          "zone": "Surface bar",
+          "desc": "Barre traversant un pli de peau. Bijou : Surface bar.",
+          "cica": "6 à 18 mois"
+        }
+      ],
+      "faire": [
+        "Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.",
+        "Protéger la zone des chocs et frottements.",
+        "Surveiller les signes de rejet ou migration."
+      ],
+      "eviter": [
+        "Vêtements frottant sur la zone.",
+        "Sport de contact les premières semaines.",
+        "Toucher ou manipuler le bijou."
+      ]
+    },
+    "bouche_levres": {
+      "title": "SOINS POST LABRET",
+      "zones": [
+        {
+          "zone": "Labret classique",
+          "desc": "Centré sous la lèvre inf., horizontal. Bijou : Labret droit.",
+          "cica": "6 à 8 sem."
+        },
+        {
+          "zone": "Labret décalé",
+          "desc": "À gauche ou à droite sous la lèvre inf. Bijou : Labret droit.",
+          "cica": "6 à 8 sem."
+        },
+        {
+          "zone": "Labret vertical",
+          "desc": "Traverse verticalement le centre de la lèvre inf. Bijou : Barbell courbé.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Ashley",
+          "desc": "Centré lèvre inf. — 1 bille visible, 1 en bouche. Bijou : Flatback.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Médusa / Philtrum",
+          "desc": "Centré au-dessus de la lèvre sup., dans le philtrum. Bijou : Labret droit.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Jestrum",
+          "desc": "Traverse la lèvre sup. verticalement — 2 billes visibles. Bijou : Barbell courbé.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Au-dessus de la lèvre sup., côté gauche. Bijou : Labret droit.",
+          "cica": "8 à 10 sem."
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Au-dessus de la lèvre sup., côté droit. Bijou : Labret droit.",
+          "cica": "8 à 10 sem."
+        },
+        {
+          "zone": "Dahlia (Joue)",
+          "desc": "Aux commissures des lèvres, légèrement écarté. Bijou : Labret long.",
+          "cica": "6 à 9 mois"
+        },
+        {
+          "zone": "Langue (Midline)",
+          "desc": "Centre de la langue, vertical. Le plus courant. Bijou : Barbell long.",
+          "cica": "4 à 6 sem."
+        },
+        {
+          "zone": "Tongue Web",
+          "desc": "Membrane sous la langue. Discret, peu douloureux. Bijou : Anneau / courbé.",
+          "cica": "4 sem."
+        },
+        {
+          "zone": "Smiley (Frein sup.)",
+          "desc": "Frein de la lèvre supérieure — visible en souriant. Bijou : Anneau, fer à cheval.",
+          "cica": "4 à 8 sem."
+        }
+      ],
+      "faire": [
+        "Rincer la bouche avec un bain de bouche SANS alcool après chaque repas.",
+        "Nettoyer l'extérieur (labret, médusa, Monroe…) 2×/jour au sérum NaCl 0,9%.",
+        "Manger froid ou tiède les premiers jours pour réduire le gonflement.",
+        "Remplacer le bijou long par un bijou court dès disparition du gonflement (J10-J14).",
+        "Utiliser un bijou en bioplastique ou titane implant-grade pour protéger dents et gencives.",
+        "Brossage doux 2×/jour sans frotter le bijou."
+      ],
+      "eviter": [
+        "Alcool, tabac, aliments épicés ou très acides les 2-3 premières semaines.",
+        "Contacts buccaux (bisous, etc.) pendant la cicatrisation.",
+        "Jouer avec le bijou — risque de fracture dentaire et récession gingivale.",
+        "Partager verres, couverts ou brosses à dents.",
+        "Conserver le bijou long initial trop longtemps (dommages dentaires).",
+        "Piscine, mer, sport de contact en phase aiguë.",
+        "Changer le bijou soi-même avant cicatrisation complète."
+      ]
+    }
   }
 }

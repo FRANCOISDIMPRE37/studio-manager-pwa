@@ -225,5 +225,285 @@
     "tatouage": "Tätowierung (05-07)",
     "dermographie": "Dermographie (08-10)",
     "rgpd": "DSGVO & Vertraulichkeit (11-12)"
+  },
+  "soins": {
+    "fiche_title": "PFLEGEBLATT",
+    "doc_subtitle": "Dokument, das dem Kunden nach jeder Sitzung ausgehändigt wird",
+    "identity_section": "KUNDENIDENTITÄT",
+    "prestation_section": "LEISTUNGSINFORMATIONEN",
+    "zone_piercing_label": "Gepiercter / behandelter Bereich",
+    "zones_section": "PIERCINGZONEN",
+    "protocol_section": "TÄGLICHES PFLEGEPROTOKOLL",
+    "todo_label": "✓ ZU TUN",
+    "avoid_label": "✗ ZU VERMEIDEN",
+    "zone_col": "Zone",
+    "desc_col": "Beschreibung & Schmuck",
+    "cica_col": "Heilung",
+    "trademark": "Eingetragene Marke — nur beschreibende Verwendung, keine kommerzielle Zugehörigkeit",
+    "declaration_1": "Ich erkläre, dass ich über die mit dem Piercing verbundenen Risiken informiert wurde",
+    "declaration_2": "Ich konnte alle Fragen stellen, die ich wollte",
+    "oreilles": {
+      "title": "OHREN",
+      "zones": [
+        {
+          "zone": "Standard-Ohrläppchen",
+          "desc": "Fleischiger Teil des Ohrläppchens. Schmuck: Stecker, Ring.",
+          "cica": "6 bis 8 Wochen"
+        },
+        {
+          "zone": "Hohes Ohrläppchen",
+          "desc": "Oberer Teil des Ohrläppchens. Schmuck: Stecker, Ring.",
+          "cica": "6 bis 8 Wochen"
+        },
+        {
+          "zone": "Helix",
+          "desc": "Oberer Rand des Knorpels. Schmuck: Ring, Stecker.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Anti-Helix",
+          "desc": "Innere Falte des Knorpels. Schmuck: Gebogener Barbell.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Tragus",
+          "desc": "Kleiner Vorsprung vor dem Gehörgang. Schmuck: Labret, Ring.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Anti-Tragus",
+          "desc": "Vorsprung gegenüber dem Tragus. Schmuck: Ring, gebogener Barbell.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Conch",
+          "desc": "Mittlere Muschel des Knorpels. Schmuck: Großer Ring, Barbell.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Innerste Falte. Schmuck: Ring, Hufeisen.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Obere innere Falte. Schmuck: Gebogener Barbell.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Doppelperforation verbunden durch eine Stange. Schmuck: Langer gerader Barbell.",
+          "cica": "6 bis 12 Monate"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Mit einer sterilen Vliesstoffkompresse trocknen.",
+        "Auf einem Reisekissen schlafen, um Druck zu vermeiden.",
+        "Haare in den ersten Wochen zusammenbinden."
+      ],
+      "eviter": [
+        "Schwimmbad, Meer, Bad während der Heilung.",
+        "Kopfhörer, Telefon, die auf das Piercing drücken.",
+        "Schmuck berühren oder drehen.",
+        "Schmuck vor vollständiger Heilung wechseln."
+      ]
+    },
+    "nez": {
+      "title": "NASE",
+      "zones": [
+        {
+          "zone": "Nasenloch",
+          "desc": "Seite des Nasenlochs. Schmuck: Stecker, Ring.",
+          "cica": "4 bis 6 Monate"
+        },
+        {
+          "zone": "Septum",
+          "desc": "Nasenscheidewand (fleischiger Teil). Schmuck: Hufeisen, Ring.",
+          "cica": "6 bis 8 Wochen"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Nasenrücken zwischen den Augen. Schmuck: Gerader Barbell.",
+          "cica": "8 bis 12 Wochen"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Mit einer sterilen Kompresse trocknen.",
+        "Nase vorsichtig putzen ohne den Schmuck zu bewegen."
+      ],
+      "eviter": [
+        "Brillen, die auf den gepiercter Bereich drücken.",
+        "Kräftiges Schnäuzen.",
+        "Make-up auf dem Bereich.",
+        "Schmuck berühren oder manipulieren."
+      ]
+    },
+    "nombril": {
+      "title": "BAUCHNABEL",
+      "zones": [
+        {
+          "zone": "Oberer Bauchnabel",
+          "desc": "Oberer Rand des Bauchnabels. Schmuck: Gebogener Barbell (Banana Bell).",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Unterer Bauchnabel",
+          "desc": "Unterer Rand des Bauchnabels. Schmuck: Gebogener Barbell.",
+          "cica": "6 bis 12 Monate"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Weite, atmungsaktive Kleidung tragen.",
+        "Nach der Dusche gründlich trocknen.",
+        "Gürtel oder Gummibänder vermeiden, die den Bereich einengen."
+      ],
+      "eviter": [
+        "Schwimmbad, Meer, Bad während der Heilung.",
+        "Zu enge Kleidung auf dem Bereich.",
+        "Intensiver Sport in den ersten Wochen.",
+        "Cremes oder Öle auf dem Bereich."
+      ]
+    },
+    "mamelons": {
+      "title": "BRUSTWARZEN",
+      "zones": [
+        {
+          "zone": "Horizontale Brustwarze",
+          "desc": "Horizontale Durchquerung der Brustwarze. Schmuck: Gerader Barbell.",
+          "cica": "6 bis 12 Monate"
+        },
+        {
+          "zone": "Vertikale Brustwarze",
+          "desc": "Vertikale Durchquerung der Brustwarze. Schmuck: Gerader Barbell.",
+          "cica": "6 bis 12 Monate"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Sport-BH ohne irritierende Nähte tragen.",
+        "Nach der Dusche gründlich trocknen."
+      ],
+      "eviter": [
+        "BH mit Bügeln oder rauen Materialien.",
+        "Kontaktsport oder Aktivitäten mit Reibung.",
+        "Schwimmbad, Meer, Bad während der Heilung.",
+        "Manipulation oder Druck auf dem Bereich."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "AUGENBRAUE",
+      "zones": [
+        {
+          "zone": "Augenbrauenrand",
+          "desc": "Rand des Augenbrauenbogens. Schmuck: Gebogener Barbell, Ring.",
+          "cica": "6 bis 9 Monate"
+        },
+        {
+          "zone": "Anti-Augenbraue",
+          "desc": "Unter dem Auge, Oberfläche. Schmuck: Surface Bar.",
+          "cica": "6 bis 12 Monate"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Mit einer sterilen Kompresse trocknen.",
+        "Auf Abstoßungszeichen achten (Ausdünnung der Haut)."
+      ],
+      "eviter": [
+        "Make-up in der Nähe des gepiercter Bereichs.",
+        "Brillen, die auf das Piercing drücken.",
+        "Schmuck berühren oder manipulieren."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Mikrodermal",
+          "desc": "Einzelner Anker unter der Haut. Schmuck: Dekorativer Kopf auf Anker.",
+          "cica": "1 bis 3 Monate"
+        },
+        {
+          "zone": "Surface Bar",
+          "desc": "Stange, die eine Hautfalte durchquert. Schmuck: Surface Bar.",
+          "cica": "6 bis 18 Monate"
+        }
+      ],
+      "faire": [
+        "Zweimal täglich mit physiologischer Kochsalzlösung NaCl 0,9% reinigen.",
+        "Den Bereich vor Stößen und Reibung schützen.",
+        "Auf Abstoßungs- oder Migrationszeichen achten."
+      ],
+      "eviter": [
+        "Kleidung, die auf dem Bereich reibt.",
+        "Kontaktsport in den ersten Wochen.",
+        "Schmuck berühren oder manipulieren."
+      ]
+    },
+    "bouche_levres": {
+      "title": "NACHSORGE LABRET",
+      "zones": [
+        {
+          "zone": "Klassisches Labret",
+          "desc": "Zentriert unter der Unterlippe, horizontal. Schmuck: Gerades Labret.",
+          "cica": "6 bis 8 Wochen"
+        },
+        {
+          "zone": "Versetztes Labret",
+          "desc": "Links oder rechts unter der Unterlippe. Schmuck: Gerades Labret.",
+          "cica": "6 bis 8 Wochen"
+        },
+        {
+          "zone": "Vertikales Labret",
+          "desc": "Durchquert die Mitte der Unterlippe vertikal. Schmuck: Gebogener Barbell.",
+          "cica": "6 bis 9 Monate"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Über der Oberlippe, linke Seite. Schmuck: Gerades Labret.",
+          "cica": "8 bis 10 Wochen"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Über der Oberlippe, rechte Seite. Schmuck: Gerades Labret.",
+          "cica": "8 bis 10 Wochen"
+        },
+        {
+          "zone": "Zunge (Midline)",
+          "desc": "Mitte der Zunge, vertikal. Am häufigsten. Schmuck: Langer Barbell.",
+          "cica": "4 bis 6 Wochen"
+        },
+        {
+          "zone": "Zungenbändchen",
+          "desc": "Membran unter der Zunge. Diskret, wenig schmerzhaft. Schmuck: Ring / gebogen.",
+          "cica": "4 Wochen"
+        },
+        {
+          "zone": "Smiley (Oberes Zungenbändchen)",
+          "desc": "Oberes Lippenbändchen — beim Lächeln sichtbar. Schmuck: Ring, Hufeisen.",
+          "cica": "4 bis 8 Wochen"
+        }
+      ],
+      "faire": [
+        "Mund nach jeder Mahlzeit mit ALKOHOLFREIEM Mundwasser spülen.",
+        "Außenseite (Labret, Medusa, Monroe…) 2×/Tag mit NaCl 0,9% reinigen.",
+        "In den ersten Tagen kalte oder lauwarme Speisen essen, um Schwellungen zu reduzieren.",
+        "Langen Schmuck durch kurzen ersetzen, sobald die Schwellung abgeklungen ist (Tag 10-14).",
+        "Implantatgerechtes Titan oder Bioplastik-Schmuck verwenden, um Zähne und Zahnfleisch zu schützen.",
+        "Sanftes Zähneputzen 2×/Tag ohne den Schmuck zu reiben."
+      ],
+      "eviter": [
+        "Alkohol, Tabak, scharfe oder sehr saure Speisen in den ersten 2-3 Wochen.",
+        "Oraler Kontakt (Küssen usw.) während der Heilung.",
+        "Mit dem Schmuck spielen — Risiko von Zahnfraktur und Zahnfleischrückgang.",
+        "Gläser, Besteck oder Zahnbürsten teilen.",
+        "Den langen Anfangsschmuck zu lange behalten (Zahnschäden).",
+        "Schwimmbad, Meer, Kontaktsport in der akuten Phase.",
+        "Schmuck selbst wechseln vor vollständiger Heilung."
+      ]
+    }
   }
 }

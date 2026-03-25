@@ -361,5 +361,285 @@
     "tatouage": "Tatuaggio (05-07)",
     "dermographie": "Dermografia (08-10)",
     "rgpd": "RGPD & Riservatezza (11-12)"
+  },
+  "soins": {
+    "fiche_title": "SCHEDA DI CURA",
+    "doc_subtitle": "Documento da consegnare al cliente dopo ogni sessione",
+    "identity_section": "IDENTITÀ DEL CLIENTE",
+    "prestation_section": "INFORMAZIONI SERVIZIO",
+    "zone_piercing_label": "Zona perforata / trattata",
+    "zones_section": "ZONE DI PIERCING",
+    "protocol_section": "PROTOCOLLO DI CURA QUOTIDIANA",
+    "todo_label": "✓ DA FARE",
+    "avoid_label": "✗ DA EVITARE",
+    "zone_col": "Zona",
+    "desc_col": "Descrizione & Gioiello",
+    "cica_col": "Cicatrizzazione",
+    "trademark": "Marchio registrato — uso descrittivo unicamente, senza affiliazione commerciale",
+    "declaration_1": "Dichiaro di essere stato/a informato/a dei rischi associati al piercing",
+    "declaration_2": "Ho potuto fare tutte le domande che volevo",
+    "oreilles": {
+      "title": "ORECCHIE",
+      "zones": [
+        {
+          "zone": "Lobo standard",
+          "desc": "Parte carnosa del lobo. Gioiello: Orecchino, anello.",
+          "cica": "6 a 8 settimane"
+        },
+        {
+          "zone": "Lobo alto",
+          "desc": "Parte superiore del lobo. Gioiello: Orecchino, anello.",
+          "cica": "6 a 8 settimane"
+        },
+        {
+          "zone": "Helix",
+          "desc": "Bordo superiore della cartilagine. Gioiello: Anello, orecchino.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Anti-helix",
+          "desc": "Piega interna della cartilagine. Gioiello: Barbell curvo.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Trago",
+          "desc": "Piccola sporgenza davanti al condotto. Gioiello: Labret, anello.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Anti-trago",
+          "desc": "Sporgenza opposta al trago. Gioiello: Anello, barbell curvo.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Conca",
+          "desc": "Conchiglia centrale della cartilagine. Gioiello: Anello grande, barbell.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Piega più interna. Gioiello: Anello, ferro di cavallo.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Piega interna superiore. Gioiello: Barbell curvo.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Doppia perforazione collegata da una barra. Gioiello: Lungo barbell dritto.",
+          "cica": "6 a 12 mesi"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Asciugare con una garza sterile non tessuta.",
+        "Dormire su un cuscino da viaggio per evitare la pressione.",
+        "Tenere i capelli raccolti nelle prime settimane."
+      ],
+      "eviter": [
+        "Piscina, mare, bagno durante la cicatrizzazione.",
+        "Cuffie, telefono che premono sul piercing.",
+        "Toccare o ruotare il gioiello.",
+        "Cambiare il gioiello prima della cicatrizzazione completa."
+      ]
+    },
+    "nez": {
+      "title": "NASO",
+      "zones": [
+        {
+          "zone": "Narice",
+          "desc": "Lato della narice. Gioiello: Chiodo, anello.",
+          "cica": "4 a 6 mesi"
+        },
+        {
+          "zone": "Setto",
+          "desc": "Setto nasale (parte carnosa). Gioiello: Ferro di cavallo, anello.",
+          "cica": "6 a 8 settimane"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Dorso del naso tra gli occhi. Gioiello: Barbell dritto.",
+          "cica": "8 a 12 settimane"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Asciugare con una garza sterile.",
+        "Soffiarsi il naso delicatamente senza spostare il gioiello."
+      ],
+      "eviter": [
+        "Occhiali che premono sulla zona perforata.",
+        "Soffiarsi il naso con forza.",
+        "Trucco sulla zona.",
+        "Toccare o manipolare il gioiello."
+      ]
+    },
+    "nombril": {
+      "title": "OMBELICO",
+      "zones": [
+        {
+          "zone": "Ombelico superiore",
+          "desc": "Bordo superiore dell'ombelico. Gioiello: Barbell curvo (banana bell).",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Ombelico inferiore",
+          "desc": "Bordo inferiore dell'ombelico. Gioiello: Barbell curvo.",
+          "cica": "6 a 12 mesi"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Indossare abiti larghi e traspiranti.",
+        "Asciugare accuratamente dopo la doccia.",
+        "Evitare cinture o elastici che stringono la zona."
+      ],
+      "eviter": [
+        "Piscina, mare, bagno durante la cicatrizzazione.",
+        "Abiti troppo stretti sulla zona.",
+        "Sport intenso nelle prime settimane.",
+        "Creme o oli sulla zona."
+      ]
+    },
+    "mamelons": {
+      "title": "CAPEZZOLI",
+      "zones": [
+        {
+          "zone": "Capezzolo orizzontale",
+          "desc": "Attraversamento orizzontale del capezzolo. Gioiello: Barbell dritto.",
+          "cica": "6 a 12 mesi"
+        },
+        {
+          "zone": "Capezzolo verticale",
+          "desc": "Attraversamento verticale del capezzolo. Gioiello: Barbell dritto.",
+          "cica": "6 a 12 mesi"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Indossare reggiseno sportivo senza cuciture irritanti.",
+        "Asciugare accuratamente dopo la doccia."
+      ],
+      "eviter": [
+        "Reggiseno con ferretto o materiali ruvidi.",
+        "Sport di contatto o attività con attrito.",
+        "Piscina, mare, bagno durante la cicatrizzazione.",
+        "Manipolazione o pressione sulla zona."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "SOPRACCIGLIO",
+      "zones": [
+        {
+          "zone": "Arco sopracciliare",
+          "desc": "Bordo dell'arco sopracciliare. Gioiello: Barbell curvo, anello.",
+          "cica": "6 a 9 mesi"
+        },
+        {
+          "zone": "Anti-sopracciglio",
+          "desc": "Sotto l'occhio, superficie. Gioiello: Surface bar.",
+          "cica": "6 a 12 mesi"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Asciugare con una garza sterile.",
+        "Monitorare i segni di rigetto (assottigliamento della pelle)."
+      ],
+      "eviter": [
+        "Trucco vicino alla zona perforata.",
+        "Occhiali che premono sul piercing.",
+        "Toccare o manipolare il gioiello."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Microdermal",
+          "desc": "Ancoraggio unico sotto la pelle. Gioiello: Testa decorativa su ancora.",
+          "cica": "1 a 3 mesi"
+        },
+        {
+          "zone": "Surface bar",
+          "desc": "Barra che attraversa una piega della pelle. Gioiello: Surface bar.",
+          "cica": "6 a 18 mesi"
+        }
+      ],
+      "faire": [
+        "Pulire 2×/giorno con soluzione fisiologica NaCl 0,9%.",
+        "Proteggere la zona da urti e attrito.",
+        "Monitorare i segni di rigetto o migrazione."
+      ],
+      "eviter": [
+        "Abiti che strofinano sulla zona.",
+        "Sport di contatto nelle prime settimane.",
+        "Toccare o manipolare il gioiello."
+      ]
+    },
+    "bouche_levres": {
+      "title": "CURE POST LABRET",
+      "zones": [
+        {
+          "zone": "Labret classico",
+          "desc": "Centrato sotto il labbro inferiore, orizzontale. Gioiello: Labret dritto.",
+          "cica": "6 a 8 settimane"
+        },
+        {
+          "zone": "Labret decentrato",
+          "desc": "Sinistra o destra sotto il labbro inferiore. Gioiello: Labret dritto.",
+          "cica": "6 a 8 settimane"
+        },
+        {
+          "zone": "Labret verticale",
+          "desc": "Attraversa verticalmente il centro del labbro inferiore. Gioiello: Barbell curvo.",
+          "cica": "6 a 9 mesi"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Sopra il labbro superiore, lato sinistro. Gioiello: Labret dritto.",
+          "cica": "8 a 10 settimane"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Sopra il labbro superiore, lato destro. Gioiello: Labret dritto.",
+          "cica": "8 a 10 settimane"
+        },
+        {
+          "zone": "Lingua (Midline)",
+          "desc": "Centro della lingua, verticale. Il più comune. Gioiello: Lungo barbell.",
+          "cica": "4 a 6 settimane"
+        },
+        {
+          "zone": "Frenulo linguale",
+          "desc": "Membrana sotto la lingua. Discreto, poco doloroso. Gioiello: Anello / curvo.",
+          "cica": "4 settimane"
+        },
+        {
+          "zone": "Smiley (Frenulo superiore)",
+          "desc": "Frenulo del labbro superiore — visibile sorridendo. Gioiello: Anello, ferro di cavallo.",
+          "cica": "4 a 8 settimane"
+        }
+      ],
+      "faire": [
+        "Sciacquare la bocca con collutorio SENZA ALCOL dopo ogni pasto.",
+        "Pulire l'esterno (labret, medusa, Monroe…) 2×/giorno con NaCl 0,9%.",
+        "Mangiare cibi freddi o tiepidi i primi giorni per ridurre il gonfiore.",
+        "Sostituire il gioiello lungo con uno corto non appena il gonfiore scompare (giorno 10-14).",
+        "Usare titanio di grado implantare o bioplastica per proteggere denti e gengive.",
+        "Spazzolamento delicato 2×/giorno senza strofinare il gioiello."
+      ],
+      "eviter": [
+        "Alcol, tabacco, cibi piccanti o molto acidi nelle prime 2-3 settimane.",
+        "Contatto orale (baci, ecc.) durante la cicatrizzazione.",
+        "Giocare con il gioiello — rischio di frattura dentale e recessione gengivale.",
+        "Condividere bicchieri, posate o spazzolini da denti.",
+        "Conservare il gioiello lungo iniziale troppo a lungo (danni dentali).",
+        "Piscina, mare, sport di contatto in fase acuta.",
+        "Cambiare il gioiello da soli prima della cicatrizzazione completa."
+      ]
+    }
   }
 }

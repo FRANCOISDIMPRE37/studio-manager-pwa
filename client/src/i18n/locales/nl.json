@@ -225,5 +225,275 @@
     "tatouage": "Tatoeage (05-07)",
     "dermographie": "Dermografie (08-10)",
     "rgpd": "AVG & Vertrouwelijkheid (11-12)"
+  },
+  "soins": {
+    "fiche_title": "VERZORGINGSBLAD",
+    "doc_subtitle": "Document dat na elke sessie aan de klant wordt meegegeven",
+    "identity_section": "KLANTIDENTITEIT",
+    "prestation_section": "DIENST INFORMATIE",
+    "zone_piercing_label": "Gepiercte / behandelde zone",
+    "zones_section": "PIERCINGZONES",
+    "protocol_section": "DAGELIJKS VERZORGINGSPROTOCOL",
+    "todo_label": "✓ TE DOEN",
+    "avoid_label": "✗ TE VERMIJDEN",
+    "zone_col": "Zone",
+    "desc_col": "Beschrijving & Sieraad",
+    "cica_col": "Genezing",
+    "trademark": "Geregistreerd handelsmerk — alleen beschrijvend gebruik, geen commerciële aansluiting",
+    "declaration_1": "Ik verklaar op de hoogte te zijn gesteld van de risico's verbonden aan piercing",
+    "declaration_2": "Ik kon alle vragen stellen die ik wilde",
+    "oreilles": {
+      "title": "OREN",
+      "zones": [
+        {
+          "zone": "Standaard oorlel",
+          "desc": "Vlezig deel van de oorlel. Sieraad: Stud, ring.",
+          "cica": "6 tot 8 weken"
+        },
+        {
+          "zone": "Hoge oorlel",
+          "desc": "Bovenste deel van de oorlel. Sieraad: Stud, ring.",
+          "cica": "6 tot 8 weken"
+        },
+        {
+          "zone": "Helix",
+          "desc": "Bovenste rand van het kraakbeen. Sieraad: Ring, stud.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Anti-helix",
+          "desc": "Binnenste plooi van het kraakbeen. Sieraad: Gebogen barbell.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Tragus",
+          "desc": "Klein uitsteeksel voor het gehoorkanaal. Sieraad: Labret, ring.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Anti-tragus",
+          "desc": "Uitsteeksel tegenover de tragus. Sieraad: Ring, gebogen barbell.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Conch",
+          "desc": "Centrale schelp van het kraakbeen. Sieraad: Grote ring, barbell.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Binnenste plooi. Sieraad: Ring, hoefijzer.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Bovenste binnenste plooi. Sieraad: Gebogen barbell.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Dubbele perforatie verbonden door een staaf. Sieraad: Lange rechte barbell.",
+          "cica": "6 tot 12 maanden"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "Drogen met een steriel niet-geweven kompres.",
+        "Slapen op een reiskussen om druk te vermijden.",
+        "Haar de eerste weken samengebonden houden."
+      ],
+      "eviter": [
+        "Zwembad, zee, bad tijdens de genezing.",
+        "Koptelefoon, telefoon die op de piercing drukt.",
+        "Sieraad aanraken of draaien.",
+        "Sieraad verwisselen voor volledige genezing."
+      ]
+    },
+    "nez": {
+      "title": "NEUS",
+      "zones": [
+        {
+          "zone": "Neusgat",
+          "desc": "Zijkant van het neusgat. Sieraad: Stud, ring.",
+          "cica": "4 tot 6 maanden"
+        },
+        {
+          "zone": "Septum",
+          "desc": "Neustussenschot (vlezige deel). Sieraad: Hoefijzer, ring.",
+          "cica": "6 tot 8 weken"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Neusbrug tussen de ogen. Sieraad: Rechte barbell.",
+          "cica": "8 tot 12 weken"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "Drogen met een steriel kompres.",
+        "Voorzichtig snuiten zonder het sieraad te bewegen."
+      ],
+      "eviter": [
+        "Bril die op de gepiercte zone drukt.",
+        "Krachtig snuiten.",
+        "Make-up op de zone.",
+        "Sieraad aanraken of manipuleren."
+      ]
+    },
+    "nombril": {
+      "title": "NAVEL",
+      "zones": [
+        {
+          "zone": "Bovenste navel",
+          "desc": "Bovenste rand van de navel. Sieraad: Gebogen barbell (banana bell).",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Onderste navel",
+          "desc": "Onderste rand van de navel. Sieraad: Gebogen barbell.",
+          "cica": "6 tot 12 maanden"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "Losse, ademende kleding dragen.",
+        "Na het douchen grondig drogen.",
+        "Riemen of elastieken vermijden die de zone samenknijpen."
+      ],
+      "eviter": [
+        "Zwembad, zee, bad tijdens de genezing.",
+        "Te strakke kleding op de zone.",
+        "Intensieve sport in de eerste weken.",
+        "Crèmes of oliën op de zone."
+      ]
+    },
+    "mamelons": {
+      "title": "TEPELS",
+      "zones": [
+        {
+          "zone": "Horizontale tepel",
+          "desc": "Horizontale doorgang van de tepel. Sieraad: Rechte barbell.",
+          "cica": "6 tot 12 maanden"
+        },
+        {
+          "zone": "Verticale tepel",
+          "desc": "Verticale doorgang van de tepel. Sieraad: Rechte barbell.",
+          "cica": "6 tot 12 maanden"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "Sportbeha dragen zonder irriterende naden.",
+        "Na het douchen grondig drogen."
+      ],
+      "eviter": [
+        "Beha met beugels of ruwe materialen.",
+        "Contactsporten of activiteiten met wrijving.",
+        "Zwembad, zee, bad tijdens de genezing.",
+        "Manipulatie of druk op de zone."
+      ]
+    },
+    "arcade_sourcil": {
+      "title": "WENKBRAUW",
+      "zones": [
+        {
+          "zone": "Wenkbrauwboog",
+          "desc": "Rand van de wenkbrauwboog. Sieraad: Gebogen barbell, ring.",
+          "cica": "6 tot 9 maanden"
+        },
+        {
+          "zone": "Anti-wenkbrauw",
+          "desc": "Onder het oog, oppervlak. Sieraad: Surface bar.",
+          "cica": "6 tot 12 maanden"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "Drogen met een steriel kompres.",
+        "Letten op tekenen van afstoting (verdunning van de huid)."
+      ],
+      "eviter": [
+        "Make-up in de buurt van de gepiercte zone.",
+        "Bril die op de piercing drukt.",
+        "Sieraad aanraken of manipuleren."
+      ]
+    },
+    "surface_dermal": {
+      "title": "SURFACE & DERMAL",
+      "zones": [
+        {
+          "zone": "Dermal / Microdermal",
+          "desc": "Enkel anker onder de huid. Sieraad: Decoratief hoofd op anker.",
+          "cica": "1 tot 3 maanden"
+        },
+        {
+          "zone": "Surface bar",
+          "desc": "Staaf die een huidplooi doorkruist. Sieraad: Surface bar.",
+          "cica": "6 tot 18 maanden"
+        }
+      ],
+      "faire": [
+        "2×/dag reinigen met fysiologische zoutoplossing NaCl 0,9%.",
+        "De zone beschermen tegen schokken en wrijving.",
+        "Letten op tekenen van afstoting of migratie."
+      ],
+      "eviter": [
+        "Kleding die op de zone wrijft.",
+        "Contactsporten in de eerste weken.",
+        "Sieraad aanraken of manipuleren."
+      ]
+    },
+    "bouche_levres": {
+      "title": "NAZORG LABRET",
+      "zones": [
+        {
+          "zone": "Klassiek labret",
+          "desc": "Gecentreerd onder onderlip, horizontaal. Sieraad: Recht labret.",
+          "cica": "6 tot 8 weken"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Boven bovenlip, linkerkant. Sieraad: Recht labret.",
+          "cica": "8 tot 10 weken"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Boven bovenlip, rechterkant. Sieraad: Recht labret.",
+          "cica": "8 tot 10 weken"
+        },
+        {
+          "zone": "Tong (Midline)",
+          "desc": "Midden van de tong, verticaal. Meest voorkomend. Sieraad: Lange barbell.",
+          "cica": "4 tot 6 weken"
+        },
+        {
+          "zone": "Tongbandje",
+          "desc": "Membraan onder de tong. Discreet, weinig pijnlijk. Sieraad: Ring / gebogen.",
+          "cica": "4 weken"
+        },
+        {
+          "zone": "Smiley (Bovenste tongbandje)",
+          "desc": "Bovenste lipbandje — zichtbaar bij glimlachen. Sieraad: Ring, hoefijzer.",
+          "cica": "4 tot 8 weken"
+        }
+      ],
+      "faire": [
+        "Mond na elke maaltijd spoelen met ALCOHOLVRIJ mondwater.",
+        "Buitenkant (labret, medusa, Monroe…) 2×/dag reinigen met NaCl 0,9%.",
+        "Eerste dagen koud of lauw voedsel eten om zwelling te verminderen.",
+        "Lang sieraad vervangen door kort zodra zwelling verdwenen is (dag 10-14).",
+        "Implantaatgeschikt titanium of bioplastiek sieraad gebruiken om tanden en tandvlees te beschermen.",
+        "Zacht poetsen 2×/dag zonder het sieraad te wrijven."
+      ],
+      "eviter": [
+        "Alcohol, tabak, pittig of zeer zuur voedsel de eerste 2-3 weken.",
+        "Oraal contact (kussen, enz.) tijdens de genezing.",
+        "Spelen met het sieraad — risico op tandbreuk en tandvleesrecessie.",
+        "Glazen, bestek of tandenborstels delen.",
+        "Het lange beginsieraad te lang bewaren (tandschade).",
+        "Zwembad, zee, contactsporten in de acute fase.",
+        "Sieraad zelf verwisselen voor volledige genezing."
+      ]
+    }
   }
 }
