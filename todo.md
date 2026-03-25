@@ -87,3 +87,11 @@
 - [ ] Rédiger Contrat DPA (Data Processing Agreement)
 - [ ] Rédiger Mentions légales
 - [ ] Préparer guide de migration vers OVHcloud HDS
+
+## Internationalisation (i18n) — 4 langues
+- [x] Installer react-i18next et i18next
+- [x] Créer la configuration i18n avec détection automatique de langue
+- [x] Créer les fichiers de traduction fr.json, en.json, de.json, nl.json
+- [x] Intégrer les clés t() dans tous les composants et pages
+- [x] Ajouter le sélecteur de langue dans la sidebar (drapeaux FR/EN/DE/NL)
+- [x] Tester la détection automatique et le changement de langue
