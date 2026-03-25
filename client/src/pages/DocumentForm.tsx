@@ -333,111 +333,110 @@ function PrintFooter({ salonInfo, docTitle }: {
 // ─── Formulaire Questionnaire Médical Mineur ─────────────────────────────────
 
 function FormQuestionnaireMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  const yesNo = [t('forms.no'), t('forms.yes')];
+  const yesNoMaybe = [t('forms.no'), t('forms.yes'), t('forms.dont_know')];
   return (
     <>
       <LegalBox color="orange">
-        <strong>■ Cadre légal — Art. 371-1 et suivants du Code civil</strong><br />
-        ■ Toute prestation de piercing sur un mineur est soumise au consentement écrit du ou des titulaires de l'autorité parentale.<br />
-        ■ La présence physique d'un représentant légal est obligatoire pendant toute la durée de la séance.<br />
-        Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP).
+        {t('legal.minor_legal_frame')}
       </LegalBox>
       <LegalBox color="cyan">
-        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
+        <em>{t('legal.rgpd_minor')}</em>
       </LegalBox>
 
-      <FormSection title="1 — IDENTITÉ DU MINEUR" />
+      <FormSection title={t('q01.section_minor_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom(s)" value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
       </div>
-      <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
-       <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <RadioField label="Pièce d'identité (CNI / Passeport)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
-      {data.pieceId && data.pieceId !== 'Non présentée' && (
-        <FormField label="Numéro de la pièce d'identité" value={data.numeroPiece || ''} onChange={v => update('numeroPiece', v)} />
+      <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      <RadioField label={t('forms.id_piece')} options={t('forms.id_options_minor', { returnObjects: true }) as string[]} value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
+      {data.pieceId && data.pieceId !== t('forms.id_not_presented') && (
+        <FormField label={t('forms.id_number')} value={data.numeroPiece || ''} onChange={v => update('numeroPiece', v)} />
       )}
-      <FormSection title="2 — PIERCING DEMANDÉ" />
-      <FormField label="Zone à percer" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
+      <FormSection title={t('q01.section_piercing_requested')} />
+      <FormField label={t('q01.zone_to_pierce')} value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
 
-      <FormSection title="3 — ÉTAT DE SANTÉ — QUESTIONNAIRE MÉDICAL COMPLET" />
-      <WarningBox>Toute réponse « Oui » peut suspendre la prestation jusqu'à avis médical. Répondez honnêtement à chaque question. (Arrêté du 3 décembre 2008 — ARS)</WarningBox>
+      <FormSection title={t('q01.section_health')} />
+      <WarningBox>{t('q01.warning_health')}</WarningBox>
 
-      <FormSection title="3.1 — Antécédents médicaux" />
-      <RadioField label="Maladies de peau en cours (eczéma, psoriasis, acné, herpès, infection cutanée)" options={['Non', 'Oui']} value={data.maladiesPeau || 'Non'} onChange={v => update('maladiesPeau', v)} />
-      <RadioField label="Maladies auto-immunes (lupus, sclérose en plaques, maladie de Crohn, polyarthrite rhumatoïde…)" options={['Non', 'Oui']} value={data.maladiesAutoImmunes || 'Non'} onChange={v => update('maladiesAutoImmunes', v)} />
-      <RadioField label="Diabète (type 1 ou type 2)" options={['Non', 'Oui']} value={data.diabete || 'Non'} onChange={v => update('diabete', v)} />
-      <RadioField label="Maladie cardiaque ou prothèse cardiaque / pacemaker" options={['Non', 'Oui']} value={data.pathologieCardiaque || 'Non'} onChange={v => update('pathologieCardiaque', v)} />
-      <RadioField label="Insuffisance rénale ou hépatique" options={['Non', 'Oui']} value={data.insuffisanceRenaleHepatique || 'Non'} onChange={v => update('insuffisanceRenaleHepatique', v)} />
-      <RadioField label="Immunodépression (VIH/SIDA, greffe d'organe, chimiothérapie)" options={['Non', 'Oui']} value={data.immunodepression || 'Non'} onChange={v => update('immunodepression', v)} />
-      <RadioField label="Troubles de la coagulation (hémophilie, thrombopénie)" options={['Non', 'Oui']} value={data.troublesCoagulation || 'Non'} onChange={v => update('troublesCoagulation', v)} />
-      <RadioField label="Tendance aux cicatrices chéloïdes (boursouflées, hypertrophiques)" options={['Non', 'Oui']} value={data.cheloide || 'Non'} onChange={v => update('cheloide', v)} />
-      <RadioField label="Antécédents d'herpès (labial ou génital)" options={['Non', 'Oui']} value={data.antecedentsHerpes || 'Non'} onChange={v => update('antecedentsHerpes', v)} />
-      <RadioField label="Porteur(se) d'une hépatite B ou C" options={['Non', 'Oui']} value={data.hepatite || 'Non'} onChange={v => update('hepatite', v)} />
-      <RadioField label="Asthme ou allergies graves (anaphylaxie)" options={['Non', 'Oui']} value={data.asthmeAllergiesGraves || 'Non'} onChange={v => update('asthmeAllergiesGraves', v)} />
-      <RadioField label="Épilepsie" options={['Non', 'Oui']} value={data.epilepsie || 'Non'} onChange={v => update('epilepsie', v)} />
+      <FormSection title={t('q01.section_medical_history')} />
+      <RadioField label={t('q01.skin_diseases')} options={yesNo} value={data.maladiesPeau || t('forms.no')} onChange={v => update('maladiesPeau', v)} />
+      <RadioField label={t('q01.autoimmune')} options={yesNo} value={data.maladiesAutoImmunes || t('forms.no')} onChange={v => update('maladiesAutoImmunes', v)} />
+      <RadioField label={t('q01.diabetes')} options={yesNo} value={data.diabete || t('forms.no')} onChange={v => update('diabete', v)} />
+      <RadioField label={t('q01.cardiac')} options={yesNo} value={data.pathologieCardiaque || t('forms.no')} onChange={v => update('pathologieCardiaque', v)} />
+      <RadioField label={t('q01.renal_hepatic')} options={yesNo} value={data.insuffisanceRenaleHepatique || t('forms.no')} onChange={v => update('insuffisanceRenaleHepatique', v)} />
+      <RadioField label={t('q01.immunodepression')} options={yesNo} value={data.immunodepression || t('forms.no')} onChange={v => update('immunodepression', v)} />
+      <RadioField label={t('q01.coagulation')} options={yesNo} value={data.troublesCoagulation || t('forms.no')} onChange={v => update('troublesCoagulation', v)} />
+      <RadioField label={t('q01.keloid')} options={yesNo} value={data.cheloide || t('forms.no')} onChange={v => update('cheloide', v)} />
+      <RadioField label={t('q01.herpes_history')} options={yesNo} value={data.antecedentsHerpes || t('forms.no')} onChange={v => update('antecedentsHerpes', v)} />
+      <RadioField label={t('q01.hepatitis')} options={yesNo} value={data.hepatite || t('forms.no')} onChange={v => update('hepatite', v)} />
+      <RadioField label={t('q01.asthma_allergy')} options={yesNo} value={data.asthmeAllergiesGraves || t('forms.no')} onChange={v => update('asthmeAllergiesGraves', v)} />
+      <RadioField label={t('q01.epilepsy')} options={yesNo} value={data.epilepsie || t('forms.no')} onChange={v => update('epilepsie', v)} />
 
-      <FormSection title="3.2 — Traitements médicamenteux en cours" />
-      <RadioField label="Anticoagulants (Warfarine, Xarelto, Eliquis, Pradaxa, Héparine…)" options={['Non', 'Oui']} value={data.anticoagulants || 'Non'} onChange={v => update('anticoagulants', v)} />
-      <RadioField label="Aspirine ou anti-inflammatoires (Ibuprofène, Kétoprofène…)" options={['Non', 'Oui']} value={data.aspirineAntiInflammatoires || 'Non'} onChange={v => update('aspirineAntiInflammatoires', v)} />
-      <RadioField label="Vitamine A acide / Roaccutane® (isotrétinoïne)" options={['Non', 'Oui']} value={data.roaccutane || 'Non'} onChange={v => update('roaccutane', v)} />
-      <RadioField label="Corticoïdes (cortisone, prednisone…) ou immunosuppresseurs" options={['Non', 'Oui']} value={data.corticoides || 'Non'} onChange={v => update('corticoides', v)} />
-      <RadioField label="Antibiotiques en cours" options={['Non', 'Oui']} value={data.antibiotiques || 'Non'} onChange={v => update('antibiotiques', v)} />
-      <RadioField label="Autres médicaments affectant la cicatrisation ou la coagulation" options={['Non', 'Oui']} value={data.autresMedicaments || 'Non'} onChange={v => update('autresMedicaments', v)} />
-      {(data.anticoagulants === 'Oui' || data.aspirineAntiInflammatoires === 'Oui' || data.roaccutane === 'Oui' || data.corticoides === 'Oui' || data.antibiotiques === 'Oui' || data.autresMedicaments === 'Oui') && (
-        <FormField label="Préciser le(s) médicament(s)" value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
-      )}
-
-      <FormSection title="3.3 — Allergies connues" />
-      <RadioField label="Allergie aux métaux (nickel, cobalt, chrome, acier chirurgical, titane)" options={['Non', 'Oui']} value={data.allergieMetaux || 'Non'} onChange={v => update('allergieMetaux', v)} />
-      <RadioField label="Allergie aux encres de tatouage ou pigments de maquillage permanent" options={['Non', 'Oui']} value={data.allergieEncres || 'Non'} onChange={v => update('allergieEncres', v)} />
-      <RadioField label="Allergie au latex" options={['Non', 'Oui']} value={data.allergieLatex || 'Non'} onChange={v => update('allergieLatex', v)} />
-      <RadioField label="Allergie aux produits désinfectants (alcool, chlorhexidine, Bétadine)" options={['Non', 'Oui']} value={data.allergieDesinfectants || 'Non'} onChange={v => update('allergieDesinfectants', v)} />
-      <RadioField label="Allergie aux anesthésiants topiques (crème EMLA, lidocaïne)" options={['Non', 'Oui']} value={data.allergieAnesthesiants || 'Non'} onChange={v => update('allergieAnesthesiants', v)} />
-      {(data.allergieMetaux === 'Oui' || data.allergieEncres === 'Oui' || data.allergieLatex === 'Oui' || data.allergieDesinfectants === 'Oui' || data.allergieAnesthesiants === 'Oui') && (
-        <FormField label="Préciser toute allergie connue" value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
+      <FormSection title={t('q01.section_medications')} />
+      <RadioField label={t('q01.anticoagulants')} options={yesNo} value={data.anticoagulants || t('forms.no')} onChange={v => update('anticoagulants', v)} />
+      <RadioField label={t('q01.aspirin')} options={yesNo} value={data.aspirineAntiInflammatoires || t('forms.no')} onChange={v => update('aspirineAntiInflammatoires', v)} />
+      <RadioField label={t('q01.roaccutane')} options={yesNo} value={data.roaccutane || t('forms.no')} onChange={v => update('roaccutane', v)} />
+      <RadioField label={t('q01.corticoids')} options={yesNo} value={data.corticoides || t('forms.no')} onChange={v => update('corticoides', v)} />
+      <RadioField label={t('q01.antibiotics')} options={yesNo} value={data.antibiotiques || t('forms.no')} onChange={v => update('antibiotiques', v)} />
+      <RadioField label={t('q01.other_medications')} options={yesNo} value={data.autresMedicaments || t('forms.no')} onChange={v => update('autresMedicaments', v)} />
+      {(data.anticoagulants === t('forms.yes') || data.aspirineAntiInflammatoires === t('forms.yes') || data.roaccutane === t('forms.yes') || data.corticoides === t('forms.yes') || data.antibiotiques === t('forms.yes') || data.autresMedicaments === t('forms.yes')) && (
+        <FormField label={t('forms.specify_medication')} value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
       )}
 
-      <FormSection title="3.4 — Situation particulière" />
-      <RadioField label="Enceinte ou allaitante" options={['Non', 'Oui', 'Ne sait pas']} value={data.grossesse || 'Non'} onChange={v => update('grossesse', v)} />
-      <RadioField label="Consommation d'alcool dans les 24h précédant la prestation" options={['Non', 'Oui']} value={data.alcool || 'Non'} onChange={v => update('alcool', v)} />
-      <RadioField label="Consommation de drogues ou substances psychoactives" options={['Non', 'Oui']} value={data.drogues || 'Non'} onChange={v => update('drogues', v)} />
-      <RadioField label="A bien mangé dans les 4h précédant la prestation" options={['Oui', 'Non']} value={data.aBienMange || 'Oui'} onChange={v => update('aBienMange', v)} />
-      <RadioField label="A dormi suffisamment la nuit précédente" options={['Oui', 'Non']} value={data.aDormi || 'Oui'} onChange={v => update('aDormi', v)} />
-      <RadioField label="Lésion, plaie ou irritation sur la zone à traiter" options={['Non', 'Oui']} value={data.lesionZone || 'Non'} onChange={v => update('lesionZone', v)} />
-      <RadioField label="Réaction lors d'une prestation antérieure" options={['Non', 'Oui']} value={data.reactionAnterieure || 'Non'} onChange={v => update('reactionAnterieure', v)} />
-      {data.reactionAnterieure === 'Oui' && (
-        <FormField label="Décrire la réaction" value={data.reactionAnterieureDetail || ''} onChange={v => update('reactionAnterieureDetail', v)} multiline />
+      <FormSection title={t('q01.section_allergies')} />
+      <RadioField label={t('q01.allergy_metals')} options={yesNo} value={data.allergieMetaux || t('forms.no')} onChange={v => update('allergieMetaux', v)} />
+      <RadioField label={t('q01.allergy_inks')} options={yesNo} value={data.allergieEncres || t('forms.no')} onChange={v => update('allergieEncres', v)} />
+      <RadioField label={t('q01.allergy_latex')} options={yesNo} value={data.allergieLatex || t('forms.no')} onChange={v => update('allergieLatex', v)} />
+      <RadioField label={t('q01.allergy_disinfectants')} options={yesNo} value={data.allergieDesinfectants || t('forms.no')} onChange={v => update('allergieDesinfectants', v)} />
+      <RadioField label={t('q01.allergy_anesthetics')} options={yesNo} value={data.allergieAnesthesiants || t('forms.no')} onChange={v => update('allergieAnesthesiants', v)} />
+      {(data.allergieMetaux === t('forms.yes') || data.allergieEncres === t('forms.yes') || data.allergieLatex === t('forms.yes') || data.allergieDesinfectants === t('forms.yes') || data.allergieAnesthesiants === t('forms.yes')) && (
+        <FormField label={t('forms.specify_allergy')} value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
       )}
-      <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="5 — AVIS DU MINEUR (obligatoire dès 12 ans)" />
-      <CheckboxField label="Confirme vouloir ce piercing de son plein gré" value={data.avisMineur || false} onToggle={() => update('avisMineur', !data.avisMineur)} />
+      <FormSection title={t('q01.section_special')} />
+      <RadioField label={t('q01.pregnancy')} options={yesNoMaybe} value={data.grossesse || t('forms.no')} onChange={v => update('grossesse', v)} />
+      <RadioField label={t('q01.alcohol')} options={yesNo} value={data.alcool || t('forms.no')} onChange={v => update('alcool', v)} />
+      <RadioField label={t('q01.drugs')} options={yesNo} value={data.drogues || t('forms.no')} onChange={v => update('drogues', v)} />
+      <RadioField label={t('q01.ate_well')} options={[t('forms.yes'), t('forms.no')]} value={data.aBienMange || t('forms.yes')} onChange={v => update('aBienMange', v)} />
+      <RadioField label={t('q01.slept_well')} options={[t('forms.yes'), t('forms.no')]} value={data.aDormi || t('forms.yes')} onChange={v => update('aDormi', v)} />
+      <RadioField label={t('q01.lesion_zone')} options={yesNo} value={data.lesionZone || t('forms.no')} onChange={v => update('lesionZone', v)} />
+      <RadioField label={t('q01.previous_reaction')} options={yesNo} value={data.reactionAnterieure || t('forms.no')} onChange={v => update('reactionAnterieure', v)} />
+      {data.reactionAnterieure === t('forms.yes') && (
+        <FormField label={t('forms.describe_reaction')} value={data.reactionAnterieureDetail || ''} onChange={v => update('reactionAnterieureDetail', v)} multiline />
+      )}
+      <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="6 — DECLARATION CLIENT" />
-      <CheckboxField label="A répondu honnêtement au questionnaire" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
+      <FormSection title={t('q01.section_minor_opinion')} />
+      <CheckboxField label={t('q01.minor_confirms')} value={data.avisMineur || false} onToggle={() => update('avisMineur', !data.avisMineur)} />
+
+      <FormSection title={t('q01.section_declaration')} />
+      <CheckboxField label={t('q01.answered_honestly')} value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
 
       <RgpdMentions />
-      <FormSection title="8 — SIGNATURES" />
+      <FormSection title={t('q01.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || client.nom || ''} onChange={v => update('nomClientSign', v)} />
-          <FormField label="Date" value={data.dateSignatureClient || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureClient', v)} />
+          <FormField label={t('forms.client_name_signed')} value={data.nomClientSign || client.nom || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureClient || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureClient', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du client"
+              label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
-          <FormField label="Date" value={data.dateSignaturePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignaturePierceur', v)} />
+          <FormField label={t('forms.piercer_name')} value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignaturePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignaturePierceur', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du pierceur"
+              label={t('forms.piercer_signature')}
               value={data.signatureImagePierceur || ''}
               onChange={v => update('signatureImagePierceur', v ?? '')}
             />
@@ -451,112 +450,114 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
 // ─── Formulaire Questionnaire Médical Majeur ─────────────────────────────────
 
 function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  const yesNo = [t('forms.no'), t('forms.yes')];
+  const yesNoMaybe = [t('forms.no'), t('forms.yes'), t('forms.dont_know')];
   return (
     <>
       <LegalBox color="green">
-        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d’identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d’accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l’effacement · Art. 21 — Droit d’opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L’écrit électronique a la même force probante que l’écrit papier (Art. 1366 du Code civil).</em>
+        <em>{t('legal.rgpd_adult')}</em>
       </LegalBox>
 
-      <FormSection title="1 — IDENTITÉ DU CLIENT" />
+      <FormSection title={t('q03.section_client_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom(s)" value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
       </div>
-      <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
-      <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <RadioField label="Pièce d'identité (CNI / Passeport)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
-      {data.pieceId && data.pieceId !== 'Non présentée' && (
-        <FormField label="Numéro de la pièce d'identité" value={data.numeroPiece || ''} onChange={v => update('numeroPiece', v)} />
+      <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      <RadioField label={t('forms.id_piece')} options={t('forms.id_options_minor', { returnObjects: true }) as string[]} value={data.pieceId || ''} onChange={v => update('pieceId', v)} />
+      {data.pieceId && data.pieceId !== t('forms.id_not_presented') && (
+        <FormField label={t('forms.id_number')} value={data.numeroPiece || ''} onChange={v => update('numeroPiece', v)} />
       )}
 
-      <FormSection title="2 — PIERCING DEMANDÉ" />
-      <FormField label="Zone à percer" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
+      <FormSection title={t('q03.section_piercing_requested')} />
+      <FormField label={t('q01.zone_to_pierce')} value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
 
-      <FormSection title="3 — ÉTAT DE SANTÉ" />
-      <WarningBox>Toute réponse "Oui" dans les sections 3.1 et 3.2 peut suspendre la prestation jusqu'à avis médical</WarningBox>
+      <FormSection title={t('q03.section_health')} />
+      <WarningBox>{t('q03.warning_health')}</WarningBox>
 
-      <FormSection title="3.1 — Antécédents médicaux" />
-      <RadioField label="Maladie de peau (eczéma, psoriasis, dermatite atopique)" options={['Non', 'Oui']} value={data.maladiePeau || 'Non'} onChange={v => update('maladiePeau', v)} />
-      <RadioField label="Maladie auto-immune (lupus, sclérodermie, polyarthrite)" options={['Non', 'Oui']} value={data.maladieAutoImmune || 'Non'} onChange={v => update('maladieAutoImmune', v)} />
-      <RadioField label="Diabète (type 1 ou type 2)" options={['Non', 'Oui']} value={data.diabete || 'Non'} onChange={v => update('diabete', v)} />
-      <RadioField label="Maladie cardiaque / pacemaker / valvulopathie" options={['Non', 'Oui']} value={data.maladieCardiaque || 'Non'} onChange={v => update('maladieCardiaque', v)} />
-      <RadioField label="Immunodépression (VIH, chimiothérapie, greffe d'organe)" options={['Non', 'Oui']} value={data.immunodepression || 'Non'} onChange={v => update('immunodepression', v)} />
-      <RadioField label="Troubles de la coagulation / hémophilie" options={['Non', 'Oui']} value={data.troublesCoagulation || 'Non'} onChange={v => update('troublesCoagulation', v)} />
-      <RadioField label="Tendance aux chéloïdes (cicatrices boursouflées)" options={['Non', 'Oui']} value={data.cheloïdes || 'Non'} onChange={v => update('cheloïdes', v)} />
-      {data.cheloïdes === 'Oui' && (
-        <FormField label="Zone(s) concernée(s)" value={data.cheloïdesZones || ''} onChange={v => update('cheloïdesZones', v)} />
+      <FormSection title={t('q01.section_medical_history')} />
+      <RadioField label={t('q03.skin_disease')} options={yesNo} value={data.maladiePeau || t('forms.no')} onChange={v => update('maladiePeau', v)} />
+      <RadioField label={t('q03.autoimmune')} options={yesNo} value={data.maladieAutoImmune || t('forms.no')} onChange={v => update('maladieAutoImmune', v)} />
+      <RadioField label={t('q01.diabetes')} options={yesNo} value={data.diabete || t('forms.no')} onChange={v => update('diabete', v)} />
+      <RadioField label={t('q03.cardiac')} options={yesNo} value={data.maladieCardiaque || t('forms.no')} onChange={v => update('maladieCardiaque', v)} />
+      <RadioField label={t('q03.immunodepression')} options={yesNo} value={data.immunodepression || t('forms.no')} onChange={v => update('immunodepression', v)} />
+      <RadioField label={t('q03.coagulation')} options={yesNo} value={data.troublesCoagulation || t('forms.no')} onChange={v => update('troublesCoagulation', v)} />
+      <RadioField label={t('q03.keloid')} options={yesNo} value={data.cheloïdes || t('forms.no')} onChange={v => update('cheloïdes', v)} />
+      {data.cheloïdes === t('forms.yes') && (
+        <FormField label={t('forms.specify_zone')} value={data.cheloïdesZones || ''} onChange={v => update('cheloïdesZones', v)} />
       )}
-      <RadioField label="Herpès labial ou génital récurrent" options={['Non', 'Oui']} value={data.herpes || 'Non'} onChange={v => update('herpes', v)} />
-      <RadioField label="Hépatite B ou C" options={['Non', 'Oui']} value={data.hepatite || 'Non'} onChange={v => update('hepatite', v)} />
-      <RadioField label="Asthme ou allergies graves" options={['Non', 'Oui']} value={data.asthmeAllergiesGraves || 'Non'} onChange={v => update('asthmeAllergiesGraves', v)} />
-      <RadioField label="Épilepsie" options={['Non', 'Oui']} value={data.epilepsie || 'Non'} onChange={v => update('epilepsie', v)} />
-      <RadioField label="Autre pathologie chronique" options={['Non', 'Oui']} value={data.autrePathologie || 'Non'} onChange={v => update('autrePathologie', v)} />
-      {data.autrePathologie === 'Oui' && (
-        <FormField label="Préciser" value={data.autrePathologieDetail || ''} onChange={v => update('autrePathologieDetail', v)} />
-      )}
-
-      <FormSection title="3.2 — Traitements médicamenteux en cours" />
-      <RadioField label="Anticoagulants (Warfarine, Xarelto, Eliquis, Pradaxa…)" options={['Non', 'Oui']} value={data.anticoagulants || 'Non'} onChange={v => update('anticoagulants', v)} />
-      <RadioField label="Aspirine ou anti-inflammatoires (Ibuprofène, Advil…)" options={['Non', 'Oui']} value={data.aspirineAntiInflammatoires || 'Non'} onChange={v => update('aspirineAntiInflammatoires', v)} />
-      <RadioField label="Roaccutane / Isotrétinoïne" options={['Non', 'Oui']} value={data.roaccutane || 'Non'} onChange={v => update('roaccutane', v)} />
-      <RadioField label="Corticoïdes (cortisone, prednisone…)" options={['Non', 'Oui']} value={data.corticoides || 'Non'} onChange={v => update('corticoides', v)} />
-      <RadioField label="Antibiotiques en cours" options={['Non', 'Oui']} value={data.antibiotiques || 'Non'} onChange={v => update('antibiotiques', v)} />
-      <RadioField label="Autres médicaments affectant la cicatrisation ou la coagulation" options={['Non', 'Oui']} value={data.autresMedicaments || 'Non'} onChange={v => update('autresMedicaments', v)} />
-      {(data.anticoagulants === 'Oui' || data.aspirineAntiInflammatoires === 'Oui' || data.roaccutane === 'Oui' || data.corticoides === 'Oui' || data.antibiotiques === 'Oui' || data.autresMedicaments === 'Oui') && (
-        <FormField label="Préciser le(s) médicament(s)" value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
+      <RadioField label={t('q03.herpes')} options={yesNo} value={data.herpes || t('forms.no')} onChange={v => update('herpes', v)} />
+      <RadioField label={t('q01.hepatitis')} options={yesNo} value={data.hepatite || t('forms.no')} onChange={v => update('hepatite', v)} />
+      <RadioField label={t('q01.asthma_allergy')} options={yesNo} value={data.asthmeAllergiesGraves || t('forms.no')} onChange={v => update('asthmeAllergiesGraves', v)} />
+      <RadioField label={t('q01.epilepsy')} options={yesNo} value={data.epilepsie || t('forms.no')} onChange={v => update('epilepsie', v)} />
+      <RadioField label={t('q03.other_chronic')} options={yesNo} value={data.autrePathologie || t('forms.no')} onChange={v => update('autrePathologie', v)} />
+      {data.autrePathologie === t('forms.yes') && (
+        <FormField label={t('forms.specify')} value={data.autrePathologieDetail || ''} onChange={v => update('autrePathologieDetail', v)} />
       )}
 
-      <FormSection title="3.3 — Allergies connues" />
-      <RadioField label="Allergie aux métaux (nickel, cobalt, chrome, acier chirurgical, titane)" options={['Non', 'Oui']} value={data.allergieMetaux || 'Non'} onChange={v => update('allergieMetaux', v)} />
-      <RadioField label="Allergie aux encres de tatouage ou pigments de maquillage permanent" options={['Non', 'Oui']} value={data.allergieEncres || 'Non'} onChange={v => update('allergieEncres', v)} />
-      <RadioField label="Allergie au latex" options={['Non', 'Oui']} value={data.allergieLatex || 'Non'} onChange={v => update('allergieLatex', v)} />
-      <RadioField label="Allergie aux produits désinfectants (alcool, chlorhexidine, Bétadine)" options={['Non', 'Oui']} value={data.allergieDesinfectants || 'Non'} onChange={v => update('allergieDesinfectants', v)} />
-      <RadioField label="Allergie aux anesthésiants topiques (crème EMLA, lidocaïne)" options={['Non', 'Oui']} value={data.allergieAnesthesiants || 'Non'} onChange={v => update('allergieAnesthesiants', v)} />
-      {(data.allergieMetaux === 'Oui' || data.allergieEncres === 'Oui' || data.allergieLatex === 'Oui' || data.allergieDesinfectants === 'Oui' || data.allergieAnesthesiants === 'Oui') && (
-        <FormField label="Préciser toute allergie connue" value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
+      <FormSection title={t('q01.section_medications')} />
+      <RadioField label={t('q01.anticoagulants')} options={yesNo} value={data.anticoagulants || t('forms.no')} onChange={v => update('anticoagulants', v)} />
+      <RadioField label={t('q03.aspirin')} options={yesNo} value={data.aspirineAntiInflammatoires || t('forms.no')} onChange={v => update('aspirineAntiInflammatoires', v)} />
+      <RadioField label={t('q03.roaccutane')} options={yesNo} value={data.roaccutane || t('forms.no')} onChange={v => update('roaccutane', v)} />
+      <RadioField label={t('q03.corticoids')} options={yesNo} value={data.corticoides || t('forms.no')} onChange={v => update('corticoides', v)} />
+      <RadioField label={t('q01.antibiotics')} options={yesNo} value={data.antibiotiques || t('forms.no')} onChange={v => update('antibiotiques', v)} />
+      <RadioField label={t('q01.other_medications')} options={yesNo} value={data.autresMedicaments || t('forms.no')} onChange={v => update('autresMedicaments', v)} />
+      {(data.anticoagulants === t('forms.yes') || data.aspirineAntiInflammatoires === t('forms.yes') || data.roaccutane === t('forms.yes') || data.corticoides === t('forms.yes') || data.antibiotiques === t('forms.yes') || data.autresMedicaments === t('forms.yes')) && (
+        <FormField label={t('forms.specify_medication')} value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
       )}
 
-      <FormSection title="3.4 — Situation particulière" />
-      <RadioField label="Enceinte, allaitante ou susceptible de l'être" options={['Non', 'Oui', 'Ne sait pas']} value={data.grossesse || 'Non'} onChange={v => update('grossesse', v)} />
-      <RadioField label="Consommation d'alcool dans les 24h précédant la prestation" options={['Non', 'Oui']} value={data.alcool || 'Non'} onChange={v => update('alcool', v)} />
-      <RadioField label="Consommation de drogues ou substances psychoactives" options={['Non', 'Oui']} value={data.drogues || 'Non'} onChange={v => update('drogues', v)} />
-      <RadioField label="A bien mangé dans les 4h précédant la prestation" options={['Oui', 'Non']} value={data.aBienMange || 'Oui'} onChange={v => update('aBienMange', v)} />
-      <RadioField label="A dormi suffisamment la nuit précédente" options={['Oui', 'Non']} value={data.aDormi || 'Oui'} onChange={v => update('aDormi', v)} />
-      <RadioField label="Lésion, plaie ou irritation sur la zone à traiter" options={['Non', 'Oui']} value={data.lesionZone || 'Non'} onChange={v => update('lesionZone', v)} />
-      <RadioField label="Réaction lors d'une prestation antérieure" options={['Non', 'Oui']} value={data.reactionAnterieure || 'Non'} onChange={v => update('reactionAnterieure', v)} />
-      {data.reactionAnterieure === 'Oui' && (
-        <FormField label="Décrire la réaction" value={data.reactionAnterieureDetail || ''} onChange={v => update('reactionAnterieureDetail', v)} multiline />
+      <FormSection title={t('q01.section_allergies')} />
+      <RadioField label={t('q01.allergy_metals')} options={yesNo} value={data.allergieMetaux || t('forms.no')} onChange={v => update('allergieMetaux', v)} />
+      <RadioField label={t('q01.allergy_inks')} options={yesNo} value={data.allergieEncres || t('forms.no')} onChange={v => update('allergieEncres', v)} />
+      <RadioField label={t('q01.allergy_latex')} options={yesNo} value={data.allergieLatex || t('forms.no')} onChange={v => update('allergieLatex', v)} />
+      <RadioField label={t('q01.allergy_disinfectants')} options={yesNo} value={data.allergieDesinfectants || t('forms.no')} onChange={v => update('allergieDesinfectants', v)} />
+      <RadioField label={t('q01.allergy_anesthetics')} options={yesNo} value={data.allergieAnesthesiants || t('forms.no')} onChange={v => update('allergieAnesthesiants', v)} />
+      {(data.allergieMetaux === t('forms.yes') || data.allergieEncres === t('forms.yes') || data.allergieLatex === t('forms.yes') || data.allergieDesinfectants === t('forms.yes') || data.allergieAnesthesiants === t('forms.yes')) && (
+        <FormField label={t('forms.specify_allergy')} value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
       )}
-      <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="6 — DECLARATION CLIENT" />
-      <CheckboxField label="Être majeur(e) et avoir capacité juridique" value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
-      <CheckboxField label="A répondu honnêtement" value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
-      <CheckboxField label="Consent librement" value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
-      <CheckboxField label="S'engage à respecter le protocole de soins" value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
+      <FormSection title={t('q01.section_special')} />
+      <RadioField label={t('q03.pregnancy')} options={yesNoMaybe} value={data.grossesse || t('forms.no')} onChange={v => update('grossesse', v)} />
+      <RadioField label={t('q01.alcohol')} options={yesNo} value={data.alcool || t('forms.no')} onChange={v => update('alcool', v)} />
+      <RadioField label={t('q01.drugs')} options={yesNo} value={data.drogues || t('forms.no')} onChange={v => update('drogues', v)} />
+      <RadioField label={t('q01.ate_well')} options={[t('forms.yes'), t('forms.no')]} value={data.aBienMange || t('forms.yes')} onChange={v => update('aBienMange', v)} />
+      <RadioField label={t('q01.slept_well')} options={[t('forms.yes'), t('forms.no')]} value={data.aDormi || t('forms.yes')} onChange={v => update('aDormi', v)} />
+      <RadioField label={t('q01.lesion_zone')} options={yesNo} value={data.lesionZone || t('forms.no')} onChange={v => update('lesionZone', v)} />
+      <RadioField label={t('q01.previous_reaction')} options={yesNo} value={data.reactionAnterieure || t('forms.no')} onChange={v => update('reactionAnterieure', v)} />
+      {data.reactionAnterieure === t('forms.yes') && (
+        <FormField label={t('forms.describe_reaction')} value={data.reactionAnterieureDetail || ''} onChange={v => update('reactionAnterieureDetail', v)} multiline />
+      )}
+      <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
+
+      <FormSection title={t('q03.section_declaration')} />
+      <CheckboxField label={t('q03.consent_adult')} value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
+      <CheckboxField label={t('q03.consent_honest')} value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
+      <CheckboxField label={t('q03.consent_free')} value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
+      <CheckboxField label={t('q03.consent_care')} value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
 
       <RgpdMentions />
-      <FormSection title="7 — SIGNATURES" />
+      <FormSection title={t('q03.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du client" value={data.nomClientSign || data.nom || ''} onChange={v => update('nomClientSign', v)} />
-          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <FormField label={t('forms.client_name')} value={data.nomClientSign || data.nom || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du client"
+              label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
-          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <FormField label={t('forms.piercer_name')} value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du pierceur"
+              label={t('forms.piercer_signature')}
               value={data.signatureImagePierceur || ''}
               onChange={v => update('signatureImagePierceur', v ?? '')}
             />
@@ -570,29 +571,30 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
 // ─── Formulaire Autorisation Parentale ───────────────────────────────────────
 
 function FormAutorisationParentale({ data, update, client, salonInfo }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client; salonInfo: any }) {
+  const { t } = useTranslation();
   return (
     <>
-      <FormSection title="1 — IDENTITÉ DU SALON" />
-      <FormField label="Nom du salon" value={data.nomSalon || salonInfo?.nom || ''} onChange={v => update('nomSalon', v)} required />
+      <FormSection title={t('q02.section_salon_identity')} />
+      <FormField label={t('forms.salon_name')} value={data.nomSalon || salonInfo?.nom || ''} onChange={v => update('nomSalon', v)} required />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Téléphone" value={data.telSalon || salonInfo?.telephone || ''} onChange={v => update('telSalon', v)} type="tel" />
-        <FormField label="N° SIRET" value={data.siret || salonInfo?.siret || ''} onChange={v => update('siret', v)} />
+        <FormField label={t('forms.phone')} value={data.telSalon || salonInfo?.telephone || ''} onChange={v => update('telSalon', v)} type="tel" />
+        <FormField label={t('forms.siret')} value={data.siret || salonInfo?.siret || ''} onChange={v => update('siret', v)} />
       </div>
-      <FormField label="Nom du pierceur" value={data.nomPierceur || salonInfo?.nomPierceur || ''} onChange={v => update('nomPierceur', v)} />
+      <FormField label={t('forms.piercer_name')} value={data.nomPierceur || salonInfo?.nomPierceur || ''} onChange={v => update('nomPierceur', v)} />
 
-      <FormSection title="2 — IDENTITÉ DU MINEUR" />
+      <FormSection title={t('q02.section_minor_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom" value={data.nomMineur || client.nom} onChange={v => update('nomMineur', v)} required />
-        <FormField label="Prénom" value={data.prenomMineur || client.prenom} onChange={v => update('prenomMineur', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nomMineur || client.nom} onChange={v => update('nomMineur', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenomMineur || client.prenom} onChange={v => update('prenomMineur', v)} required />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissanceMineur || client.dateNaissance || ''} onChange={v => update('dateNaissanceMineur', v)} />
-        <FormField label="Âge" value={data.ageMineur || ''} onChange={v => update('ageMineur', v)} />
+        <FormField label={t('forms.dob')} value={data.dateNaissanceMineur || client.dateNaissance || ''} onChange={v => update('dateNaissanceMineur', v)} />
+        <FormField label={t('forms.age')} value={data.ageMineur || ''} onChange={v => update('ageMineur', v)} />
       </div>
 
-      <FormSection title="3 — REPRÉSENTANT(S) LÉGAL(AUX)" />
+      <FormSection title={t('q02.section_legal_rep')} />
       <div className="p-3 rounded-xl mb-3" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.2)' }}>
-        <p className="text-xs mb-1" style={{ color: 'var(--brand-cyan)' }}>Informations synchronisées automatiquement depuis le Questionnaire Médical Mineur (01)</p>
+        <p className="text-xs mb-1" style={{ color: 'var(--brand-cyan)' }}>{t('q02.sync_from_01')}</p>
         <p className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
           {data.nomRep || client.nom} {data.prenomRep || client.prenom}
         </p>
@@ -600,42 +602,41 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
         {data.lienRep ? <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Lien : {data.lienRep}</p> : null}
       </div>
 
-      <FormSection title="4 — DÉCLARATIONS ET CONSENTEMENT" />
-      <LegalBox>Je soussigné(e), représentant(e) légal(e) du mineur désigné ci-dessus :</LegalBox>
-      <CheckboxField label="Certifie être titulaire de l'autorité parentale / tutelle légale." value={data.decl_0 || false} onToggle={() => update('decl_0', !data.decl_0)} />
-      <CheckboxField label="Autorise expressément la réalisation du piercing décrit ci-dessus." value={data.decl_1 || false} onToggle={() => update('decl_1', !data.decl_1)} />
-      <CheckboxField label="Confirme que le mineur ne présente pas de contre-indication médicale à cette intervention." value={data.decl_3 || false} onToggle={() => update('decl_3', !data.decl_3)} />
-      <CheckboxField label="M'engage à faire respecter au mineur le protocole de soins post-piercing remis par le professionnel." value={data.decl_4 || false} onToggle={() => update('decl_4', !data.decl_4)} />
+      <FormSection title={t('q02.section_declarations')} />
+      <LegalBox>{t('q02.legal_rep_intro')}</LegalBox>
+      <CheckboxField label={t('q02.decl_authority')} value={data.decl_0 || false} onToggle={() => update('decl_0', !data.decl_0)} />
+      <CheckboxField label={t('q02.decl_authorize')} value={data.decl_1 || false} onToggle={() => update('decl_1', !data.decl_1)} />
+      <CheckboxField label={t('q02.decl_no_contraindication')} value={data.decl_3 || false} onToggle={() => update('decl_3', !data.decl_3)} />
+      <CheckboxField label={t('q02.decl_care_protocol')} value={data.decl_4 || false} onToggle={() => update('decl_4', !data.decl_4)} />
 
-      <FormSection title="6 — PRÉSENCE PENDANT LA SÉANCE" />
-      <CheckboxField label="Était présent(e) physiquement lors de la réalisation du piercing." value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
-      <CheckboxField label="A donné son autorisation écrite mais n'était pas présent(e) — copie de CNI jointe." value={data.presenceEcrite || false} onToggle={() => update('presenceEcrite', !data.presenceEcrite)} />
+      <FormSection title={t('q02.section_presence')} />
+      <CheckboxField label={t('q02.presence_physical')} value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
+      <CheckboxField label={t('q02.presence_written')} value={data.presenceEcrite || false} onToggle={() => update('presenceEcrite', !data.presenceEcrite)} />
 
-
-      <FormSection title="8b — PIÈCE D'IDENTITÉ DU REPRÉSENTANT LÉGAL" />
-      <RadioField label="Pièce d'identité du représentant légal (optionnel)" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdRepresentantType || ''} onChange={v => update('pieceIdRepresentantType', v)} />
-      <FormField label="Numéro de la pièce d'identité" value={data.pieceIdRepresentantNumero || ''} onChange={v => update('pieceIdRepresentantNumero', v)} />
+      <FormSection title={t('q02.section_rep_id')} />
+      <RadioField label={t('q02.rep_id_label')} options={t('forms.id_options_minor', { returnObjects: true }) as string[]} value={data.pieceIdRepresentantType || ''} onChange={v => update('pieceIdRepresentantType', v)} />
+      <FormField label={t('forms.id_number')} value={data.pieceIdRepresentantNumero || ''} onChange={v => update('pieceIdRepresentantNumero', v)} />
 
       <RgpdMentions />
-      <FormSection title="9 — SIGNATURES" />
+      <FormSection title={t('q02.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || data.nomRepresentant || ''} onChange={v => update('nomRepresentantSign', v)} />
-          <FormField label="Date" value={data.dateSignatureParent || ''} onChange={v => update('dateSignatureParent', v)} />
+          <FormField label={t('forms.legal_rep_name')} value={data.nomRepresentantSign || data.nomRepresentant || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureParent || ''} onChange={v => update('dateSignatureParent', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du représentant légal"
+              label={t('forms.legal_rep_signature')}
               value={data.signatureImageParent || ''}
               onChange={v => update('signatureImageParent', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
-          <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
+          <FormField label={t('forms.piercer_name')} value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du pierceur"
+              label={t('forms.piercer_signature')}
               value={data.signatureImagePierceur || ''}
               onChange={v => update('signatureImagePierceur', v ?? '')}
             />
@@ -1557,123 +1558,122 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
 // ─── Formulaire Questionnaire Médical Tatouage Majeur ────────────────────────
 
 function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  const yesNo = [t('forms.no'), t('forms.yes')];
+  const yesNoMaybe = [t('forms.no'), t('forms.yes'), t('forms.dont_know')];
   return (
     <>
       <LegalBox color="green">
-        <em>Conservation : 3 ans minimum à compter de la dernière prestation (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
+        <em>{t('legal.rgpd_tattoo')}</em>
       </LegalBox>
-
       <LegalBox color="orange">
-        <strong>▪ Règlement UE 2020/2081 — Encres de tatouage</strong><br />
-        ▪ Les encres utilisées sont conformes au Règlement UE 2020/2081 en vigueur depuis le 4 janvier 2022.<br />
-        ▪ La traçabilité des encres est conservée <strong>5 ans</strong> (Art. R 1311-7 CSP + Arrêté 13/03/2009).
+        {t('legal.eu_ink_regulation')}
       </LegalBox>
 
-      <FormField label="Nom du salon" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
+      <FormField label={t('forms.salon_name')} value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
 
-      <FormSection title="1 — IDENTITÉ DU CLIENT" />
+      <FormSection title={t('q05.section_client_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom(s)" value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
       </div>
-      <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
-      <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <RadioField label="Pièce d'identité" options={['CNI', 'Passeport', 'Titre de séjour']} value={data.pieceIdType || ''} onChange={v => update('pieceIdType', v)} />
+      <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      <RadioField label={t('forms.id_piece')} options={t('forms.id_options_adult', { returnObjects: true }) as string[]} value={data.pieceIdType || ''} onChange={v => update('pieceIdType', v)} />
       {data.pieceIdType && (
-        <FormField label="Numéro de la pièce d'identité" value={data.pieceIdNumero || ''} onChange={v => update('pieceIdNumero', v)} />
+        <FormField label={t('forms.id_number')} value={data.pieceIdNumero || ''} onChange={v => update('pieceIdNumero', v)} />
       )}
 
-      <FormSection title="2 — PROJET DE TATOUAGE" />
-      <FormField label="Zone à tatouer" value={data.zoneTatouage || ''} onChange={v => update('zoneTatouage', v)} required />
-      <FormField label="Description du motif" value={data.descriptionMotif || ''} onChange={v => update('descriptionMotif', v)} multiline />
-      <RadioField label="Type de tatouage" options={['Noir & gris', 'Couleur', 'Minimaliste', 'Traditionnel', 'Réaliste', 'Autre']} value={data.typeTatouage || ''} onChange={v => update('typeTatouage', v)} />
-      <RadioField label="Premier tatouage" options={['Oui', 'Non']} value={data.premierTatouage || 'Non'} onChange={v => update('premierTatouage', v)} />
+      <FormSection title={t('q05.section_tattoo_project')} />
+      <FormField label={t('q05.zone_to_tattoo')} value={data.zoneTatouage || ''} onChange={v => update('zoneTatouage', v)} required />
+      <FormField label={t('q05.motif_description')} value={data.descriptionMotif || ''} onChange={v => update('descriptionMotif', v)} multiline />
+      <RadioField label={t('q05.tattoo_type')} options={t('q05.tattoo_type_options', { returnObjects: true }) as string[]} value={data.typeTatouage || ''} onChange={v => update('typeTatouage', v)} />
+      <RadioField label={t('q05.first_tattoo')} options={[t('forms.yes'), t('forms.no')]} value={data.premierTatouage || t('forms.no')} onChange={v => update('premierTatouage', v)} />
 
-      <FormSection title="3 — ÉTAT DE SANTÉ — QUESTIONNAIRE MÉDICAL COMPLET" />
-      <WarningBox>Toute réponse « Oui » peut suspendre la prestation jusqu'à avis médical. Répondez honnêtement. (Arrêté du 3 décembre 2008 — ARS)</WarningBox>
+      <FormSection title={t('q05.section_health')} />
+      <WarningBox>{t('q01.warning_health')}</WarningBox>
 
-      <FormSection title="3.1 — Antécédents médicaux" />
-      <RadioField label="Maladies de peau en cours (eczéma, psoriasis, acné, herpès, infection cutanée)" options={['Non', 'Oui']} value={data.maladiesPeau || 'Non'} onChange={v => update('maladiesPeau', v)} />
-      <RadioField label="Maladies auto-immunes (lupus, sclérose en plaques, maladie de Crohn…)" options={['Non', 'Oui']} value={data.maladiesAutoImmunes || 'Non'} onChange={v => update('maladiesAutoImmunes', v)} />
-      <RadioField label="Diabète (type 1 ou type 2)" options={['Non', 'Oui']} value={data.diabete || 'Non'} onChange={v => update('diabete', v)} />
-      <RadioField label="Maladie cardiaque ou prothèse cardiaque / pacemaker" options={['Non', 'Oui']} value={data.pathologieCardiaque || 'Non'} onChange={v => update('pathologieCardiaque', v)} />
-      <RadioField label="Insuffisance rénale ou hépatique" options={['Non', 'Oui']} value={data.insuffisanceRenaleHepatique || 'Non'} onChange={v => update('insuffisanceRenaleHepatique', v)} />
-      <RadioField label="Immunodépression (VIH/SIDA, greffe d'organe, chimiothérapie)" options={['Non', 'Oui']} value={data.immunodepression || 'Non'} onChange={v => update('immunodepression', v)} />
-      <RadioField label="Troubles de la coagulation (hémophilie, thrombopénie)" options={['Non', 'Oui']} value={data.troublesCoagulation || 'Non'} onChange={v => update('troublesCoagulation', v)} />
-      <RadioField label="Tendance aux cicatrices chéloïdes (boursouflées, hypertrophiques)" options={['Non', 'Oui']} value={data.cheloide || 'Non'} onChange={v => update('cheloide', v)} />
-      <RadioField label="Antécédents d'herpès (labial ou génital)" options={['Non', 'Oui']} value={data.antecedentsHerpes || 'Non'} onChange={v => update('antecedentsHerpes', v)} />
-      <RadioField label="Porteur(se) d'une hépatite B ou C" options={['Non', 'Oui']} value={data.hepatite || 'Non'} onChange={v => update('hepatite', v)} />
-      <RadioField label="Épilepsie" options={['Non', 'Oui']} value={data.epilepsie || 'Non'} onChange={v => update('epilepsie', v)} />
-      <RadioField label="Vitiligo ou hypopigmentation" options={['Non', 'Oui']} value={data.vitiligo || 'Non'} onChange={v => update('vitiligo', v)} />
-      <RadioField label="Antécédent de réaction à un tatouage précédent" options={['Non', 'Oui']} value={data.reactionTatouage || 'Non'} onChange={v => update('reactionTatouage', v)} />
-      {data.reactionTatouage === 'Oui' && (
-        <FormField label="Décrire la réaction" value={data.reactionTatouageDetail || ''} onChange={v => update('reactionTatouageDetail', v)} multiline />
+      <FormSection title={t('q01.section_medical_history')} />
+      <RadioField label={t('q01.skin_diseases')} options={yesNo} value={data.maladiesPeau || t('forms.no')} onChange={v => update('maladiesPeau', v)} />
+      <RadioField label={t('q01.autoimmune')} options={yesNo} value={data.maladiesAutoImmunes || t('forms.no')} onChange={v => update('maladiesAutoImmunes', v)} />
+      <RadioField label={t('q01.diabetes')} options={yesNo} value={data.diabete || t('forms.no')} onChange={v => update('diabete', v)} />
+      <RadioField label={t('q01.cardiac')} options={yesNo} value={data.pathologieCardiaque || t('forms.no')} onChange={v => update('pathologieCardiaque', v)} />
+      <RadioField label={t('q01.renal_hepatic')} options={yesNo} value={data.insuffisanceRenaleHepatique || t('forms.no')} onChange={v => update('insuffisanceRenaleHepatique', v)} />
+      <RadioField label={t('q01.immunodepression')} options={yesNo} value={data.immunodepression || t('forms.no')} onChange={v => update('immunodepression', v)} />
+      <RadioField label={t('q01.coagulation')} options={yesNo} value={data.troublesCoagulation || t('forms.no')} onChange={v => update('troublesCoagulation', v)} />
+      <RadioField label={t('q01.keloid')} options={yesNo} value={data.cheloide || t('forms.no')} onChange={v => update('cheloide', v)} />
+      <RadioField label={t('q01.herpes_history')} options={yesNo} value={data.antecedentsHerpes || t('forms.no')} onChange={v => update('antecedentsHerpes', v)} />
+      <RadioField label={t('q01.hepatitis')} options={yesNo} value={data.hepatite || t('forms.no')} onChange={v => update('hepatite', v)} />
+      <RadioField label={t('q01.epilepsy')} options={yesNo} value={data.epilepsie || t('forms.no')} onChange={v => update('epilepsie', v)} />
+      <RadioField label={t('q05.vitiligo')} options={yesNo} value={data.vitiligo || t('forms.no')} onChange={v => update('vitiligo', v)} />
+      <RadioField label={t('q05.previous_tattoo_reaction')} options={yesNo} value={data.reactionTatouage || t('forms.no')} onChange={v => update('reactionTatouage', v)} />
+      {data.reactionTatouage === t('forms.yes') && (
+        <FormField label={t('forms.describe_reaction')} value={data.reactionTatouageDetail || ''} onChange={v => update('reactionTatouageDetail', v)} multiline />
       )}
 
-      <FormSection title="3.2 — Traitements médicamenteux en cours" />
-      <RadioField label="Anticoagulants (Warfarine, Xarelto, Eliquis, Pradaxa, Héparine…)" options={['Non', 'Oui']} value={data.anticoagulants || 'Non'} onChange={v => update('anticoagulants', v)} />
-      <RadioField label="Aspirine ou anti-inflammatoires (Ibuprofène, Kétoprofène…)" options={['Non', 'Oui']} value={data.aspirineAntiInflammatoires || 'Non'} onChange={v => update('aspirineAntiInflammatoires', v)} />
-      <RadioField label="Vitamine A acide / Roaccutane® (isotrétinoïne)" options={['Non', 'Oui']} value={data.roaccutane || 'Non'} onChange={v => update('roaccutane', v)} />
-      <RadioField label="Corticoïdes (cortisone, prednisone…) ou immunosuppresseurs" options={['Non', 'Oui']} value={data.corticoides || 'Non'} onChange={v => update('corticoides', v)} />
-      <RadioField label="Antibiotiques en cours" options={['Non', 'Oui']} value={data.antibiotiques || 'Non'} onChange={v => update('antibiotiques', v)} />
-      {(data.anticoagulants === 'Oui' || data.aspirineAntiInflammatoires === 'Oui' || data.roaccutane === 'Oui' || data.corticoides === 'Oui' || data.antibiotiques === 'Oui') && (
-        <FormField label="Préciser le(s) médicament(s)" value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
+      <FormSection title={t('q01.section_medications')} />
+      <RadioField label={t('q01.anticoagulants')} options={yesNo} value={data.anticoagulants || t('forms.no')} onChange={v => update('anticoagulants', v)} />
+      <RadioField label={t('q01.aspirin')} options={yesNo} value={data.aspirineAntiInflammatoires || t('forms.no')} onChange={v => update('aspirineAntiInflammatoires', v)} />
+      <RadioField label={t('q01.roaccutane')} options={yesNo} value={data.roaccutane || t('forms.no')} onChange={v => update('roaccutane', v)} />
+      <RadioField label={t('q01.corticoids')} options={yesNo} value={data.corticoides || t('forms.no')} onChange={v => update('corticoides', v)} />
+      <RadioField label={t('q01.antibiotics')} options={yesNo} value={data.antibiotiques || t('forms.no')} onChange={v => update('antibiotiques', v)} />
+      {(data.anticoagulants === t('forms.yes') || data.aspirineAntiInflammatoires === t('forms.yes') || data.roaccutane === t('forms.yes') || data.corticoides === t('forms.yes') || data.antibiotiques === t('forms.yes')) && (
+        <FormField label={t('forms.specify_medication')} value={data.traitementMedicalDetail || ''} onChange={v => update('traitementMedicalDetail', v)} multiline />
       )}
 
-      <FormSection title="3.3 — Allergies connues" />
-      <RadioField label="Allergie aux encres de tatouage ou pigments" options={['Non', 'Oui']} value={data.allergieEncres || 'Non'} onChange={v => update('allergieEncres', v)} />
-      <RadioField label="Allergie aux métaux (nickel, cobalt, chrome)" options={['Non', 'Oui']} value={data.allergieMetaux || 'Non'} onChange={v => update('allergieMetaux', v)} />
-      <RadioField label="Allergie au latex" options={['Non', 'Oui']} value={data.allergieLatex || 'Non'} onChange={v => update('allergieLatex', v)} />
-      <RadioField label="Allergie aux produits désinfectants (alcool, chlorhexidine)" options={['Non', 'Oui']} value={data.allergieDesinfectants || 'Non'} onChange={v => update('allergieDesinfectants', v)} />
-      <RadioField label="Allergie aux anesthésiants topiques (crème EMLA, lidoïne)" options={['Non', 'Oui']} value={data.allergieAnesthesiants || 'Non'} onChange={v => update('allergieAnesthesiants', v)} />
-      {(data.allergieEncres === 'Oui' || data.allergieMetaux === 'Oui' || data.allergieLatex === 'Oui' || data.allergieDesinfectants === 'Oui' || data.allergieAnesthesiants === 'Oui') && (
-        <FormField label="Préciser toute allergie connue" value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
+      <FormSection title={t('q01.section_allergies')} />
+      <RadioField label={t('q01.allergy_inks')} options={yesNo} value={data.allergieEncres || t('forms.no')} onChange={v => update('allergieEncres', v)} />
+      <RadioField label={t('q05.allergy_metals')} options={yesNo} value={data.allergieMetaux || t('forms.no')} onChange={v => update('allergieMetaux', v)} />
+      <RadioField label={t('q01.allergy_latex')} options={yesNo} value={data.allergieLatex || t('forms.no')} onChange={v => update('allergieLatex', v)} />
+      <RadioField label={t('q05.allergy_disinfectants')} options={yesNo} value={data.allergieDesinfectants || t('forms.no')} onChange={v => update('allergieDesinfectants', v)} />
+      <RadioField label={t('q01.allergy_anesthetics')} options={yesNo} value={data.allergieAnesthesiants || t('forms.no')} onChange={v => update('allergieAnesthesiants', v)} />
+      {(data.allergieEncres === t('forms.yes') || data.allergieMetaux === t('forms.yes') || data.allergieLatex === t('forms.yes') || data.allergieDesinfectants === t('forms.yes') || data.allergieAnesthesiants === t('forms.yes')) && (
+        <FormField label={t('forms.specify_allergy')} value={data.allergiesDetail || ''} onChange={v => update('allergiesDetail', v)} multiline />
       )}
 
-      <FormSection title="3.4 — Situation particulière" />
-      <RadioField label="Enceinte ou allaitante" options={['Non', 'Oui', 'Ne sait pas']} value={data.grossesse || 'Non'} onChange={v => update('grossesse', v)} />
-      <RadioField label="Consommation d'alcool dans les 24h précédant la prestation" options={['Non', 'Oui']} value={data.alcool || 'Non'} onChange={v => update('alcool', v)} />
-      <RadioField label="A bien mangé dans les 4h précédant la prestation" options={['Oui', 'Non']} value={data.aBienMange || 'Oui'} onChange={v => update('aBienMange', v)} />
-      <RadioField label="Lésion, plaie ou irritation sur la zone à tatouer" options={['Non', 'Oui']} value={data.lesionZone || 'Non'} onChange={v => update('lesionZone', v)} />
-      <RadioField label="Exposition solaire récente sur la zone à tatouer" options={['Non', 'Oui']} value={data.expositionSolaire || 'Non'} onChange={v => update('expositionSolaire', v)} />
-      <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
+      <FormSection title={t('q01.section_special')} />
+      <RadioField label={t('q01.pregnancy')} options={yesNoMaybe} value={data.grossesse || t('forms.no')} onChange={v => update('grossesse', v)} />
+      <RadioField label={t('q01.alcohol')} options={yesNo} value={data.alcool || t('forms.no')} onChange={v => update('alcool', v)} />
+      <RadioField label={t('q01.ate_well')} options={[t('forms.yes'), t('forms.no')]} value={data.aBienMange || t('forms.yes')} onChange={v => update('aBienMange', v)} />
+      <RadioField label={t('q05.lesion_zone')} options={yesNo} value={data.lesionZone || t('forms.no')} onChange={v => update('lesionZone', v)} />
+      <RadioField label={t('q05.sun_exposure')} options={yesNo} value={data.expositionSolaire || t('forms.no')} onChange={v => update('expositionSolaire', v)} />
+      <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="4 — TRAÇABILITÉ DES ENCRES (Règl. UE 2020/2081)" />
-      <WarningBox>Conservation obligatoire 5 ans. Toutes les encres utilisées doivent être conformes au Règlement UE 2020/2081 en vigueur depuis le 4 janvier 2022.</WarningBox>
-      <FormField label="Marque de l'encre" value={data.marqueEncre || ''} onChange={v => update('marqueEncre', v)} />
-      <FormField label="Couleur(s) utilisée(s)" value={data.couleurEncre || ''} onChange={v => update('couleurEncre', v)} />
-      <FormField label="N° de lot / référence" value={data.lotEncre || ''} onChange={v => update('lotEncre', v)} />
-      <FormField label="Date de péremption" value={data.peremptionEncre || ''} onChange={v => update('peremptionEncre', v)} />
-      <RadioField label="Certificat de conformité UE 2020/2081 disponible" options={['Oui', 'Non']} value={data.certifEncre || 'Oui'} onChange={v => update('certifEncre', v)} />
+      <FormSection title={t('q05.section_ink_traceability')} />
+      <WarningBox>{t('q05.ink_warning')}</WarningBox>
+      <FormField label={t('q05.ink_brand')} value={data.marqueEncre || ''} onChange={v => update('marqueEncre', v)} />
+      <FormField label={t('q05.ink_colors')} value={data.couleurEncre || ''} onChange={v => update('couleurEncre', v)} />
+      <FormField label={t('q05.ink_lot')} value={data.lotEncre || ''} onChange={v => update('lotEncre', v)} />
+      <FormField label={t('q05.ink_expiry')} value={data.peremptionEncre || ''} onChange={v => update('peremptionEncre', v)} />
+      <RadioField label={t('q05.ink_cert')} options={[t('forms.yes'), t('forms.no')]} value={data.certifEncre || t('forms.yes')} onChange={v => update('certifEncre', v)} />
 
-      <FormSection title="5 — CONSENTEMENT ÉCLAIRÉ" />
-      <CheckboxField label="A répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Donne son consentement libre et éclairé pour la réalisation du tatouage" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
-      <CheckboxField label="Assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
-      <CheckboxField label="Confirme être majeur(e) et ne pas être sous tutelle" value={data.confirmeMajeur || false} onToggle={() => update('confirmeMajeur', !data.confirmeMajeur)} />
+      <FormSection title={t('q05.section_consent')} />
+      <CheckboxField label={t('q05.consent_honest')} value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
+      <CheckboxField label={t('q05.consent_free')} value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
+      <CheckboxField label={t('q05.consent_care')} value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
+      <CheckboxField label={t('q05.consent_adult')} value={data.confirmeMajeur || false} onToggle={() => update('confirmeMajeur', !data.confirmeMajeur)} />
 
       <RgpdMentions />
-      <FormSection title="6 — SIGNATURES" />
+      <FormSection title={t('q05.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
-          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <FormField label={t('forms.client_name_signed')} value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du client"
+              label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
-          <FormField label="Date" value={data.dateSignatureTatoueur || ''} onChange={v => update('dateSignatureTatoueur', v)} />
+          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureTatoueur || ''} onChange={v => update('dateSignatureTatoueur', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du tatoueur"
+              label={t('forms.tattoo_artist_signature')}
               value={data.signatureImageTatoueur || ''}
               onChange={v => update('signatureImageTatoueur', v ?? '')}
             />
@@ -1687,145 +1687,148 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
 // ─── Formulaire Fiche de Séance Dermographe ───────────────────────────────────────────
 
 function FormFicheSeanceDermographe({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  const yesNo = [t('forms.yes'), t('forms.no')];
   return (
     <>
       <LegalBox color="orange">
-        <strong>Cadre réglementaire :</strong> Arrêté du 3 décembre 2008 (maquillage permanent) • Règlement UE 2020/2081 (pigments) • Art. L.1311-1 CSP • RGPD Art. 9 (données santé) • Traitement des données conservé 5 ans minimum
+        {t('q08.legal_framework')}
       </LegalBox>
 
-      <FormSection title="1 — IDENTITÉ DU CLIENT" />
+      <FormSection title={t('q08.section_client_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom" value={data.nom || client.nom || ''} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom" value={data.prenom || client.prenom || ''} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom || ''} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom || ''} onChange={v => update('prenom', v)} required />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Date de naissance" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} type="date" />
-        <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      </div>
-      <FormSection title="2 — INFORMATIONS SÉANCE" />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Date de la séance" value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} type="date" required />
-        <FormField label="Durée (minutes)" value={data.dureeSeance || ''} onChange={v => update('dureeSeance', v)} placeholder="ex : 90 min" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Heure de début" value={data.heureDebut || ''} onChange={v => update('heureDebut', v)} type="time" />
-        <FormField label="Heure de fin" value={data.heureFin || ''} onChange={v => update('heureFin', v)} type="time" />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="N° de séance" value={data.numeroSeance || ''} onChange={v => update('numeroSeance', v)} placeholder="ex : Séance 1/2" />
-        <FormField label="Dermographe / Artiste" value={data.dermographe || ''} onChange={v => update('dermographe', v)} placeholder="Nom de l'artiste" required />
+        <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} type="date" />
+        <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
       </div>
 
-      <FormSection title="3 — ZONE(S) TRAITÉE(S)" />
+      <FormSection title={t('q08.section_session_info')} />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label={t('q08.session_date')} value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} type="date" required />
+        <FormField label={t('q08.session_duration')} value={data.dureeSeance || ''} onChange={v => update('dureeSeance', v)} placeholder={t('q08.session_duration_placeholder')} />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label={t('q08.start_time')} value={data.heureDebut || ''} onChange={v => update('heureDebut', v)} type="time" />
+        <FormField label={t('q08.end_time')} value={data.heureFin || ''} onChange={v => update('heureFin', v)} type="time" />
+      </div>
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label={t('q08.session_number')} value={data.numeroSeance || ''} onChange={v => update('numeroSeance', v)} placeholder={t('q08.session_number_placeholder')} />
+        <FormField label={t('q08.artist_name')} value={data.dermographe || ''} onChange={v => update('dermographe', v)} placeholder={t('q08.artist_name_placeholder')} required />
+      </div>
+
+      <FormSection title={t('q08.section_zones')} />
       <LegalBox color="green">
-        <strong>Zones autorisées :</strong> Sourcils (microblading, powder brows, ombre brows) • Lèvres (contour, aquarelle) • Eye-liner (supérieur, inférieur) • Ailes du nez • Grain de beauté artificiel
+        {t('q08.authorized_zones')}
       </LegalBox>
-      {['sourcils', 'levres', 'eye_liner_superieur', 'eye_liner_inferieur', 'autre_zone'].map((zone, idx) => {
-        const labels: Record<string, string> = {
-          sourcils: 'Sourcils',
-          levres: 'Lèvres',
-          eye_liner_superieur: 'Eye-liner supérieur',
-          eye_liner_inferieur: 'Eye-liner inférieur',
-          autre_zone: 'Autre zone',
+      {['sourcils', 'levres', 'eye_liner_superieur', 'eye_liner_inferieur', 'autre_zone'].map((zone) => {
+        const zoneLabels: Record<string, string> = {
+          sourcils: t('q08.zone_eyebrows'),
+          levres: t('q08.zone_lips'),
+          eye_liner_superieur: t('q08.zone_eyeliner_upper'),
+          eye_liner_inferieur: t('q08.zone_eyeliner_lower'),
+          autre_zone: t('q08.zone_other'),
         };
         return (
           <div key={zone} className="p-3 rounded-lg mb-2" style={{ background: 'rgba(255,152,0,0.04)', border: '1px solid rgba(255,152,0,0.15)' }}>
-            <CheckboxField label={labels[zone]} value={data[`zone_${zone}`] || false} onToggle={() => update(`zone_${zone}`, !data[`zone_${zone}`])} />
+            <CheckboxField label={zoneLabels[zone]} value={data[`zone_${zone}`] || false} onToggle={() => update(`zone_${zone}`, !data[`zone_${zone}`])} />
             {data[`zone_${zone}`] && (
               <>
                 <div className="grid grid-cols-2 gap-2 mt-2">
-                  <RadioField label="Technique" options={zone === 'sourcils' ? ['Microblading', 'Powder Brows', 'Ombre Brows', 'Combo Brows', 'Nano Brows'] : zone === 'levres' ? ['Contour lèvres', 'Aquarelle lèvres', 'Full lips', 'Neutralisation'] : ['Trait fin', 'Trait épais', 'Smoky', 'Cat eye']} value={data[`zone_${zone}_technique`] || ''} onChange={v => update(`zone_${zone}_technique`, v)} />
-                  <FormField label="Description / Forme" value={data[`zone_${zone}_description`] || ''} onChange={v => update(`zone_${zone}_description`, v)} multiline placeholder="Forme, épaisseur, longueur, notes..." />
+                  <RadioField label={t('q08.technique')} options={zone === 'sourcils' ? ['Microblading', 'Powder Brows', 'Ombre Brows', 'Combo Brows', 'Nano Brows'] : zone === 'levres' ? [t('q08.lip_contour'), t('q08.lip_watercolor'), 'Full lips', t('q08.lip_neutralization')] : [t('q08.liner_thin'), t('q08.liner_thick'), 'Smoky', 'Cat eye']} value={data[`zone_${zone}_technique`] || ''} onChange={v => update(`zone_${zone}_technique`, v)} />
+                  <FormField label={t('q08.description_form')} value={data[`zone_${zone}_description`] || ''} onChange={v => update(`zone_${zone}_description`, v)} multiline placeholder={t('q08.description_form_placeholder')} />
                 </div>
-                <FormField label="Couleur / Teinte" value={data[`zone_${zone}_couleur`] || ''} onChange={v => update(`zone_${zone}_couleur`, v)} placeholder="ex : Brun clair, Brun foncé, Noir, Rose nude..." />
-                <FormField label="Observations séance précédente" value={data[`zone_${zone}_obs`] || ''} onChange={v => update(`zone_${zone}_obs`, v)} multiline placeholder="État de la cicatrisation, retouches nécessaires..." />
+                <FormField label={t('q08.color_shade')} value={data[`zone_${zone}_couleur`] || ''} onChange={v => update(`zone_${zone}_couleur`, v)} placeholder={t('q08.color_shade_placeholder')} />
+                <FormField label={t('q08.prev_session_obs')} value={data[`zone_${zone}_obs`] || ''} onChange={v => update(`zone_${zone}_obs`, v)} multiline placeholder={t('q08.prev_session_obs_placeholder')} />
               </>
             )}
           </div>
         );
       })}
 
-      <FormSection title="4 — TRAÇABILITÉ DES PIGMENTS (Règl. UE 2020/2081)" />
+      <FormSection title={t('q08.section_pigment_traceability')} />
       <LegalBox color="orange">
-        <strong>Obligation légale :</strong> Arrêté du 3 déc. 2008 + Règlement UE 2020/2081 entré en vigueur le 4 janvier 2022 — traitement obligatoire de chaque pigment utilisé (fabricant, référence, N° lot, date péremption). Conservation 5 ans minimum.
+        {t('q08.pigment_legal_obligation')}
       </LegalBox>
       {[1, 2, 3].map(i => (
         <div key={i} className="p-3 rounded-lg mb-2" style={{ background: 'rgba(255,152,0,0.04)', border: '1px solid rgba(255,152,0,0.15)' }}>
-          <p className="text-xs font-600 mb-2" style={{ color: '#FF9800', fontWeight: 600 }}>Pigment n°{i}</p>
+          <p className="text-xs font-600 mb-2" style={{ color: '#FF9800', fontWeight: 600 }}>{t('q08.pigment_n', { n: i })}</p>
           <div className="grid grid-cols-2 gap-2">
-            <FormField label="Couleur / Teinte" value={data[`pigment${i}_couleur`] || ''} onChange={v => update(`pigment${i}_couleur`, v)} placeholder="ex : Brun, Noir, Rose..." />
-            <FormField label="Fabricant" value={data[`pigment${i}_fabricant`] || ''} onChange={v => update(`pigment${i}_fabricant`, v)} placeholder="Marque" />
+            <FormField label={t('q08.pigment_color')} value={data[`pigment${i}_couleur`] || ''} onChange={v => update(`pigment${i}_couleur`, v)} placeholder={t('q08.pigment_color_placeholder')} />
+            <FormField label={t('q08.pigment_manufacturer')} value={data[`pigment${i}_fabricant`] || ''} onChange={v => update(`pigment${i}_fabricant`, v)} placeholder={t('q08.pigment_manufacturer_placeholder')} />
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <FormField label="Référence / Code" value={data[`pigment${i}_ref`] || ''} onChange={v => update(`pigment${i}_ref`, v)} placeholder="Réf. produit" />
-            <FormField label="N° de lot" value={data[`pigment${i}_lot`] || ''} onChange={v => update(`pigment${i}_lot`, v)} placeholder="N° lot" />
+            <FormField label={t('q08.pigment_ref')} value={data[`pigment${i}_ref`] || ''} onChange={v => update(`pigment${i}_ref`, v)} placeholder={t('q08.pigment_ref_placeholder')} />
+            <FormField label={t('q08.pigment_lot')} value={data[`pigment${i}_lot`] || ''} onChange={v => update(`pigment${i}_lot`, v)} placeholder={t('q08.pigment_lot_placeholder')} />
           </div>
           <div className="grid grid-cols-2 gap-2">
-            <FormField label="Date de péremption" value={data[`pigment${i}_peremption`] || ''} onChange={v => update(`pigment${i}_peremption`, v)} type="date" />
-            <FormField label="Quantité utilisée (ml)" value={data[`pigment${i}_quantite`] || ''} onChange={v => update(`pigment${i}_quantite`, v)} placeholder="ml" />
+            <FormField label={t('forms.expiry_date')} value={data[`pigment${i}_peremption`] || ''} onChange={v => update(`pigment${i}_peremption`, v)} type="date" />
+            <FormField label={t('q08.pigment_quantity')} value={data[`pigment${i}_quantite`] || ''} onChange={v => update(`pigment${i}_quantite`, v)} placeholder="ml" />
           </div>
-          <RadioField label="Conforme UE 2020/2081" options={['Oui', 'Non']} value={data[`pigment${i}_conforme`] || 'Oui'} onChange={v => update(`pigment${i}_conforme`, v)} />
+          <RadioField label={t('q08.pigment_compliant')} options={yesNo} value={data[`pigment${i}_conforme`] || t('forms.yes')} onChange={v => update(`pigment${i}_conforme`, v)} />
         </div>
       ))}
 
-      <FormSection title="5 — MACHINE & MATÉRIEL" />
+      <FormSection title={t('q08.section_machine')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Machine utilisée" value={data.machine || ''} onChange={v => update('machine', v)} placeholder="ex : Cheyenne Hawk, Dragonhawk..." />
-        <FormField label="Vitesse (Hz)" value={data.vitesseMachine || ''} onChange={v => update('vitesseMachine', v)} placeholder="ex : 100 Hz" />
+        <FormField label={t('q08.machine_used')} value={data.machine || ''} onChange={v => update('machine', v)} placeholder={t('q08.machine_used_placeholder')} />
+        <FormField label={t('q08.machine_speed')} value={data.vitesseMachine || ''} onChange={v => update('vitesseMachine', v)} placeholder={t('q08.machine_speed_placeholder')} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Type d'aiguille" value={data.typeAiguille || ''} onChange={v => update('typeAiguille', v)} placeholder="ex : 1RL, 3RL, 5M1..." />
-        <FormField label="N° de lot aiguille" value={data.lotAiguille || ''} onChange={v => update('lotAiguille', v)} placeholder="N° lot" />
+        <FormField label={t('q08.needle_type')} value={data.typeAiguille || ''} onChange={v => update('typeAiguille', v)} placeholder={t('q08.needle_type_placeholder')} />
+        <FormField label={t('q08.needle_lot')} value={data.lotAiguille || ''} onChange={v => update('lotAiguille', v)} placeholder={t('q08.needle_lot_placeholder')} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Date de péremption aiguille" value={data.peremptionAiguille || ''} onChange={v => update('peremptionAiguille', v)} type="date" />
-        <FormField label="Fabricant aiguille" value={data.fabricantAiguille || ''} onChange={v => update('fabricantAiguille', v)} placeholder="Marque" />
+        <FormField label={t('q08.needle_expiry')} value={data.peremptionAiguille || ''} onChange={v => update('peremptionAiguille', v)} type="date" />
+        <FormField label={t('q08.needle_manufacturer')} value={data.fabricantAiguille || ''} onChange={v => update('fabricantAiguille', v)} placeholder={t('q08.needle_manufacturer_placeholder')} />
       </div>
-      <FormField label="Produit anesthésiant topique" value={data.anesthesiant || ''} onChange={v => update('anesthesiant', v)} placeholder="ex : EMLA, Hush, Dr. Numb... ou Aucun" />
+      <FormField label={t('q08.anesthetic')} value={data.anesthesiant || ''} onChange={v => update('anesthesiant', v)} placeholder={t('q08.anesthetic_placeholder')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Lot anesthésiant" value={data.lotAnesthesiant || ''} onChange={v => update('lotAnesthesiant', v)} />
-        <FormField label="Péremption anesthésiant" value={data.peremptionAnesthesiant || ''} onChange={v => update('peremptionAnesthesiant', v)} type="date" />
+        <FormField label={t('q08.anesthetic_lot')} value={data.lotAnesthesiant || ''} onChange={v => update('lotAnesthesiant', v)} />
+        <FormField label={t('q08.anesthetic_expiry')} value={data.peremptionAnesthesiant || ''} onChange={v => update('peremptionAnesthesiant', v)} type="date" />
       </div>
 
-      <FormSection title="6 — DÉROULEMENT DE LA SÉANCE" />
-      <RadioField label="Préparation de la zone" options={['Nettoyage + désinfection', 'Nettoyage seul', 'Autre']} value={data.preparationZone || 'Nettoyage + désinfection'} onChange={v => update('preparationZone', v)} />
-      <RadioField label="Test de couleur préalable" options={['Oui', 'Non']} value={data.testCouleur || 'Non'} onChange={v => update('testCouleur', v)} />
-      <RadioField label="Dessin / gabarit préalable" options={['Oui', 'Non']} value={data.gabarit || 'Oui'} onChange={v => update('gabarit', v)} />
-      <RadioField label="Accord du client sur le dessin" options={['Oui', 'Non']} value={data.accordDessin || 'Oui'} onChange={v => update('accordDessin', v)} />
-      <RadioField label="Incident / réaction pendant la séance" options={['Aucun', 'Douleur intense', 'Malaise', 'Saignement excessif', 'Réaction allergique', 'Autre']} value={data.incident || 'Aucun'} onChange={v => update('incident', v)} />
-      {data.incident && data.incident !== 'Aucun' && (
-        <FormField label="Détails de l'incident" value={data.incidentDetail || ''} onChange={v => update('incidentDetail', v)} multiline />
+      <FormSection title={t('q08.section_session_progress')} />
+      <RadioField label={t('q08.zone_preparation')} options={t('q08.zone_preparation_options', { returnObjects: true }) as string[]} value={data.preparationZone || t('q08.zone_preparation_default')} onChange={v => update('preparationZone', v)} />
+      <RadioField label={t('q08.color_test')} options={yesNo} value={data.testCouleur || t('forms.no')} onChange={v => update('testCouleur', v)} />
+      <RadioField label={t('q08.template_used')} options={yesNo} value={data.gabarit || t('forms.yes')} onChange={v => update('gabarit', v)} />
+      <RadioField label={t('q08.client_approved_design')} options={yesNo} value={data.accordDessin || t('forms.yes')} onChange={v => update('accordDessin', v)} />
+      <RadioField label={t('q08.incident')} options={t('q08.incident_options', { returnObjects: true }) as string[]} value={data.incident || t('q08.incident_none')} onChange={v => update('incident', v)} />
+      {data.incident && data.incident !== t('q08.incident_none') && (
+        <FormField label={t('q08.incident_details')} value={data.incidentDetail || ''} onChange={v => update('incidentDetail', v)} multiline />
       )}
-      <FormField label="Observations générales" value={data.observations || ''} onChange={v => update('observations', v)} multiline placeholder="Notes sur le résultat, la réaction de la peau, les retouches prévues..." />
+      <FormField label={t('q08.general_observations')} value={data.observations || ''} onChange={v => update('observations', v)} multiline placeholder={t('q08.general_observations_placeholder')} />
 
-      <FormSection title="7 — RETOUCHE & SUIVI" />
-      <RadioField label="Retouche prévue" options={['Oui', 'Non']} value={data.retouchePrevue || 'Oui'} onChange={v => update('retouchePrevue', v)} />
-      {data.retouchePrevue === 'Oui' && (
-        <FormField label="Date prévue de retouche" value={data.dateRetouche || ''} onChange={v => update('dateRetouche', v)} type="date" />
+      <FormSection title={t('q08.section_followup')} />
+      <RadioField label={t('q08.touchup_planned')} options={yesNo} value={data.retouchePrevue || t('forms.yes')} onChange={v => update('retouchePrevue', v)} />
+      {data.retouchePrevue === t('forms.yes') && (
+        <FormField label={t('q08.touchup_date')} value={data.dateRetouche || ''} onChange={v => update('dateRetouche', v)} type="date" />
       )}
-      <FormField label="Conseils post-séance donnés au client" value={data.conseilsPostSeance || ''} onChange={v => update('conseilsPostSeance', v)} multiline placeholder="Consignes de cicatrisation, produits recommandés, évictions..." />
-      <CheckboxField label="Fiche de soins post-dermographie remise au client" value={data.ficheSoinsRemise || false} onToggle={() => update('ficheSoinsRemise', !data.ficheSoinsRemise)} />
+      <FormField label={t('q08.post_session_advice')} value={data.conseilsPostSeance || ''} onChange={v => update('conseilsPostSeance', v)} multiline placeholder={t('q08.post_session_advice_placeholder')} />
+      <CheckboxField label={t('q08.care_sheet_given')} value={data.ficheSoinsRemise || false} onToggle={() => update('ficheSoinsRemise', !data.ficheSoinsRemise)} />
 
       <RgpdMentions />
-      <FormSection title="8 — SIGNATURES" />
+      <FormSection title={t('q08.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
-          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <FormField label={t('forms.client_name_signed')} value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du client"
+              label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
-          <FormField label="Date" value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
+          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du dermographe"
+              label={t('q08.dermographer_signature')}
               value={data.signatureImageDermographe || ''}
               onChange={v => update('signatureImageDermographe', v ?? '')}
             />
@@ -1839,135 +1842,132 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
 // ─── Formulaire Questionnaire Médical Dermographe ───────────────────────────────────────────
 
 function FormQuestionnaireDermographe({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  const yesNo = [t('forms.no'), t('forms.yes')];
   return (
     <>
       <LegalBox color="orange">
-        <strong>▪ Cadre légal — Dermographie / Maquillage Permanent</strong><br />
-        ▪ La dermographie (maquillage permanent) est réglementée par l'Arrêté du 3 décembre 2008 relatif aux conditions d'hygiène et de salubrité relatives aux pratiques de tatouage avec effraction cutanée (Art. L1311-1 CSP).<br />
-        ▪ Les pigments utilisés doivent être conformes au Règlement UE 2020/2081 (REACH) en vigueur depuis le 4 janvier 2022.<br />
-        ▪ La pratique sur mineurs est interdite sauf dérogation médicale écrite (Art. L1311-7 CSP).<br />
-        Conservation des données : 3 ans à compter de la dernière prestation (Art. L1110-4 CSP) — Traçabilité des pigments : 5 ans (Règl. UE 2020/2081).
+        {t('q09.legal_framework')}
       </LegalBox>
       <LegalBox color="cyan">
-        <em>VOS DROITS RGPD — Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles (données de santé). Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition. Conservation : données de santé 3 ans à compter de la dernière prestation. Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
-        Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
+        <em>{t('legal.rgpd_dermography')}</em>
       </LegalBox>
 
-      <FormField label="Nom du salon" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
-      <FormField label="Date de la prestation (JJ/MM/AAAA)" value={data.datePrestation || ''} onChange={v => update('datePrestation', v)} />
+      <FormField label={t('forms.salon_name')} value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
+      <FormField label={t('q09.service_date')} value={data.datePrestation || ''} onChange={v => update('datePrestation', v)} />
 
-      <FormSection title="1 — IDENTITÉ DU CLIENT" />
+      <FormSection title={t('q09.section_client_identity')} />
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Nom de famille" value={data.nom || client.nom} onChange={v => update('nom', v)} required />
-        <FormField label="Prénom(s)" value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
       </div>
-      <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
-      <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+      <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
 
-      <FormSection title="2 — PRESTATION DERMOGRAPHIQUE" />
+      <FormSection title={t('q09.section_service')} />
       <RadioField
-        label="Zone(s) traitée(s)"
-        options={['Sourcils', 'Lèvres', 'Eye-liner', 'Carré de sourcil', 'Grain de beauté', 'Autre']}
+        label={t('q09.zones_treated')}
+        options={t('q09.zones_options', { returnObjects: true }) as string[]}
         value={data.zoneDermographie || ''}
         onChange={v => update('zoneDermographie', v)}
       />
-      {data.zoneDermographie === 'Autre' && (
-        <FormField label="Préciser la zone" value={data.zoneAutre || ''} onChange={v => update('zoneAutre', v)} />
+      {data.zoneDermographie === t('forms.other') && (
+        <FormField label={t('forms.specify_zone')} value={data.zoneAutre || ''} onChange={v => update('zoneAutre', v)} />
       )}
       <RadioField
-        label="Type de technique"
-        options={['Microblading', 'Powder brows', 'Combo brows', 'Ombré lips', 'Liner permanent', 'Autre']}
+        label={t('q09.technique_type')}
+        options={t('q09.technique_options', { returnObjects: true }) as string[]}
         value={data.techniqueDermographie || ''}
         onChange={v => update('techniqueDermographie', v)}
       />
-      {data.techniqueDermographie === 'Autre' && (
-        <FormField label="Préciser la technique" value={data.techniqueAutre || ''} onChange={v => update('techniqueAutre', v)} />
+      {data.techniqueDermographie === t('forms.other') && (
+        <FormField label={t('forms.specify_technique')} value={data.techniqueAutre || ''} onChange={v => update('techniqueAutre', v)} />
       )}
-      <RadioField label="Première séance ou retouche" options={['Première séance', 'Retouche', 'Correction']} value={data.typeSeance || 'Première séance'} onChange={v => update('typeSeance', v)} />
-      <FormField label="Description du projet / rendu souhaité" value={data.descriptionProjet || ''} onChange={v => update('descriptionProjet', v)} multiline />
+      <RadioField label={t('q09.session_type')} options={t('q09.session_type_options', { returnObjects: true }) as string[]} value={data.typeSeance || t('q09.session_type_first')} onChange={v => update('typeSeance', v)} />
+      <FormField label={t('q09.project_description')} value={data.descriptionProjet || ''} onChange={v => update('descriptionProjet', v)} multiline />
 
-      <FormSection title="3 — ANTÉCÉDENTS DERMOGRAPHIQUES" />
-      <RadioField label="Maquillage permanent antérieur sur la zone" options={['Non', 'Oui']} value={data.maquillagePrecedent || 'Non'} onChange={v => update('maquillagePrecedent', v)} />
-      {data.maquillagePrecedent === 'Oui' && (
+      <FormSection title={t('q09.section_history')} />
+      <RadioField label={t('q09.previous_pmu')} options={yesNo} value={data.maquillagePrecedent || t('forms.no')} onChange={v => update('maquillagePrecedent', v)} />
+      {data.maquillagePrecedent === t('forms.yes') && (
         <>
-          <FormField label="Salon / praticien précédent" value={data.salonPrecedent || ''} onChange={v => update('salonPrecedent', v)} />
-          <FormField label="Date approximative de la dernière séance" value={data.dateDerniereMaquillagePrecedente || ''} onChange={v => update('dateDerniereMaquillagePrecedente', v)} />
-          <RadioField label="Pigments précédents retirés au laser" options={['Non', 'Oui', 'Partiellement']} value={data.retraitLaser || 'Non'} onChange={v => update('retraitLaser', v)} />
+          <FormField label={t('q09.previous_salon')} value={data.salonPrecedent || ''} onChange={v => update('salonPrecedent', v)} />
+          <FormField label={t('q09.previous_session_date')} value={data.dateDerniereMaquillagePrecedente || ''} onChange={v => update('dateDerniereMaquillagePrecedente', v)} />
+          <RadioField label={t('q09.laser_removal')} options={[t('forms.no'), t('forms.yes'), t('q09.partially')]} value={data.retraitLaser || t('forms.no')} onChange={v => update('retraitLaser', v)} />
         </>
       )}
-      <RadioField label="Traitement au laser sur la zone (autre motif)" options={['Non', 'Oui']} value={data.laserAutre || 'Non'} onChange={v => update('laserAutre', v)} />
+      <RadioField label={t('q09.laser_other')} options={yesNo} value={data.laserAutre || t('forms.no')} onChange={v => update('laserAutre', v)} />
 
-      <FormSection title="4 — ÉTAT DE SANTÉ — CONTRE-INDICATIONS" />
-      <WarningBox>Toute réponse « Oui » peut constituer une contre-indication absolue ou relative. La prestation sera suspendue jusqu'à avis médical si nécessaire. (Arrêté du 3 décembre 2008 — ARS)</WarningBox>
-      <RadioField label="Grossesse ou allaitement en cours" options={['Non', 'Oui']} value={data.grossesse || 'Non'} onChange={v => update('grossesse', v)} />
-      <RadioField label="Diabète (type 1 ou 2)" options={['Non', 'Oui']} value={data.diabete || 'Non'} onChange={v => update('diabete', v)} />
-      <RadioField label="Troubles de la coagulation / hémophilie" options={['Non', 'Oui']} value={data.troublesCoagulation || 'Non'} onChange={v => update('troublesCoagulation', v)} />
-      <RadioField label="Maladies auto-immunes (lupus, psoriasis, vitiligo…)" options={['Non', 'Oui']} value={data.maladiesAutoImmunes || 'Non'} onChange={v => update('maladiesAutoImmunes', v)} />
-      <RadioField label="Maladies de peau actives sur la zone (eczéma, herpès…)" options={['Non', 'Oui']} value={data.maladiesPeau || 'Non'} onChange={v => update('maladiesPeau', v)} />
-      {data.maladiesPeau === 'Oui' && (
-        <FormField label="Préciser la pathologie" value={data.maladiesPeauDetail || ''} onChange={v => update('maladiesPeauDetail', v)} />
+      <FormSection title={t('q09.section_health')} />
+      <WarningBox>{t('q09.warning_health')}</WarningBox>
+      <RadioField label={t('q01.pregnancy')} options={yesNo} value={data.grossesse || t('forms.no')} onChange={v => update('grossesse', v)} />
+      <RadioField label={t('q01.diabetes')} options={yesNo} value={data.diabete || t('forms.no')} onChange={v => update('diabete', v)} />
+      <RadioField label={t('q01.coagulation')} options={yesNo} value={data.troublesCoagulation || t('forms.no')} onChange={v => update('troublesCoagulation', v)} />
+      <RadioField label={t('q09.autoimmune_dermo')} options={yesNo} value={data.maladiesAutoImmunes || t('forms.no')} onChange={v => update('maladiesAutoImmunes', v)} />
+      <RadioField label={t('q09.skin_diseases_zone')} options={yesNo} value={data.maladiesPeau || t('forms.no')} onChange={v => update('maladiesPeau', v)} />
+      {data.maladiesPeau === t('forms.yes') && (
+        <FormField label={t('forms.specify_pathology')} value={data.maladiesPeauDetail || ''} onChange={v => update('maladiesPeauDetail', v)} />
       )}
-      <RadioField label="Tendance aux cicatrices chéloïdes ou hypertrophiques" options={['Non', 'Oui']} value={data.cheloide || 'Non'} onChange={v => update('cheloide', v)} />
-      <RadioField label="Herpès labial récurrent (pour prestation lèvres)" options={['Non', 'Oui', 'Non concerné']} value={data.herpesLabial || 'Non concerné'} onChange={v => update('herpesLabial', v)} />
-      {data.herpesLabial === 'Oui' && (
-        <WarningBox>Traitement antiviral préventif recommandé avant toute prestation sur les lèvres. Consultez votre médecin.</WarningBox>
+      <RadioField label={t('q01.keloid')} options={yesNo} value={data.cheloide || t('forms.no')} onChange={v => update('cheloide', v)} />
+      <RadioField label={t('q09.herpes_labial')} options={[t('forms.no'), t('forms.yes'), t('q09.not_applicable')]} value={data.herpesLabial || t('q09.not_applicable')} onChange={v => update('herpesLabial', v)} />
+      {data.herpesLabial === t('forms.yes') && (
+        <WarningBox>{t('q09.herpes_warning')}</WarningBox>
       )}
-      <RadioField label="Allergie connue aux pigments, métaux lourds ou anesthésiants" options={['Non', 'Oui']} value={data.allergiesPigments || 'Non'} onChange={v => update('allergiesPigments', v)} />
-      {data.allergiesPigments === 'Oui' && (
-        <FormField label="Préciser l'allergie" value={data.allergiesPigmentsDetail || ''} onChange={v => update('allergiesPigmentsDetail', v)} />
+      <RadioField label={t('q09.allergy_pigments')} options={yesNo} value={data.allergiesPigments || t('forms.no')} onChange={v => update('allergiesPigments', v)} />
+      {data.allergiesPigments === t('forms.yes') && (
+        <FormField label={t('forms.specify_allergy')} value={data.allergiesPigmentsDetail || ''} onChange={v => update('allergiesPigmentsDetail', v)} />
       )}
-      <RadioField label="Allergie au latex" options={['Non', 'Oui']} value={data.allergieLatex || 'Non'} onChange={v => update('allergieLatex', v)} />
-      <RadioField label="Immunodépression (VIH, chimiothérapie, corticoïdes au long cours…)" options={['Non', 'Oui']} value={data.immunodepression || 'Non'} onChange={v => update('immunodepression', v)} />
-      <RadioField label="Traitement anticoagulant ou antiagrégant plaquettaire" options={['Non', 'Oui']} value={data.anticoagulant || 'Non'} onChange={v => update('anticoagulant', v)} />
-      {data.anticoagulant === 'Oui' && (
-        <FormField label="Nom du médicament" value={data.anticoagulantDetail || ''} onChange={v => update('anticoagulantDetail', v)} />
+      <RadioField label={t('q01.allergy_latex')} options={yesNo} value={data.allergieLatex || t('forms.no')} onChange={v => update('allergieLatex', v)} />
+      <RadioField label={t('q01.immunodepression')} options={yesNo} value={data.immunodepression || t('forms.no')} onChange={v => update('immunodepression', v)} />
+      <RadioField label={t('q09.anticoagulant')} options={yesNo} value={data.anticoagulant || t('forms.no')} onChange={v => update('anticoagulant', v)} />
+      {data.anticoagulant === t('forms.yes') && (
+        <FormField label={t('forms.medication_name')} value={data.anticoagulantDetail || ''} onChange={v => update('anticoagulantDetail', v)} />
       )}
-      <RadioField label="Traitement isotrétinoïne (Roaccutane) en cours ou récent (< 1 an)" options={['Non', 'Oui']} value={data.isotretinoine || 'Non'} onChange={v => update('isotretinoine', v)} />
-      <RadioField label="Autre traitement médicamenteux en cours" options={['Non', 'Oui']} value={data.autreMedicament || 'Non'} onChange={v => update('autreMedicament', v)} />
-      {data.autreMedicament === 'Oui' && (
-        <FormField label="Préciser le(s) traitement(s)" value={data.autreMedicamentDetail || ''} onChange={v => update('autreMedicamentDetail', v)} multiline />
+      <RadioField label={t('q09.isotretinoin')} options={yesNo} value={data.isotretinoine || t('forms.no')} onChange={v => update('isotretinoine', v)} />
+      <RadioField label={t('q09.other_medication')} options={yesNo} value={data.autreMedicament || t('forms.no')} onChange={v => update('autreMedicament', v)} />
+      {data.autreMedicament === t('forms.yes') && (
+        <FormField label={t('forms.specify_medication')} value={data.autreMedicamentDetail || ''} onChange={v => update('autreMedicamentDetail', v)} multiline />
       )}
-      <FormField label="Informations médicales complémentaires" value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
+      <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
-      <FormSection title="5 — TRAÇABILITÉ DES PIGMENTS (Règl. UE 2020/2081)" />
-      <WarningBox>Depuis le 4 janvier 2022, seuls les pigments conformes au Règlement UE 2020/2081 (REACH) peuvent être utilisés. Conservation des données de traçabilité : 5 ans.</WarningBox>
-      <FormField label="Marque du pigment" value={data.marquePigment || ''} onChange={v => update('marquePigment', v)} />
-      <FormField label="Référence / couleur utilisée" value={data.referencePigment || ''} onChange={v => update('referencePigment', v)} />
-      <FormField label="N° de lot" value={data.lotPigment || ''} onChange={v => update('lotPigment', v)} />
-      <FormField label="Date de péremption du pigment" value={data.perempPigment || ''} onChange={v => update('perempPigment', v)} />
-      <RadioField label="Certificat de conformité UE 2020/2081 disponible" options={['Oui', 'Non']} value={data.certifPigment || 'Oui'} onChange={v => update('certifPigment', v)} />
-      <FormField label="Anesthésiant topique utilisé (marque + référence)" value={data.anesthesiant || ''} onChange={v => update('anesthesiant', v)} />
+      <FormSection title={t('q09.section_pigment_traceability')} />
+      <WarningBox>{t('q09.pigment_warning')}</WarningBox>
+      <FormField label={t('q09.pigment_brand')} value={data.marquePigment || ''} onChange={v => update('marquePigment', v)} />
+      <FormField label={t('q09.pigment_ref_color')} value={data.referencePigment || ''} onChange={v => update('referencePigment', v)} />
+      <FormField label={t('q08.pigment_lot')} value={data.lotPigment || ''} onChange={v => update('lotPigment', v)} />
+      <FormField label={t('q09.pigment_expiry')} value={data.perempPigment || ''} onChange={v => update('perempPigment', v)} />
+      <RadioField label={t('q05.ink_cert')} options={[t('forms.yes'), t('forms.no')]} value={data.certifPigment || t('forms.yes')} onChange={v => update('certifPigment', v)} />
+      <FormField label={t('q09.anesthetic_used')} value={data.anesthesiant || ''} onChange={v => update('anesthesiant', v)} />
 
-      <FormSection title="6 — CONSENTEMENT ÉCLAIRÉ" />
-      <CheckboxField label="J'ai été informé(e) des risques liés à la dermographie (réaction allergique, infection, résultat non garanti, nécessité de retouche)" value={data.informeRisques || false} onToggle={() => update('informeRisques', !data.informeRisques)} />
-      <CheckboxField label="J'ai été informé(e) que le résultat définitif n'est visible qu'après cicatrisation complète (4 à 6 semaines)" value={data.informeCicatrisation || false} onToggle={() => update('informeCicatrisation', !data.informeCicatrisation)} />
-      <CheckboxField label="J'ai été informé(e) que la couleur peut s'éclaircir de 30 à 50 % après cicatrisation" value={data.informeEclaircissement || false} onToggle={() => update('informeEclaircissement', !data.informeEclaircissement)} />
-      <CheckboxField label="J'ai été informé(e) des contre-indications et certifie ne pas en présenter (ou avoir consulté un médecin)" value={data.certifieContraIndications || false} onToggle={() => update('certifieContraIndications', !data.certifieContraIndications)} />
-      <CheckboxField label="J'ai pris connaissance des soins post-dermographie et m'engage à les respecter" value={data.engageSoinsPost || false} onToggle={() => update('engageSoinsPost', !data.engageSoinsPost)} />
-      <CheckboxField label="Je consens librement et en toute connaissance de cause à la réalisation de la prestation" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
-      <CheckboxField label="Je certifie que les informations médicales fournies sont exactes et complètes" value={data.certifieInfosExactes || false} onToggle={() => update('certifieInfosExactes', !data.certifieInfosExactes)} />
+      <FormSection title={t('q09.section_consent')} />
+      <CheckboxField label={t('q09.consent_risks')} value={data.informeRisques || false} onToggle={() => update('informeRisques', !data.informeRisques)} />
+      <CheckboxField label={t('q09.consent_healing')} value={data.informeCicatrisation || false} onToggle={() => update('informeCicatrisation', !data.informeCicatrisation)} />
+      <CheckboxField label={t('q09.consent_fading')} value={data.informeEclaircissement || false} onToggle={() => update('informeEclaircissement', !data.informeEclaircissement)} />
+      <CheckboxField label={t('q09.consent_contraindications')} value={data.certifieContraIndications || false} onToggle={() => update('certifieContraIndications', !data.certifieContraIndications)} />
+      <CheckboxField label={t('q09.consent_aftercare')} value={data.engageSoinsPost || false} onToggle={() => update('engageSoinsPost', !data.engageSoinsPost)} />
+      <CheckboxField label={t('q09.consent_free')} value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
+      <CheckboxField label={t('q09.consent_accurate')} value={data.certifieInfosExactes || false} onToggle={() => update('certifieInfosExactes', !data.certifieInfosExactes)} />
 
       <RgpdMentions />
-      <FormSection title="7 — SIGNATURES" />
+      <FormSection title={t('q09.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du client — Lu et approuvé" value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
-          <FormField label="Date" value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
+          <FormField label={t('forms.client_name_signed')} value={data.nomClientSign || ''} onChange={v => update('nomClientSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureClient || ''} onChange={v => update('dateSignatureClient', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du client"
+              label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
             />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
-          <FormField label="Date" value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
+          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label={t('forms.date')} value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
             <SignaturePad
-              label="Signature du dermographe"
+              label={t('q08.dermographer_signature')}
               value={data.signatureImageDermographe || ''}
               onChange={v => update('signatureImageDermographe', v ?? '')}
             />
