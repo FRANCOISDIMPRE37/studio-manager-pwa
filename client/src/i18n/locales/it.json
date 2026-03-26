@@ -558,14 +558,34 @@
       "title": "SURFACE & DERMAL",
       "zones": [
         {
-          "zone": "Dermal / Microdermal",
-          "desc": "Ancoraggio unico sotto la pelle. Gioiello: Testa decorativa su ancora.",
-          "cica": "1 a 3 mesi"
+          "zone": "Microdermal",
+          "desc": "Qualsiasi zona piatta: collo, décolleté, nuca, fianchi, guance, tempie… Gioiello: Testa decorativa su ancora.",
+          "cica": "da 1 a 3 mesi"
         },
         {
-          "zone": "Surface bar",
-          "desc": "Barra che attraversa una piega della pelle. Gioiello: Surface bar.",
-          "cica": "6 a 18 mesi"
+          "zone": "Skin Diver",
+          "desc": "Variante più leggera del microdermal. Meno ancoraggio sottocutaneo. Gioiello: Testa decorativa.",
+          "cica": "da 1 a 3 mesi"
+        },
+        {
+          "zone": "Surface — Fianco",
+          "desc": "Tra l'ombelico e l'osso iliaco, inclinato a 90°. Zona ad alto movimento. Gioiello: Surface bar.",
+          "cica": "da 9 a 18 mesi"
+        },
+        {
+          "zone": "Surface — Nuca",
+          "desc": "Orizzontale sulla nuca. Tra i più alti rischi di rigetto. Gioiello: Surface bar.",
+          "cica": "da 9 a 18 mesi"
+        },
+        {
+          "zone": "Surface — Sterno",
+          "desc": "Verticale o orizzontale sullo sterno / décolleté. Gioiello: Surface bar.",
+          "cica": "da 9 a 18 mesi"
+        },
+        {
+          "zone": "Surface — Addome",
+          "desc": "Intorno all'ombelico (non ombelico). Triangolo o croce di skin diver. Gioiello: Surface bar.",
+          "cica": "da 9 a 18 mesi"
         }
       ],
       "faire": [

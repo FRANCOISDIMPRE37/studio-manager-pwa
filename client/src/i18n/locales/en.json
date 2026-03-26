@@ -422,14 +422,34 @@
       "title": "SURFACE & DERMAL",
       "zones": [
         {
-          "zone": "Dermal / Microdermal",
-          "desc": "Single anchor under the skin. Jewelry: Decorative head on anchor.",
+          "zone": "Microdermal",
+          "desc": "Any flat area: neck, décolleté, nape, hips, cheeks, temples… Jewellery: decorative top on anchor.",
           "cica": "1 to 3 months"
         },
         {
-          "zone": "Surface bar",
-          "desc": "Bar crossing a skin fold. Jewelry: Surface bar.",
-          "cica": "6 to 18 months"
+          "zone": "Skin Diver",
+          "desc": "Lighter variant of microdermal. Less subcutaneous anchoring. Jewellery: decorative top.",
+          "cica": "1 to 3 months"
+        },
+        {
+          "zone": "Surface — Hip",
+          "desc": "Between navel and iliac crest, angled at 90°. High-movement area. Jewellery: surface bar.",
+          "cica": "9 to 18 months"
+        },
+        {
+          "zone": "Surface — Nape",
+          "desc": "Horizontal on the nape of the neck. Among the highest rejection risks. Jewellery: surface bar.",
+          "cica": "9 to 18 months"
+        },
+        {
+          "zone": "Surface — Sternum",
+          "desc": "Vertical or horizontal on the sternum / décolleté. Jewellery: surface bar.",
+          "cica": "9 to 18 months"
+        },
+        {
+          "zone": "Surface — Belly",
+          "desc": "Around the navel (non-navel). Triangle or cross of skin divers. Jewellery: surface bar.",
+          "cica": "9 to 18 months"
         }
       ],
       "faire": [

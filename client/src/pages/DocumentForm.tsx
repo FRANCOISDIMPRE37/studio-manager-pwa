@@ -757,10 +757,14 @@ const SOINS_DATA: Record<string, { title: string; zones: { zone: string; desc: s
     ],
   },
   soins_surface_dermal: {
-    title: 'SURFACE & DERMAL',
+    title: 'SOINS POST PIERCING SURFACE / DERMAL',
     zones: [
-      { zone: 'Dermal / Microdermal', desc: 'Ancrage unique sous la peau. Bijou : Tête décorative sur ancre.', cica: '1 à 3 mois' },
-      { zone: 'Surface bar', desc: 'Barre traversant un pli de peau. Bijou : Surface bar.', cica: '6 à 18 mois' },
+      { zone: 'Microdermal', desc: "N'importe quelle zone plane : cou, décolleté, nuque, hanches, joues, tempes… Bijou : Tête décorative sur ancre.", cica: '1 à 3 mois' },
+      { zone: 'Skin Diver', desc: "Variante + légère du microdermal. Moins d'ancrage sous-cutané. Bijou : Tête décorative.", cica: '1 à 3 mois' },
+      { zone: 'Surface — Hanche', desc: "Entre nombril et os iliaque, incliné à 90°. Zone à fort mouvement. Bijou : Surface bar.", cica: '9 à 18 mois' },
+      { zone: 'Surface — Nuque', desc: "Horizontale sur la nuque. Risque de rejet parmi les plus élevés. Bijou : Surface bar.", cica: '9 à 18 mois' },
+      { zone: 'Surface — Sternum', desc: "Verticale ou horizontale sur le sternum / décolleté. Bijou : Surface bar.", cica: '9 à 18 mois' },
+      { zone: 'Surface — Ventre', desc: "Autour du nombril (non-nombril). Triangle ou croix de skin divers. Bijou : Surface bar.", cica: '9 à 18 mois' },
     ],
     faire: [
       'Nettoyer 2×/jour au sérum physiologique NaCl 0,9%.',

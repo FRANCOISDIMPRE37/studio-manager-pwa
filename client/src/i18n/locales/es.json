@@ -558,14 +558,34 @@
       "title": "SURFACE & DERMAL",
       "zones": [
         {
-          "zone": "Dermal / Microdermal",
-          "desc": "Anclaje único bajo la piel. Joya: Cabeza decorativa sobre ancla.",
+          "zone": "Microdermal",
+          "desc": "Cualquier zona plana: cuello, escote, nuca, caderas, mejillas, sienes… Joya: Cabeza decorativa sobre ancla.",
           "cica": "1 a 3 meses"
         },
         {
-          "zone": "Surface bar",
-          "desc": "Barra que atraviesa un pliegue de piel. Joya: Surface bar.",
-          "cica": "6 a 18 meses"
+          "zone": "Skin Diver",
+          "desc": "Variante más ligera del microdermal. Menos anclaje subcutáneo. Joya: Cabeza decorativa.",
+          "cica": "1 a 3 meses"
+        },
+        {
+          "zone": "Surface — Cadera",
+          "desc": "Entre el ombligo y el hueso ilíaco, inclinado 90°. Zona de mucho movimiento. Joya: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Nuca",
+          "desc": "Horizontal en la nuca. Uno de los mayores riesgos de rechazo. Joya: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Esternón",
+          "desc": "Vertical u horizontal sobre el esternón / escote. Joya: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Vientre",
+          "desc": "Alrededor del ombligo (no ombligo). Triángulo o cruz de skin divers. Joya: Surface bar.",
+          "cica": "9 a 18 meses"
         }
       ],
       "faire": [

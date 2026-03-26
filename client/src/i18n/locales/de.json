@@ -422,14 +422,34 @@
       "title": "SURFACE & DERMAL",
       "zones": [
         {
-          "zone": "Dermal / Mikrodermal",
-          "desc": "Einzelner Anker unter der Haut. Schmuck: Dekorativer Kopf auf Anker.",
+          "zone": "Microdermal",
+          "desc": "Jede flache Körperstelle: Hals, Dekolleté, Nacken, Hüften, Wangen, Schläfen… Schmuck: Dekorativer Aufsatz auf Anker.",
           "cica": "1 bis 3 Monate"
         },
         {
-          "zone": "Surface Bar",
-          "desc": "Stange, die eine Hautfalte durchquert. Schmuck: Surface Bar.",
-          "cica": "6 bis 18 Monate"
+          "zone": "Skin Diver",
+          "desc": "Leichtere Variante des Microdermals. Weniger subkutane Verankerung. Schmuck: Dekorativer Aufsatz.",
+          "cica": "1 bis 3 Monate"
+        },
+        {
+          "zone": "Surface — Hüfte",
+          "desc": "Zwischen Nabel und Beckenkamm, 90° geneigt. Bereich mit starker Bewegung. Schmuck: Surface Bar.",
+          "cica": "9 bis 18 Monate"
+        },
+        {
+          "zone": "Surface — Nacken",
+          "desc": "Horizontal am Nacken. Eines der höchsten Abstoßungsrisiken. Schmuck: Surface Bar.",
+          "cica": "9 bis 18 Monate"
+        },
+        {
+          "zone": "Surface — Sternum",
+          "desc": "Vertikal oder horizontal auf dem Sternum / Dekolleté. Schmuck: Surface Bar.",
+          "cica": "9 bis 18 Monate"
+        },
+        {
+          "zone": "Surface — Bauch",
+          "desc": "Rund um den Nabel (kein Nabelpiercing). Dreieck oder Kreuz aus Skin Divern. Schmuck: Surface Bar.",
+          "cica": "9 bis 18 Monate"
         }
       ],
       "faire": [

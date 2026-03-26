@@ -422,14 +422,34 @@
       "title": "SURFACE & DERMAL",
       "zones": [
         {
-          "zone": "Dermal / Microdermal",
-          "desc": "Enkel anker onder de huid. Sieraad: Decoratief hoofd op anker.",
+          "zone": "Microdermal",
+          "desc": "Elk plat lichaamsdeel: nek, decolleté, nek, heupen, wangen, slapen… Sieraad: Decoratieve top op anker.",
           "cica": "1 tot 3 maanden"
         },
         {
-          "zone": "Surface bar",
-          "desc": "Staaf die een huidplooi doorkruist. Sieraad: Surface bar.",
-          "cica": "6 tot 18 maanden"
+          "zone": "Skin Diver",
+          "desc": "Lichtere variant van microdermal. Minder subcutane verankering. Sieraad: Decoratieve top.",
+          "cica": "1 tot 3 maanden"
+        },
+        {
+          "zone": "Surface — Heup",
+          "desc": "Tussen navel en heupbeen, 90° gekanteld. Zone met veel beweging. Sieraad: Surface bar.",
+          "cica": "9 tot 18 maanden"
+        },
+        {
+          "zone": "Surface — Nek",
+          "desc": "Horizontaal op de nek. Behoort tot de hoogste afstotingsrisico's. Sieraad: Surface bar.",
+          "cica": "9 tot 18 maanden"
+        },
+        {
+          "zone": "Surface — Sternum",
+          "desc": "Verticaal of horizontaal op het sternum / decolleté. Sieraad: Surface bar.",
+          "cica": "9 tot 18 maanden"
+        },
+        {
+          "zone": "Surface — Buik",
+          "desc": "Rond de navel (geen navelpiercing). Driehoek of kruis van skin divers. Sieraad: Surface bar.",
+          "cica": "9 tot 18 maanden"
         }
       ],
       "faire": [
