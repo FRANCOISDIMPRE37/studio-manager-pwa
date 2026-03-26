@@ -934,8 +934,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       {docType === 'soins_oreilles' && (
         <div className="mb-4">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreille_mamelon_arcade_5a1bea4b.webp"
-            alt="Soins post-piercing — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreilles_mamelons_arcade_d6fa385b.webp"
+            alt="Soins post-piercing Oreilles — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
           <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
@@ -945,8 +945,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       {docType === 'soins_mamelons' && (
         <div className="mb-4">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreille_mamelon_arcade_5a1bea4b.webp"
-            alt="Soins post-piercing — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreilles_mamelons_arcade_d6fa385b.webp"
+            alt="Soins post-piercing Mamelons — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
           <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
@@ -956,8 +956,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       {docType === 'soins_arcade_sourcil' && (
         <div className="mb-4">
           <img
-            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreille_mamelon_arcade_5a1bea4b.webp"
-            alt="Soins post-piercing — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir 15 jours, compresses non-tissées"
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/soins_oreilles_mamelons_arcade_d6fa385b.webp"
+            alt="Soins post-piercing Arcade/Sourcil — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
           <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
