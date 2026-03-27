@@ -2918,23 +2918,7 @@ export default function DocumentForm() {
             <Printer size={15} />
             <span className="hidden sm:inline">Imprimer</span>
           </button>
-          {/* Bouton Email */}
-          <button
-            onClick={handleEmail}
-            disabled={sendDocumentEmail.isPending}
-            title={sendDocumentEmail.isPending ? 'Envoi en cours...' : 'Envoyer par email'}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
-            style={{
-              color: sendDocumentEmail.isPending ? 'var(--brand-cyan)' : 'var(--brand-text-muted)',
-              border: sendDocumentEmail.isPending ? '1px solid rgba(131,208,245,0.5)' : '1px solid var(--brand-border)',
-              fontWeight: 600,
-              opacity: sendDocumentEmail.isPending ? 0.8 : 1,
-            }}
-          >
-            {sendDocumentEmail.isPending
-              ? <><Loader2 size={15} className="animate-spin" /><span className="hidden sm:inline">Envoi...</span></>
-              : <><Mail size={15} /><span className="hidden sm:inline">Email</span></>}
-          </button>
+
           {/* Bouton Sauvegarder */}
           <button
             onClick={handleSave}
