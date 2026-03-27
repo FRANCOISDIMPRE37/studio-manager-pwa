@@ -7,8 +7,8 @@ import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import {
   getClientsByUserId, getClientById, createClient, updateClientById, deleteClientById,
-  getPrestationsByClientId, createPrestation, deletePrestationById,
-  getDocumentsByClientId, getDocumentById, createDocument, updateDocumentById,
+  getPrestationsByClientId, getPrestationsByUserId, createPrestation, deletePrestationById,
+  getDocumentsByClientId, getDocumentsByUserId, getDocumentById, createDocument, updateDocumentById,
   getRDVByUserId, createRDV, updateRDVById, deleteRDVById,
   getSalonSettings, upsertSalonSettings,
   getSmtpConfig, upsertSmtpConfig,
@@ -98,6 +98,9 @@ export const appRouter = router({
   }),
 
   prestations: router({
+    listAll: protectedProcedure.query(async ({ ctx }) => {
+      return getPrestationsByUserId(ctx.user.id);
+    }),
     listByClient: protectedProcedure
       .input(z.object({ clientId: z.string() }))
       .query(async ({ ctx, input }) => {
@@ -125,6 +128,9 @@ export const appRouter = router({
   }),
 
   documents: router({
+    listAll: protectedProcedure.query(async ({ ctx }) => {
+      return getDocumentsByUserId(ctx.user.id);
+    }),
     listByClient: protectedProcedure
       .input(z.object({ clientId: z.string() }))
       .query(async ({ ctx, input }) => {

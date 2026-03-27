@@ -136,6 +136,14 @@ export async function getPrestationsByClientId(clientId: string, userId: number)
     .orderBy(desc(prestations.createdAt));
 }
 
+export async function getPrestationsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(prestations)
+    .where(eq(prestations.userId, userId))
+    .orderBy(desc(prestations.createdAt));
+}
+
 export async function createPrestation(data: InsertPrestation) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
@@ -156,6 +164,14 @@ export async function getDocumentsByClientId(clientId: string, userId: number) {
   if (!db) return [];
   return db.select().from(documents)
     .where(and(eq(documents.clientId, clientId), eq(documents.userId, userId)))
+    .orderBy(desc(documents.createdAt));
+}
+
+export async function getDocumentsByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(documents)
+    .where(eq(documents.userId, userId))
     .orderBy(desc(documents.createdAt));
 }
 

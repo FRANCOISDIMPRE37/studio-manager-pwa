@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { Client, SalonInfo, DashboardStats, RGPDStatus, RendezVous, calculateRGPDStatus } from './types';
+import { Client, SalonInfo, DashboardStats, RGPDStatus, RendezVous, Prestation, ClientDocument, calculateRGPDStatus } from './types';
 import { nanoid } from 'nanoid';
 import { trpc } from './trpc';
 
@@ -261,29 +261,75 @@ function AppProviderInner({ children, dispatch, state }: {
     if (state.isDemo) return;
     try {
       dispatch({ type: 'SET_SYNCING', payload: true });
-      const [dbClients, dbRDV, dbSalon] = await Promise.all([
+      const [dbClients, dbRDV, dbSalon, dbPrestations, dbDocuments] = await Promise.all([
         utils.clients.list.fetch(),
         utils.rdv.list.fetch(),
         utils.salon.get.fetch(),
+        utils.prestations.listAll.fetch(),
+        utils.documents.listAll.fetch(),
       ]);
 
       const clients = (dbClients as Record<string, unknown>[]).map(dbClientToClient);
       const rdv = (dbRDV as Record<string, unknown>[]).map(dbRDVToRDV);
 
-      // Merge with localStorage data (localStorage takes priority for documents/prestations not yet in DB)
+      // Group prestations and documents by clientId
+      const prestationsByClient = new Map<string, Prestation[]>();
+      for (const p of (dbPrestations as Record<string, unknown>[]) ) {
+        const clientId = p.clientId as string;
+        if (!prestationsByClient.has(clientId)) prestationsByClient.set(clientId, []);
+        prestationsByClient.get(clientId)!.push({
+          id: p.id as string,
+          date: p.date as string,
+          type: p.type as Prestation['type'],
+          zone: p.zone as string,
+          description: p.description as string | undefined,
+          documents: [],
+          photos: (p.photos as string[]) || [],
+        });
+      }
+
+      const documentsByClient = new Map<string, ClientDocument[]>();
+      for (const d of (dbDocuments as Record<string, unknown>[]) ) {
+        const clientId = d.clientId as string;
+        if (!documentsByClient.has(clientId)) documentsByClient.set(clientId, []);
+        documentsByClient.get(clientId)!.push({
+          id: d.id as string,
+          type: d.type as ClientDocument['type'],
+          status: d.status as ClientDocument['status'],
+          data: (d.data as Record<string, unknown>) || {},
+          signatureClient: d.signatureClient as string | undefined,
+          signatureProfessionnel: d.signatureProfessionnel as string | undefined,
+          signatureRepresentant: d.signatureRepresentant as string | undefined,
+          dateCreation: d.createdAt ? new Date(d.createdAt as string).toISOString().split('T')[0] : fmt(new Date()),
+          dateSigned: d.dateSigned as string | undefined,
+        });
+      }
+
+      // Merge with localStorage data
       const localClients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
       const mergedClients = clients.map(dbC => {
         const localC = localClients.find(lc => lc.id === dbC.id);
-        if (localC) {
-          return {
-            ...dbC,
-            prestations: localC.prestations || [],
-            documentsAssocies: localC.documentsAssocies || [],
-            documents: localC.documents || [],
-            photos: localC.photos || [],
-          };
-        }
-        return dbC;
+        const dbPrestList = prestationsByClient.get(dbC.id) || [];
+        const dbDocList = documentsByClient.get(dbC.id) || [];
+        const dbDocTypes = new Set(dbDocList.map(d => d.type));
+
+        // Merge: DB documents + local-only documents not yet synced
+        const localDocs = localC?.documents || [];
+        const localOnlyDocs = localDocs.filter(ld => !dbDocList.find(dd => dd.id === ld.id));
+        const mergedDocs = [...dbDocList, ...localOnlyDocs];
+
+        // Merge: DB prestations + local-only prestations not yet synced
+        const localPrests = localC?.prestations || [];
+        const localOnlyPrests = localPrests.filter(lp => !dbPrestList.find(dp => dp.id === lp.id));
+        const mergedPrests = [...dbPrestList, ...localOnlyPrests];
+
+        return {
+          ...dbC,
+          prestations: mergedPrests,
+          documentsAssocies: mergedDocs.map(d => d.type) as Client['documentsAssocies'],
+          documents: mergedDocs,
+          photos: localC?.photos || [],
+        };
       });
 
       // Add local-only clients (not yet synced)
@@ -309,6 +355,8 @@ function AppProviderInner({ children, dispatch, state }: {
         };
         dispatch({ type: 'SET_SALON_INFO', payload: salonInfo });
       }
+
+      console.info(`[Sync] ✅ Synced: ${clients.length} clients, ${(dbPrestations as unknown[]).length} prestations, ${(dbDocuments as unknown[]).length} documents`);
     } catch (err) {
       console.warn('[Sync] Cloud sync failed, using local data:', err);
     } finally {
