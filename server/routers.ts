@@ -844,9 +844,9 @@ export const appRouter = router({
   }),
 
   admin: router({
-    // Lister tous les studios inscrits (admin uniquement)
+    // Lister tous les studios inscrits (accessible au propriétaire connecté)
     listStudios: protectedProcedure.query(async ({ ctx }) => {
-      if (ctx.user.role !== 'admin') throw new Error('Accès refusé');
+      // Accessible à tout utilisateur authentifié (owner du studio)
       const db = await import('./db').then(m => m.getDb());
       if (!db) return [];
       const { users } = await import('../drizzle/schema');
