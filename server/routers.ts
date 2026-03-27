@@ -18,6 +18,7 @@ import {
   createStudioUser, updateStudioUser, deleteStudioUser,
   getSmsConfig, upsertSmsConfig,
   getUserByOpenId, upsertUser,
+  getUserByEmail, createUserWithEmail, getPasswordHashByEmail,
 } from "./db";
 
 export const appRouter = router({
@@ -79,6 +80,49 @@ export const appRouter = router({
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
         return { success: true };
+      }),
+    // Inscription par email/mot de passe (nouveau studio client)
+    register: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string().min(8),
+        nomSalon: z.string().min(2),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        // Vérifier si l'email est déjà utilisé
+        const existing = await getUserByEmail(input.email);
+        if (existing) throw new Error("Cet email est déjà utilisé");
+        // Hasher le mot de passe
+        const passwordHash = await bcrypt.hash(input.password, 10);
+        // Créer l'utilisateur et le salon
+        const user = await createUserWithEmail({
+          email: input.email,
+          passwordHash,
+          name: input.nomSalon,
+        });
+        // Créer la session
+        const token = await sdk.createSessionToken(`email:${input.email}`, { name: input.nomSalon });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+        return { success: true, userId: user.id };
+      }),
+    // Connexion par email/mot de passe
+    loginEmail: publicProcedure
+      .input(z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const user = await getUserByEmail(input.email);
+        if (!user) throw new Error("Email ou mot de passe incorrect");
+        const passwordHash = await getPasswordHashByEmail(input.email);
+        if (!passwordHash) throw new Error("Email ou mot de passe incorrect");
+        const valid = await bcrypt.compare(input.password, passwordHash);
+        if (!valid) throw new Error("Email ou mot de passe incorrect");
+        const token = await sdk.createSessionToken(`email:${input.email}`, { name: user.name || input.email });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+        return { success: true, userId: user.id };
       }),
     // Mettre à jour le PIN (nécessite d'être authentifié)
     pinUpdate: protectedProcedure
@@ -799,6 +843,24 @@ export const appRouter = router({
       }),
   }),
 
+  admin: router({
+    // Lister tous les studios inscrits (admin uniquement)
+    listStudios: protectedProcedure.query(async ({ ctx }) => {
+      if (ctx.user.role !== 'admin') throw new Error('Accès refusé');
+      const db = await import('./db').then(m => m.getDb());
+      if (!db) return [];
+      const { users } = await import('../drizzle/schema');
+      const result = await db.select({
+        id: users.id,
+        name: users.name,
+        email: users.email,
+        loginMethod: users.loginMethod,
+        role: users.role,
+        createdAt: users.createdAt,
+      }).from(users).orderBy(users.createdAt);
+      return result;
+    }),
+  }),
   rappels: router({
     getStatus: protectedProcedure.query(async ({ ctx }) => {
       const db = await import('./db').then(m => m.getDb());

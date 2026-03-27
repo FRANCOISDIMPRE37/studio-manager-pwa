@@ -387,3 +387,45 @@ export async function insertRdvRappel(rappel: RdvRappel): Promise<void> {
     [rappel.id, rappel.userId, rappel.rdvId, rappel.rdvDate, rappel.rdvHeure, rappel.clientNom, rappel.clientEmail, rappel.sentAt, rappel.statut, rappel.errorMessage, rappel.createdAt]
   );
 }
+
+// ============================================================
+// Fonctions multi-clients (inscription par email/mot de passe)
+// ============================================================
+
+export async function getUserByEmail(email: string) {
+  const db = await getDb();
+  if (!db) return null;
+  const result = await db.select().from(users).where(eq(users.email, email)).limit(1);
+  return result[0] ?? null;
+}
+
+export async function createUserWithEmail(data: {
+  email: string;
+  passwordHash: string;
+  name: string;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error("DB not available");
+  const openId = `email:${data.email}`;
+  await db.insert(users).values({
+    openId,
+    name: data.name,
+    email: data.email,
+    loginMethod: "email",
+    role: "user",
+    lastSignedIn: new Date(),
+  });
+  const user = await getUserByEmail(data.email);
+  if (!user) throw new Error("Failed to create user");
+  await upsertSalonSettings(user.id, { nom: data.name, passwordHash: data.passwordHash } as any);
+  return user;
+}
+
+export async function getPasswordHashByEmail(email: string): Promise<string | null> {
+  const db = await getDb();
+  if (!db) return null;
+  const user = await getUserByEmail(email);
+  if (!user) return null;
+  const settings = await getSalonSettings(user.id);
+  return (settings as any)?.passwordHash ?? null;
+}

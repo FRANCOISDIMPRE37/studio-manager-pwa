@@ -21,6 +21,9 @@ import MentionsLegales from "@/pages/MentionsLegales";
 import VideosDemoPage from "@/pages/VideosDemoPage";
 import Onboarding from "@/pages/Onboarding";
 import APropos from "@/pages/APropos";
+import Inscription from "@/pages/Inscription";
+import ConnexionEmail from "@/pages/ConnexionEmail";
+import Admin from "@/pages/Admin";
 
 function AppRoutes() {
   const { state } = useApp();
@@ -40,12 +43,17 @@ function AppRoutes() {
     );
   }
 
+  // Routes publiques accessibles sans authentification
+  const path = window.location.pathname;
+  if (path === '/inscription') return <Inscription />;
+  if (path === '/connexion') return <ConnexionEmail />;
+  if (path === '/admin') return <Admin />;
+
   // Premier lancement : aucun PIN configuré → onboarding guidé
   const hasPin = !!localStorage.getItem('sm_pin');
   if (!hasPin) {
     return <Onboarding />;
   }
-
   if (!state.isAuthenticated) {
     return <Login />;
   }
@@ -68,6 +76,9 @@ function AppRoutes() {
         <Route path="/mentions-legales" component={MentionsLegales} />
         <Route path="/videos-demo" component={VideosDemoPage} />
         <Route path="/a-propos" component={APropos} />
+        <Route path="/inscription" component={Inscription} />
+        <Route path="/connexion" component={ConnexionEmail} />
+        <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
