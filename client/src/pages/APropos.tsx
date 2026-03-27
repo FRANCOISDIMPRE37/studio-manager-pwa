@@ -188,7 +188,7 @@ export default function APropos() {
         <div className="space-y-2">
           {[
             "Conforme à l'Arrêté du 3 décembre 2008 (piercing & tatouage)",
-            'Gestion des durées de conservation (5 ans)',
+            'Gestion des durées de conservation (3 ans)',
             'Exercice des droits RGPD (accès, rectification, effacement)',
             "Engagement de confidentialité Art. 29 pour collaborateurs",
             'Agréé CNIL depuis 2019',
