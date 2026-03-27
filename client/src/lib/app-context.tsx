@@ -340,6 +340,8 @@ function AppProviderInner({ children, dispatch, state }: {
       dispatch({ type: 'SET_RDV', payload: rdv });
 
       if (dbSalon) {
+        // Effacer le cache local pour que les données cloud aient priorité
+        localStorage.removeItem(STORAGE_KEYS.salonInfo);
         const salonInfo: SalonInfo = {
           nom: (dbSalon as Record<string, unknown>).nom as string || '',
           raisonSociale: (dbSalon as Record<string, unknown>).raisonSociale as string | undefined,
