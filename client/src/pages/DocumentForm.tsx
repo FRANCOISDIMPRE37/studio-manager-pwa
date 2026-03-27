@@ -902,6 +902,17 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       <FormSection title="INFORMATIONS COMPLÉMENTAIRES" />
       <FormField label="Notes du professionnel" value={data.notes || ''} onChange={v => update('notes', v)} multiline />
 
+      {docType === 'soins_oreilles' && (
+        <div className="mb-4">
+          <img
+            src="https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/pasted_file_vRQdfj_image_04a9dd8b.png"
+            alt="Soins post-piercing Oreilles — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
+            style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
+          />
+          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+        </div>
+      )}
+
       {docType === 'soins_bouche_levres' && (
         <div className="mb-4">
           <img
