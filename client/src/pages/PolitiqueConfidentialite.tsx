@@ -14,7 +14,7 @@ export default function PolitiqueConfidentialite() {
         <p>
           La présente politique de confidentialité s'applique à l'application <strong>Studio Manager</strong>, accessible à l'adresse <strong>app.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
         </p>
-        <p className="mt-2">Contact RGPD : <a href="mailto:rgpd@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>rgpd@intemporelle.eu</a></p>
+        <p className="mt-2">Contact RGPD : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a></p>
       </section>
 
       {/* Section 2 */}
@@ -72,10 +72,10 @@ export default function PolitiqueConfidentialite() {
             </thead>
             <tbody>
               {[
-                ["Questionnaires médicaux", "Consentement explicite (art. 9§2a) + Obligation légale (art. 6§1c)"],
-                ["Autorisations parentales", "Obligation légale (art. 6§1c)"],
-                ["Gestion des rendez-vous", "Exécution du contrat (art. 6§1b)"],
-                ["Facturation", "Obligation légale (art. 6§1c) — Code du commerce"],
+                ["Questionnaires médicaux", "Consentement explicite (art. 9-2a) + Obligation légale (art. 6-1c)"],
+                ["Autorisations parentales", "Obligation légale (art. 6-1c)"],
+                ["Gestion des rendez-vous", "Exécution du contrat (art. 6-1b)"],
+                ["Facturation", "Obligation légale (art. 6-1c) — Code du commerce"],
               ].map(([t, b], i) => (
                 <tr key={i} style={{ background: i % 2 ? 'rgba(255,255,255,0.03)' : 'transparent' }}>
                   <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>{t}</td>
@@ -140,7 +140,7 @@ export default function PolitiqueConfidentialite() {
           ))}
         </ul>
         <p className="mt-4">
-          Pour exercer vos droits : <a href="mailto:rgpd@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>rgpd@intemporelle.eu</a>
+          Pour exercer vos droits : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
         </p>
         <p className="mt-2" style={{ color: 'var(--brand-text-muted)' }}>
           Vous disposez également du droit d'introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-cyan)' }}>CNIL</a>.
@@ -202,7 +202,7 @@ export default function PolitiqueConfidentialite() {
       </section>
 
       <div className="mt-10 pt-6 text-xs text-center" style={{ borderTop: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-        Studio Manager by Intemporelle — <a href="mailto:rgpd@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>rgpd@intemporelle.eu</a>
+        Studio Manager by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
       </div>
     </div>
   );
