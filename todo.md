@@ -95,3 +95,12 @@
 - [x] Intégrer les clés t() dans tous les composants et pages
 - [x] Ajouter le sélecteur de langue dans la sidebar (drapeaux FR/EN/DE/NL)
 - [x] Tester la détection automatique et le changement de langue
+
+## Système d'inscription multi-clients (revente)
+- [ ] Créer page d'inscription publique /inscription (email, mot de passe, nom du salon)
+- [ ] Créer procédure tRPC auth.register (création compte + studio + période d'essai 30j)
+- [ ] Créer page de connexion email/mot de passe /connexion
+- [ ] Créer procédure tRPC auth.loginEmail (connexion par email/mot de passe)
+- [ ] Corriger App.tsx pour rediriger vers /inscription ou /connexion si pas de compte
+- [ ] Créer panneau admin /admin pour gérer les studios clients
+- [ ] Pousser les migrations de la table studios et invitations
