@@ -184,9 +184,9 @@ export default function PolitiqueConfidentialite() {
             </thead>
             <tbody>
               <tr>
-                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>Manus (infrastructure)</td>
-                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>Hébergement cloud</td>
-                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>Union Européenne</td>
+                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>OVHcloud (certifié HDS)</td>
+                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>Hébergement cloud certifié HDS</td>
+                <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>France — Gravelines (GRA11)</td>
               </tr>
               <tr style={{ background: 'rgba(255,255,255,0.03)' }}>
                 <td className="p-3 border" style={{ borderColor: 'var(--brand-border)' }}>IONOS</td>
