@@ -533,6 +533,15 @@ function AppProviderInner({ children, dispatch, state }: {
     }
   }, [state.isDemo, updateSalonMutation]);
 
+  // Sync automatique depuis le cloud au démarrage dès que l'utilisateur est authentifié
+  // Cela garantit que les données cloud ont toujours priorité sur le localStorage
+  useEffect(() => {
+    if (state.isAuthenticated && !state.isDemo && !state.isLoading) {
+      syncFromCloud();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [state.isAuthenticated, state.isLoading]);
+
   const setAuthenticated = useCallback((val: boolean) => {
     dispatch({ type: 'SET_AUTHENTICATED', payload: val });
     saveToStorage(STORAGE_KEYS.auth, val);
@@ -638,7 +647,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSyncing: false,
   });
 
-  // Load from localStorage on mount
+  // Load from localStorage on mount (cache rapide pour affichage immédiat)
+  // Le cloud sync dans AppProviderInner remplacera ces données dès qu'elles arrivent
   useEffect(() => {
     const clients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
     const salonInfo = loadFromStorage<SalonInfo>(STORAGE_KEYS.salonInfo);
@@ -653,21 +663,21 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     dispatch({ type: 'LOAD_STATE', payload: { clients: updatedClients, salonInfo, rendezVous: rdv, isAuthenticated, isLoading: false } });
   }, []);
 
-  // Persist clients to localStorage
+  // Persist clients to localStorage (cache local uniquement)
   useEffect(() => {
     if (!state.isLoading && !state.isDemo) {
       saveToStorage(STORAGE_KEYS.clients, state.clients);
     }
   }, [state.clients, state.isLoading, state.isDemo]);
 
-  // Persist RDV to localStorage
+  // Persist RDV to localStorage (cache local uniquement)
   useEffect(() => {
     if (!state.isLoading && !state.isDemo) {
       saveToStorage(STORAGE_KEYS.rdv, state.rendezVous);
     }
   }, [state.rendezVous, state.isLoading, state.isDemo]);
 
-  // Persist salon info to localStorage
+  // Persist salon info to localStorage (cache local uniquement)
   useEffect(() => {
     if (state.salonInfo && !state.isDemo) {
       saveToStorage(STORAGE_KEYS.salonInfo, state.salonInfo);
