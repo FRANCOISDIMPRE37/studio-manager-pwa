@@ -23,6 +23,7 @@ i18n
       it: { translation: it },
       pt: { translation: pt },
     },
+    lng: "fr",
     fallbackLng: "fr",
     supportedLngs: ["fr", "en", "de", "nl", "es", "it", "pt"],
     detection: {
