@@ -171,12 +171,20 @@ export default function APropos() {
           <Lock size={16} style={{ color: 'var(--brand-cyan)' }} />
           <h3 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Vos données clients</h3>
         </div>
-        <p className="text-xs" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
-          Toutes les données de vos clients sont stockées{' '}
-          <strong style={{ color: 'var(--brand-text)' }}>exclusivement sur cette tablette</strong>,
-          dans le navigateur local. Elles ne sont jamais transmises à des serveurs externes.
-          Vous en êtes le seul propriétaire et responsable de traitement au sens du RGPD.
-        </p>
+        <div className="space-y-2">
+          {[
+            'Données hébergées sur serveur OVHcloud b3-16 — Datacenter Gravelines (GRA11), France',
+            'Certifié HDS (Hébergement de Données de Santé) par l’Agence du Numérique en Santé (ANS)',
+            'Conforme RGPD — données hébergées exclusivement en France',
+            'Vous êtes le seul propriétaire de vos données personnelles',
+            'Accessibles 24h/24 — 7j/7 — Bande passante 1 000 Mbit/s',
+          ].map((item, i) => (
+            <div key={i} className="flex items-start gap-2">
+              <span style={{ color: 'var(--brand-cyan)', flexShrink: 0, marginTop: 1 }}>&#x2022;</span>
+              <span className="text-xs" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>{item}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* ── CONFORMITÉ RGPD ── */}
