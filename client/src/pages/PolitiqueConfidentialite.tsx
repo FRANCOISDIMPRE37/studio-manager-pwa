@@ -12,7 +12,7 @@ export default function PolitiqueConfidentialite() {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--brand-cyan)' }}>1. Responsable de traitement</h2>
         <p>
-          La présente politique de confidentialité s'applique à l'application <strong>Studio Manager</strong>, accessible à l'adresse <strong>app.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
+          La présente politique de confidentialité s'applique à l'application <strong>Studio Manager</strong>, accessible à l'adresse <strong>studio.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
         </p>
         <p className="mt-2">Contact RGPD : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a></p>
       </section>
