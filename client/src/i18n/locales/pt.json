@@ -358,25 +358,85 @@
     "current_password": "Palavra-passe atual",
     "new_password": "Nova palavra-passe",
     "show_password": "Mostrar palavra-passe",
-    "hide_password": "Ocultar palavra-passe"
+    "hide_password": "Ocultar palavra-passe",
+    "coming_soon": "Funcionalidade em breve",
+    "days": "dias",
+    "digits": "dígitos",
+    "months": "meses",
+    "no_data": "Sem dados",
+    "select": "Selecionar",
+    "view": "Ver",
+    "years": "anos"
   },
   "soins": {
     "oreilles": {
       "title": "CUIDADOS PÓS-PIERCING ORELHA",
       "zones": [
-        { "zone": "Lóbulo simples", "desc": "Perfuração clássica do lóbulo. Joia: Labret reto, anel.", "cica": "4 a 6 semanas" },
-        { "zone": "Lóbulo duplo/triplo", "desc": "Várias perfurações no lóbulo. Joia: Labret reto, anel.", "cica": "4 a 6 semanas" },
-        { "zone": "Helix", "desc": "Cartilagem superior da orelha. Joia: Anel, labret reto.", "cica": "6 a 12 meses" },
-        { "zone": "Double Helix", "desc": "Duas perfurações no helix. Joia: Anel, labret reto.", "cica": "6 a 12 meses" },
-        { "zone": "Forward Helix", "desc": "Cartilagem anterior do helix. Joia: Labret reto, anel.", "cica": "6 a 12 meses" },
-        { "zone": "Tragus", "desc": "Pequena saliência na frente do canal auditivo. Joia: Labret reto, anel.", "cica": "6 a 12 meses" },
-        { "zone": "Anti-Tragus", "desc": "Saliência oposta ao tragus. Joia: Anel, barbell curvo.", "cica": "6 a 12 meses" },
-        { "zone": "Conch (Concha)", "desc": "Interior da concha da orelha. Joia: Labret reto, anel grande.", "cica": "6 a 12 meses" },
-        { "zone": "Daith", "desc": "Prega de cartilagem interior. Joia: Anel de segmento, barbell curvo.", "cica": "6 a 12 meses" },
-        { "zone": "Rook", "desc": "Prega anti-helix superior. Joia: Barbell curvo.", "cica": "9 a 12 meses" },
-        { "zone": "Industrial", "desc": "Barra reta atravessando dois pontos do helix. Joia: Barbell industrial.", "cica": "9 a 12 meses" },
-        { "zone": "Snug", "desc": "Prega anti-helix interior. Joia: Barbell curvo.", "cica": "9 a 18 meses" },
-        { "zone": "Orbital", "desc": "Dois furos ligados por um anel. Joia: Anel de segmento.", "cica": "6 a 12 meses" }
+        {
+          "zone": "Lóbulo simples",
+          "desc": "Perfuração clássica do lóbulo. Joia: Labret reto, anel.",
+          "cica": "4 a 6 semanas"
+        },
+        {
+          "zone": "Lóbulo duplo/triplo",
+          "desc": "Várias perfurações no lóbulo. Joia: Labret reto, anel.",
+          "cica": "4 a 6 semanas"
+        },
+        {
+          "zone": "Helix",
+          "desc": "Cartilagem superior da orelha. Joia: Anel, labret reto.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Double Helix",
+          "desc": "Duas perfurações no helix. Joia: Anel, labret reto.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Forward Helix",
+          "desc": "Cartilagem anterior do helix. Joia: Labret reto, anel.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Tragus",
+          "desc": "Pequena saliência na frente do canal auditivo. Joia: Labret reto, anel.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Anti-Tragus",
+          "desc": "Saliência oposta ao tragus. Joia: Anel, barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Conch (Concha)",
+          "desc": "Interior da concha da orelha. Joia: Labret reto, anel grande.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Daith",
+          "desc": "Prega de cartilagem interior. Joia: Anel de segmento, barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Rook",
+          "desc": "Prega anti-helix superior. Joia: Barbell curvo.",
+          "cica": "9 a 12 meses"
+        },
+        {
+          "zone": "Industrial",
+          "desc": "Barra reta atravessando dois pontos do helix. Joia: Barbell industrial.",
+          "cica": "9 a 12 meses"
+        },
+        {
+          "zone": "Snug",
+          "desc": "Prega anti-helix interior. Joia: Barbell curvo.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Orbital",
+          "desc": "Dois furos ligados por um anel. Joia: Anel de segmento.",
+          "cica": "6 a 12 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9% (manhã e noite) durante 15 dias.",
@@ -396,10 +456,26 @@
     "nez": {
       "title": "CUIDADOS PÓS-PIERCING NARIZ",
       "zones": [
-        { "zone": "Narina (Nostril)", "desc": "Asa do nariz, esquerda ou direita. Joia: Pino nasal, anel.", "cica": "4 a 6 meses" },
-        { "zone": "Septo", "desc": "Septo nasal (cartilagem). Joia: Ferradura, anel de segmento, barbell.", "cica": "6 a 8 semanas" },
-        { "zone": "Bridge", "desc": "Raiz do nariz, entre os olhos. Joia: Barbell reto.", "cica": "6 a 12 meses" },
-        { "zone": "Nasallang", "desc": "Atravessa ambas as narinas e o septo. Joia: Barbell reto longo.", "cica": "6 a 9 meses" }
+        {
+          "zone": "Narina (Nostril)",
+          "desc": "Asa do nariz, esquerda ou direita. Joia: Pino nasal, anel.",
+          "cica": "4 a 6 meses"
+        },
+        {
+          "zone": "Septo",
+          "desc": "Septo nasal (cartilagem). Joia: Ferradura, anel de segmento, barbell.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Bridge",
+          "desc": "Raiz do nariz, entre os olhos. Joia: Barbell reto.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Nasallang",
+          "desc": "Atravessa ambas as narinas e o septo. Joia: Barbell reto longo.",
+          "cica": "6 a 9 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9%.",
@@ -416,9 +492,21 @@
     "nombril": {
       "title": "CUIDADOS PÓS-PIERCING UMBIGO",
       "zones": [
-        { "zone": "Umbigo superior", "desc": "Borda superior do umbigo. Joia: Barbell curvo, anel.", "cica": "6 a 12 meses" },
-        { "zone": "Umbigo inferior", "desc": "Borda inferior do umbigo. Joia: Barbell curvo.", "cica": "6 a 12 meses" },
-        { "zone": "Umbigo duplo", "desc": "Bordas superior e inferior. Joia: Barbell curvo.", "cica": "6 a 12 meses" }
+        {
+          "zone": "Umbigo superior",
+          "desc": "Borda superior do umbigo. Joia: Barbell curvo, anel.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Umbigo inferior",
+          "desc": "Borda inferior do umbigo. Joia: Barbell curvo.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Umbigo duplo",
+          "desc": "Bordas superior e inferior. Joia: Barbell curvo.",
+          "cica": "6 a 12 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9%.",
@@ -434,8 +522,16 @@
     "mamelons": {
       "title": "CUIDADOS PÓS-PIERCING MAMILO",
       "zones": [
-        { "zone": "Mamilo horizontal", "desc": "Atravessa o mamilo horizontalmente. Joia: Barbell reto.", "cica": "6 a 12 meses" },
-        { "zone": "Mamilo vertical", "desc": "Atravessa o mamilo verticalmente. Joia: Barbell reto.", "cica": "6 a 12 meses" }
+        {
+          "zone": "Mamilo horizontal",
+          "desc": "Atravessa o mamilo horizontalmente. Joia: Barbell reto.",
+          "cica": "6 a 12 meses"
+        },
+        {
+          "zone": "Mamilo vertical",
+          "desc": "Atravessa o mamilo verticalmente. Joia: Barbell reto.",
+          "cica": "6 a 12 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9%.",
@@ -452,8 +548,16 @@
     "arcade_sourcil": {
       "title": "SOBRANCELHA",
       "zones": [
-        { "zone": "Arco superciliar", "desc": "Borda do arco superciliar. Joia: Barbell curvo, anel.", "cica": "6 a 9 meses" },
-        { "zone": "Anti-sobrancelha", "desc": "Abaixo do olho, superfície. Joia: Surface bar.", "cica": "6 a 12 meses" }
+        {
+          "zone": "Arco superciliar",
+          "desc": "Borda do arco superciliar. Joia: Barbell curvo, anel.",
+          "cica": "6 a 9 meses"
+        },
+        {
+          "zone": "Anti-sobrancelha",
+          "desc": "Abaixo do olho, superfície. Joia: Surface bar.",
+          "cica": "6 a 12 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9%.",
@@ -469,12 +573,36 @@
     "surface_dermal": {
       "title": "SURFACE & DERMAL",
       "zones": [
-        { "zone": "Microdermal", "desc": "Qualquer zona plana: pescoço, decote, nuca, ancas, bochechas, têmporas… Joia: Cabeça decorativa sobre âncora.", "cica": "1 a 3 meses" },
-        { "zone": "Skin Diver", "desc": "Variante mais leve do microdermal. Menos ancoragem subcutânea. Joia: Cabeça decorativa.", "cica": "1 a 3 meses" },
-        { "zone": "Surface — Anca", "desc": "Entre o umbigo e o osso ilíaco, inclinado 90°. Zona de muito movimento. Joia: Surface bar.", "cica": "9 a 18 meses" },
-        { "zone": "Surface — Nuca", "desc": "Horizontal na nuca. Um dos maiores riscos de rejeição. Joia: Surface bar.", "cica": "9 a 18 meses" },
-        { "zone": "Surface — Esterno", "desc": "Vertical ou horizontal sobre o esterno / decote. Joia: Surface bar.", "cica": "9 a 18 meses" },
-        { "zone": "Surface — Abdómen", "desc": "À volta do umbigo (não umbigo). Triângulo ou cruz de skin divers. Joia: Surface bar.", "cica": "9 a 18 meses" }
+        {
+          "zone": "Microdermal",
+          "desc": "Qualquer zona plana: pescoço, decote, nuca, ancas, bochechas, têmporas… Joia: Cabeça decorativa sobre âncora.",
+          "cica": "1 a 3 meses"
+        },
+        {
+          "zone": "Skin Diver",
+          "desc": "Variante mais leve do microdermal. Menos ancoragem subcutânea. Joia: Cabeça decorativa.",
+          "cica": "1 a 3 meses"
+        },
+        {
+          "zone": "Surface — Anca",
+          "desc": "Entre o umbigo e o osso ilíaco, inclinado 90°. Zona de muito movimento. Joia: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Nuca",
+          "desc": "Horizontal na nuca. Um dos maiores riscos de rejeição. Joia: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Esterno",
+          "desc": "Vertical ou horizontal sobre o esterno / decote. Joia: Surface bar.",
+          "cica": "9 a 18 meses"
+        },
+        {
+          "zone": "Surface — Abdómen",
+          "desc": "À volta do umbigo (não umbigo). Triângulo ou cruz de skin divers. Joia: Surface bar.",
+          "cica": "9 a 18 meses"
+        }
       ],
       "faire": [
         "Limpar 2×/dia com soro fisiológico NaCl 0,9%.",
@@ -490,14 +618,46 @@
     "bouche_levres": {
       "title": "CUIDADOS PÓS LABRET",
       "zones": [
-        { "zone": "Labret clássico", "desc": "Centrado abaixo do lábio inferior, horizontal. Joia: Labret reto.", "cica": "6 a 8 semanas" },
-        { "zone": "Labret descentrado", "desc": "Esquerda ou direita abaixo do lábio inferior. Joia: Labret reto.", "cica": "6 a 8 semanas" },
-        { "zone": "Labret vertical", "desc": "Atravessa verticalmente o centro do lábio inferior. Joia: Barbell curvo.", "cica": "6 a 9 meses" },
-        { "zone": "Monroe", "desc": "Acima do lábio superior, lado esquerdo. Joia: Labret reto.", "cica": "8 a 10 semanas" },
-        { "zone": "Madonna", "desc": "Acima do lábio superior, lado direito. Joia: Labret reto.", "cica": "8 a 10 semanas" },
-        { "zone": "Língua (Midline)", "desc": "Centro da língua, vertical. O mais comum. Joia: Barbell longo.", "cica": "4 a 6 semanas" },
-        { "zone": "Freio lingual", "desc": "Membrana sob a língua. Discreto, pouco doloroso. Joia: Anel / curvo.", "cica": "4 semanas" },
-        { "zone": "Smiley (Freio superior)", "desc": "Freio do lábio superior — visível ao sorrir. Joia: Anel, ferradura.", "cica": "4 a 8 semanas" }
+        {
+          "zone": "Labret clássico",
+          "desc": "Centrado abaixo do lábio inferior, horizontal. Joia: Labret reto.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Labret descentrado",
+          "desc": "Esquerda ou direita abaixo do lábio inferior. Joia: Labret reto.",
+          "cica": "6 a 8 semanas"
+        },
+        {
+          "zone": "Labret vertical",
+          "desc": "Atravessa verticalmente o centro do lábio inferior. Joia: Barbell curvo.",
+          "cica": "6 a 9 meses"
+        },
+        {
+          "zone": "Monroe",
+          "desc": "Acima do lábio superior, lado esquerdo. Joia: Labret reto.",
+          "cica": "8 a 10 semanas"
+        },
+        {
+          "zone": "Madonna",
+          "desc": "Acima do lábio superior, lado direito. Joia: Labret reto.",
+          "cica": "8 a 10 semanas"
+        },
+        {
+          "zone": "Língua (Midline)",
+          "desc": "Centro da língua, vertical. O mais comum. Joia: Barbell longo.",
+          "cica": "4 a 6 semanas"
+        },
+        {
+          "zone": "Freio lingual",
+          "desc": "Membrana sob a língua. Discreto, pouco doloroso. Joia: Anel / curvo.",
+          "cica": "4 semanas"
+        },
+        {
+          "zone": "Smiley (Freio superior)",
+          "desc": "Freio do lábio superior — visível ao sorrir. Joia: Anel, ferradura.",
+          "cica": "4 a 8 semanas"
+        }
       ],
       "faire": [
         "Bochechar com elixir bucal SEM ÁLCOOL após cada refeição.",
@@ -516,7 +676,22 @@
         "Piscina, mar, desportos de contacto em fase aguda.",
         "Trocar a joia sozinho antes da cicatrização completa."
       ]
-    }
+    },
+    "avoid_label": "✗ A EVITAR",
+    "cica_col": "Cicatrização",
+    "declaration_1": "Declaro ter tomado conhecimento dos riscos associados à prática do piercing",
+    "declaration_2": "Pude colocar todas as questões que desejava",
+    "desc_col": "Descrição & Joia",
+    "doc_subtitle": "Documento a entregar ao cliente após cada sessão",
+    "fiche_title": "FICHA DE CUIDADOS",
+    "identity_section": "IDENTIDADE DO CLIENTE",
+    "prestation_section": "INFORMAÇÕES DO SERVIÇO",
+    "protocol_section": "PROTOCOLO DE CUIDADOS DIÁRIOS",
+    "todo_label": "✓ A FAZER",
+    "trademark": "Marca registada — uso descritivo apenas, sem afiliação comercial",
+    "zone_col": "Zona",
+    "zone_piercing_label": "Zona perfurada / tratada",
+    "zones_section": "ZONAS DE PIERCING"
   },
   "forms": {
     "last_name": "Apelido(s)",
@@ -774,5 +949,66 @@
     "consent_care": "Compromete-se a respeitar o protocolo de cuidados pós-maquilhagem permanente",
     "consent_adult": "Confirma ser maior de idade",
     "section_signatures": "5 — ASSINATURAS"
+  },
+  "doc_categories": {
+    "dermographie": "Dermografia (08-10)",
+    "piercing_majeurs": "Piercing — Adultos (03-04)",
+    "piercing_mineurs": "Piercing — Menores (01-02)",
+    "rgpd": "RGPD & Confidencialidade (11-12)",
+    "soins_piercing": "Cuidados Pós-Piercing (A, B, C, D–G)",
+    "tatouage": "Tatuagem (05-07)"
+  },
+  "doc_labels": {
+    "affichage_salon": "12 — Informação ao Cliente — Proteção de Dados (RGPD)",
+    "autorisation_parentale": "02 — Autorização Parental",
+    "consentement_soins_tatouage": "06 — Consentimento & Cuidados Pós-Tatuagem",
+    "engagement_confidentialite": "11 — Compromisso de Confidencialidade (RGPD Art. 29)",
+    "fiche_seance_dermographe": "10 — Ficha de Sessão Dermógrafo",
+    "fiche_seance_piercing": "04 — Ficha de Rastreabilidade Material Estéril (Piercing)",
+    "fiche_seance_tatouage": "07 — Ficha de Sessão Tatuagem",
+    "questionnaire_dermographe": "08 — Questionário Médico Dermógrafo",
+    "questionnaire_majeur": "03 — Questionário Médico Adulto (Piercing)",
+    "questionnaire_mineur": "01 — Questionário Médico Menor (Piercing)",
+    "questionnaire_tatouage_majeur": "05 — Questionário Médico Tatuagem Adulto",
+    "soins_arcade_sourcil": "F — Cuidados Pós-Piercing Arcada / Sobrancelha",
+    "soins_bouche_levres": "C — Cuidados Pós Labret (Boca & Lábios)",
+    "soins_dermographe": "09 — Cuidados Pós-Dermografia (Maquilhagem Permanente)",
+    "soins_mamelons": "E — Cuidados Pós-Piercing Mamilo",
+    "soins_nez": "B — Cuidados Pós-Piercing Nariz",
+    "soins_nombril": "D — Cuidados Pós-Piercing Umbigo",
+    "soins_oreilles": "A — Cuidados Pós-Piercing Orelhas",
+    "soins_surface_dermal": "G — Cuidados Pós-Piercing Superfície / Dermal"
+  },
+  "language": {
+    "bg": "Български",
+    "cs": "Čeština",
+    "da": "Dansk",
+    "de": "Deutsch",
+    "el": "Ελληνικά",
+    "en": "English",
+    "es": "Español",
+    "et": "Eesti",
+    "fi": "Suomi",
+    "fr": "Français",
+    "full_translation": "Tradução completa",
+    "ga": "Gaeilge",
+    "hr": "Hrvatski",
+    "hu": "Magyar",
+    "is": "Íslenska",
+    "it": "Italiano",
+    "lt": "Lietuvių",
+    "lv": "Latviešu",
+    "mt": "Malti",
+    "nl": "Nederlands",
+    "no": "Norsk",
+    "partial_translation": "Em curso de tradução",
+    "pl": "Polski",
+    "pt": "Português",
+    "ro": "Română",
+    "select": "Idioma",
+    "sk": "Slovenčina",
+    "sl": "Slovenščina",
+    "sv": "Svenska",
+    "tr": "Türkçe"
   }
 }
