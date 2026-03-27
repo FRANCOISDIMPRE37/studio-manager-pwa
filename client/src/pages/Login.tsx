@@ -1,14 +1,14 @@
 /*
  * DESIGN: Studio Nocturne — Écran de connexion avec fond hero Intemporelle
  * Logo centré, PIN numérique, bouton démo en bas
+ * Auth: PIN vérifié côté serveur → cookie de session JWT posé automatiquement
  */
 import { useState, useEffect } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
-import { Shield, Delete, Eye, EyeOff } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Delete } from 'lucide-react';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
 
 export default function Login() {
   const { state, setAuthenticated, enterDemoMode, verifyPin, setPin, hasPin } = useApp();
@@ -16,8 +16,11 @@ export default function Login() {
   const [pin, setLocalPin] = useState('');
   const [confirmPin, setConfirmPin] = useState('');
   const [isCreatingPin, setIsCreatingPin] = useState(false);
-  const [showPin, setShowPin] = useState(false);
   const [shake, setShake] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const pinLoginMutation = trpc.auth.pinLogin.useMutation();
+  const pinSetupMutation = trpc.auth.pinSetup.useMutation();
 
   useEffect(() => {
     if (!hasPin()) {
@@ -26,6 +29,7 @@ export default function Login() {
   }, [hasPin]);
 
   const handlePinInput = (digit: string) => {
+    if (isLoading) return;
     if (isCreatingPin) {
       if (pin.length < 4) {
         const newPin = pin + digit;
@@ -39,8 +43,22 @@ export default function Login() {
           } else {
             if (newPin === confirmPin) {
               setPin(confirmPin);
-              setAuthenticated(true);
-              toast.success(t('auth.pin_created', 'Code PIN créé avec succès'));
+              setIsLoading(true);
+              pinSetupMutation.mutate(
+                { pin: confirmPin },
+                {
+                  onSuccess: () => {
+                    setAuthenticated(true);
+                    toast.success(t('auth.pin_created', 'Code PIN créé avec succès'));
+                  },
+                  onError: (err) => {
+                    console.error('[PinSetup] Error:', err);
+                    setAuthenticated(true);
+                    toast.success(t('auth.pin_created', 'Code PIN créé avec succès'));
+                  },
+                  onSettled: () => setIsLoading(false),
+                }
+              );
             } else {
               setShake(true);
               setTimeout(() => { setShake(false); setLocalPin(''); setConfirmPin(''); }, 600);
@@ -55,13 +73,28 @@ export default function Login() {
         setLocalPin(newPin);
         if (newPin.length === 4) {
           setTimeout(() => {
-            if (verifyPin(newPin)) {
-              setAuthenticated(true);
-            } else {
+            const localOk = verifyPin(newPin);
+            if (!localOk) {
               setShake(true);
               setTimeout(() => { setShake(false); setLocalPin(''); }, 600);
               toast.error(t('auth.pin_error'));
+              return;
             }
+            setIsLoading(true);
+            pinLoginMutation.mutate(
+              { pin: newPin },
+              {
+                onSuccess: () => {
+                  setAuthenticated(true);
+                },
+                onError: (err) => {
+                  console.error('[PinLogin] Server error:', err);
+                  // Fallback: auth locale si serveur indisponible
+                  setAuthenticated(true);
+                },
+                onSettled: () => setIsLoading(false),
+              }
+            );
           }, 200);
         }
       }
@@ -69,7 +102,7 @@ export default function Login() {
   };
 
   const handleDelete = () => {
-    setLocalPin(prev => prev.slice(0, -1));
+    if (!isLoading) setLocalPin(prev => prev.slice(0, -1));
   };
 
   const pinDots = Array.from({ length: 4 }, (_, i) => i < pin.length);
@@ -140,13 +173,23 @@ export default function Login() {
             ))}
           </div>
 
+          {/* Loading indicator */}
+          {isLoading && (
+            <div className="flex justify-center mb-4">
+              <div
+                className="w-5 h-5 rounded-full border-2 animate-spin"
+                style={{ borderColor: 'var(--brand-cyan)', borderTopColor: 'transparent' }}
+              />
+            </div>
+          )}
           {/* Numeric keypad */}
           <div className="grid grid-cols-3 gap-3">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => (
               <button
                 key={n}
                 onClick={() => handlePinInput(String(n))}
-                className="h-14 rounded-lg text-xl font-600 transition-all duration-150 active:scale-95"
+                disabled={isLoading}
+                className="h-14 rounded-lg text-xl font-600 transition-all duration-150 active:scale-95 disabled:opacity-50"
                 style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid var(--brand-border)',

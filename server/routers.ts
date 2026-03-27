@@ -3,6 +3,8 @@ import { COOKIE_NAME } from "@shared/const";
 import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, protectedProcedure, router } from "./_core/trpc";
+import { sdk } from "./_core/sdk";
+import { ENV } from "./_core/env";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import {
@@ -15,6 +17,7 @@ import {
   getStudioUsersByOwner, getStudioUserById, loginExistsForOwner,
   createStudioUser, updateStudioUser, deleteStudioUser,
   getSmsConfig, upsertSmsConfig,
+  getUserByOpenId, upsertUser,
 } from "./db";
 
 export const appRouter = router({
@@ -26,6 +29,65 @@ export const appRouter = router({
       ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
+    // Connexion par PIN — crée un cookie de session JWT sans passer par Manus OAuth
+    pinLogin: publicProcedure
+      .input(z.object({ pin: z.string().length(4) }))
+      .mutation(async ({ ctx, input }) => {
+        // Récupérer l'utilisateur propriétaire (openId = OWNER_OPEN_ID)
+        const ownerOpenId = ENV.ownerOpenId;
+        if (!ownerOpenId) throw new Error("Owner not configured");
+        let user = await getUserByOpenId(ownerOpenId);
+        if (!user) {
+          // Créer l'utilisateur owner s'il n'existe pas encore
+          await upsertUser({ openId: ownerOpenId, name: "Admin", role: "admin" });
+          user = await getUserByOpenId(ownerOpenId);
+        }
+        if (!user) throw new Error("Failed to get or create owner user");
+        // Vérifier le PIN haché stocké dans salon_settings
+        const salonSettings = await getSalonSettings(user.id);
+        if (!salonSettings?.pinHash) {
+          // Pas encore de PIN configuré — autoriser la connexion initiale
+          // (le PIN sera configuré lors de l'onboarding)
+          const token = await sdk.createSessionToken(ownerOpenId, { name: user.name || "Admin" });
+          const cookieOptions = getSessionCookieOptions(ctx.req);
+          ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+          return { success: true, firstLogin: true };
+        }
+        const pinValid = await bcrypt.compare(input.pin, salonSettings.pinHash);
+        if (!pinValid) throw new Error("PIN incorrect");
+        const token = await sdk.createSessionToken(ownerOpenId, { name: user.name || "Admin" });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+        return { success: true, firstLogin: false };
+      }),
+    // Enregistrer le PIN haché en base de données
+    pinSetup: publicProcedure
+      .input(z.object({ pin: z.string().length(4) }))
+      .mutation(async ({ ctx, input }) => {
+        const ownerOpenId = ENV.ownerOpenId;
+        if (!ownerOpenId) throw new Error("Owner not configured");
+        let user = await getUserByOpenId(ownerOpenId);
+        if (!user) {
+          await upsertUser({ openId: ownerOpenId, name: "Admin", role: "admin" });
+          user = await getUserByOpenId(ownerOpenId);
+        }
+        if (!user) throw new Error("Failed to get or create owner user");
+        const pinHash = await bcrypt.hash(input.pin, 10);
+        await upsertSalonSettings(user.id, { nom: "Mon Studio", pinHash });
+        // Créer la session après setup du PIN
+        const token = await sdk.createSessionToken(ownerOpenId, { name: user.name || "Admin" });
+        const cookieOptions = getSessionCookieOptions(ctx.req);
+        ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+        return { success: true };
+      }),
+    // Mettre à jour le PIN (nécessite d'être authentifié)
+    pinUpdate: protectedProcedure
+      .input(z.object({ pin: z.string().length(4) }))
+      .mutation(async ({ ctx, input }) => {
+        const pinHash = await bcrypt.hash(input.pin, 10);
+        await upsertSalonSettings(ctx.user.id, { nom: "Mon Studio", pinHash });
+        return { success: true };
+      }),
   }),
 
   clients: router({

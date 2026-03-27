@@ -131,10 +131,10 @@ export const salonSettings = mysqlTable("salon_settings", {
   nomPierceur: varchar("nomPierceur", { length: 200 }),
   nomTatoueur: varchar("nomTatoueur", { length: 200 }),
   nomDermographe: varchar("nomDermographe", { length: 200 }),
+  pinHash: text("pinHash"),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
-
-export type SalonSettings = typeof salonSettings.$inferSelect;
+export type SalonSettings = typeof salonSettings.$inferSelect;;
 export type InsertSalonSettings = typeof salonSettings.$inferInsert;
 
 /**
