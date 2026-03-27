@@ -18,7 +18,7 @@ const MODE_EMPLOI_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/31051966315929289
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const { state, getDashboardStats, setAuthenticated } = useApp();
+  const { state, getDashboardStats, setAuthenticated, syncFromCloud } = useApp();
   const stats = getDashboardStats();
   const { t } = useTranslation();
 
@@ -188,7 +188,15 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           {/* Sélecteur de langue — menu déroulant toutes langues européennes */}
           <LanguageSelector />
           <button
-            onClick={() => { toast.info('Actualisation...'); window.location.reload(); }}
+            onClick={async () => {
+              toast.info('Synchronisation en cours...');
+              try {
+                await syncFromCloud();
+                toast.success('Données synchronisées !');
+              } catch {
+                toast.error('Erreur de synchronisation');
+              }
+            }}
             className="flex items-center gap-3 w-full px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/5"
             style={{ color: 'var(--brand-cyan)' }}
             title={t('nav.refresh')}
