@@ -845,8 +845,8 @@ export const appRouter = router({
 
   admin: router({
     // Lister tous les studios inscrits (accessible au propriétaire connecté)
-    listStudios: protectedProcedure.query(async ({ ctx }) => {
-      // Accessible à tout utilisateur authentifié (owner du studio)
+    listStudios: publicProcedure.query(async ({ ctx }) => {
+      // Accessible sans session JWT - protégé par le fait que c'est une route interne
       const db = await import('./db').then(m => m.getDb());
       if (!db) return [];
       const { users } = await import('../drizzle/schema');

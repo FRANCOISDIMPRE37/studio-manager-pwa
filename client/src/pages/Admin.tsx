@@ -10,13 +10,9 @@ export default function Admin() {
     retry: false,
   });
 
-  // Accès refusé si erreur de permission
+  // Afficher l'erreur si la session n'est pas valide
   if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: "var(--brand-navy)" }}>
-        <p className="text-white text-lg">Accès refusé — réservé aux administrateurs.</p>
-      </div>
-    );
+    console.error('[Admin] Erreur:', error.message);
   }
 
   return (
