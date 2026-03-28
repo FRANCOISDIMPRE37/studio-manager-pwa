@@ -1,0 +1,19 @@
+{
+  "query": "SELECT * FROM licenses LIMIT 5; SELECT COUNT(*) as total FROM admin_articles; SELECT COUNT(*) as total FROM shared_services;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute SELECT * FROM licenses LIMIT 5; SELECT COUNT(*) as total FROM admin_articles; SELECT COUNT(*) as total FROM shared_services;",
+  "rows": [
+    {
+      "total": "0"
+    },
+    {
+      "total": "total"
+    },
+    {
+      "total": "0"
+    }
+  ],
+  "messages": [],
+  "stdout": "total\n0\ntotal\n0\n",
+  "stderr": "",
+  "execution_time_ms": 77
+}

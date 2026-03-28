@@ -1,0 +1,9 @@
+{
+  "query": "INSERT INTO licenses (userId, planType, status, expiresAt, featureClients, featureDocuments, featureAgenda, featureSms, featureMultiUsers, featureExport, maxClients, maxUsers, notes, createdAt, updatedAt)\nVALUES (\n  1650001,\n  'studio',\n  'active',\n  DATE_ADD(NOW(), INTERVAL 1 YEAR),\n  1, 1, 1, 0, 0, 1,\n  500, 3,\n  'Licence test créée depuis la console admin - Studio FRANCOIS',\n  NOW(),\n  NOW()\n);",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute INSERT INTO licenses (userId, planType, status, expiresAt, featureClients, featureDocuments, featureAgenda, featureSms, featureMultiUsers, featureExport, maxClients, maxUsers, notes, createdAt, updatedAt)\nVALUES (\n  1650001,\n  'studio',\n  'active',\n  DATE_ADD(NOW(), INTERVAL 1 YEAR),\n  1, 1, 1, 0, 0, 1,\n  500, 3,\n  'Licence test créée depuis la console admin - Studio FRANCOIS',\n  NOW(),\n  NOW()\n);",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 69
+}

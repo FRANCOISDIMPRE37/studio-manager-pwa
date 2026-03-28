@@ -873,12 +873,13 @@ export const appRouter = router({
     }),
 
     listStudiosWithLicenses: publicProcedure.query(async () => {
-      const db = await import('./db').then(m => m.getDb());
-      if (!db) return [];
+      if (!process.env.DATABASE_URL) return [];
       try {
-        const [rows] = await (db as any).$client.query(`
+        const mysql2 = await import('mysql2/promise');
+        const conn = await mysql2.createConnection(process.env.DATABASE_URL);
+        const [rows] = await conn.query(`
           SELECT u.id, u.name, u.email, u.loginMethod, u.role, u.createdAt,
-                 l.planType, l.status as licenseStatus, l.expiresAt,
+                 l.id as licenseId, l.planType, l.status as licenseStatus, l.expiresAt,
                  l.featureClients, l.featureDocuments, l.featureAgenda,
                  l.featureSms, l.featureMultiUsers, l.featureExport,
                  l.maxClients, l.maxUsers, l.notes as licenseNotes,
@@ -888,8 +889,9 @@ export const appRouter = router({
           LEFT JOIN salon_settings ss ON ss.userId = u.id
           ORDER BY u.createdAt ASC
         `);
+        await conn.end();
         return rows as any[];
-      } catch { return []; }
+      } catch (e) { console.error('[admin.listStudiosWithLicenses]', e); return []; }
     }),
 
     deleteUser: publicProcedure
