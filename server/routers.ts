@@ -19,6 +19,12 @@ import {
   getSmsConfig, upsertSmsConfig,
   getUserByOpenId, upsertUser,
   getUserByEmail, createUserWithEmail, getPasswordHashByEmail,
+  getLicenseByUserId, upsertLicense, getAllLicenses,
+  getAdminArticles, getAdminArticleById, createAdminArticle, updateAdminArticle, deleteAdminArticle,
+  markArticleRead, getArticleReadIds,
+  createAdminNotification, getNotificationsForUser, markNotificationRead, getAllAdminNotifications,
+  getSharedServices, createSharedService, updateSharedService, deleteSharedService,
+  getAdminStats,
 } from "./db";
 
 export const appRouter = router({
@@ -844,12 +850,17 @@ export const appRouter = router({
   }),
 
   admin: router({
-    // Lister tous les studios inscrits (accessible au propriétaire connecté)
-    listStudios: publicProcedure.query(async ({ ctx }) => {
-      // Accessible sans session JWT - protégé par le fait que c'est une route interne
+    // ====== STATISTIQUES ======
+    getStats: publicProcedure.query(async () => {
+      return getAdminStats();
+    }),
+
+    // ====== GESTION DES STUDIOS ======
+    listStudios: publicProcedure.query(async () => {
       const db = await import('./db').then(m => m.getDb());
       if (!db) return [];
       const { users } = await import('../drizzle/schema');
+      const { asc } = await import('drizzle-orm');
       const result = await db.select({
         id: users.id,
         name: users.name,
@@ -857,25 +868,280 @@ export const appRouter = router({
         loginMethod: users.loginMethod,
         role: users.role,
         createdAt: users.createdAt,
-      }).from(users).orderBy(users.createdAt);
+      }).from(users).orderBy(asc(users.createdAt));
       return result;
     }),
-    // Supprimer un compte studio (et toutes ses données)
+
+    listStudiosWithLicenses: publicProcedure.query(async () => {
+      const db = await import('./db').then(m => m.getDb());
+      if (!db) return [];
+      try {
+        const [rows] = await (db as any).$client.query(`
+          SELECT u.id, u.name, u.email, u.loginMethod, u.role, u.createdAt,
+                 l.planType, l.status as licenseStatus, l.expiresAt,
+                 l.featureClients, l.featureDocuments, l.featureAgenda,
+                 l.featureSms, l.featureMultiUsers, l.featureExport,
+                 l.maxClients, l.maxUsers, l.notes as licenseNotes,
+                 ss.nom as salonNom, ss.ville, ss.telephone
+          FROM users u
+          LEFT JOIN licenses l ON l.userId = u.id
+          LEFT JOIN salon_settings ss ON ss.userId = u.id
+          ORDER BY u.createdAt ASC
+        `);
+        return rows as any[];
+      } catch { return []; }
+    }),
+
     deleteUser: publicProcedure
       .input(z.object({ userId: z.number() }))
       .mutation(async ({ input }) => {
         const db = await import('./db').then(m => m.getDb());
         if (!db) throw new Error('DB non disponible');
-        const { users, clients, salonSettings, prestations } = await import('../drizzle/schema');
+        const { users, clients, salonSettings, prestations, licenses } = await import('../drizzle/schema');
         const { eq } = await import('drizzle-orm');
-        // Supprimer les données liées
         try { await db.delete(clients).where(eq(clients.userId, input.userId)); } catch {}
         try { await db.delete(salonSettings).where(eq(salonSettings.userId, input.userId)); } catch {}
         try { await db.delete(prestations).where(eq(prestations.userId, input.userId)); } catch {}
-        // Supprimer le compte
+        try { await db.delete(licenses).where(eq(licenses.userId, input.userId)); } catch {}
         await db.delete(users).where(eq(users.id, input.userId));
         return { success: true };
       }),
+
+    // ====== LICENCES ======
+    getLicense: publicProcedure
+      .input(z.object({ userId: z.number() }))
+      .query(async ({ input }) => {
+        return getLicenseByUserId(input.userId);
+      }),
+
+    getAllLicenses: publicProcedure.query(async () => {
+      return getAllLicenses();
+    }),
+
+    upsertLicense: publicProcedure
+      .input(z.object({
+        userId: z.number(),
+        planType: z.enum(['trial', 'solo', 'studio', 'multi']).optional(),
+        status: z.enum(['active', 'suspended', 'expired', 'cancelled']).optional(),
+        expiresAt: z.date().nullable().optional(),
+        featureClients: z.boolean().optional(),
+        featureDocuments: z.boolean().optional(),
+        featureAgenda: z.boolean().optional(),
+        featureSms: z.boolean().optional(),
+        featureMultiUsers: z.boolean().optional(),
+        featureExport: z.boolean().optional(),
+        maxClients: z.number().optional(),
+        maxUsers: z.number().optional(),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { userId, ...data } = input;
+        await upsertLicense(userId, data as any);
+        return { success: true };
+      }),
+
+    // ====== ARTICLES ADMIN ======
+    listArticles: publicProcedure
+      .input(z.object({ statut: z.string().optional() }))
+      .query(async ({ input }) => {
+        return getAdminArticles(input.statut);
+      }),
+
+    getArticle: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .query(async ({ input }) => {
+        return getAdminArticleById(input.id);
+      }),
+
+    createArticle: publicProcedure
+      .input(z.object({
+        titre: z.string().min(1),
+        contenu: z.string().min(1),
+        type: z.enum(['annonce', 'mise_a_jour', 'legal', 'formation', 'promo']),
+        statut: z.enum(['brouillon', 'publie', 'archive']),
+        ciblePlanType: z.string().optional(),
+        important: z.boolean().optional(),
+        publieLe: z.date().optional(),
+        expireLe: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const ownerOpenId = ENV.ownerOpenId;
+        let createdByUserId = 1;
+        if (ownerOpenId) {
+          const owner = await getUserByOpenId(ownerOpenId);
+          if (owner) createdByUserId = owner.id;
+        }
+        await createAdminArticle({ ...input, createdByUserId });
+        return { success: true };
+      }),
+
+    updateArticle: publicProcedure
+      .input(z.object({
+        id: z.number(),
+        titre: z.string().optional(),
+        contenu: z.string().optional(),
+        type: z.enum(['annonce', 'mise_a_jour', 'legal', 'formation', 'promo']).optional(),
+        statut: z.enum(['brouillon', 'publie', 'archive']).optional(),
+        ciblePlanType: z.string().optional(),
+        important: z.boolean().optional(),
+        publieLe: z.date().optional(),
+        expireLe: z.date().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateAdminArticle(id, data as any);
+        return { success: true };
+      }),
+
+    deleteArticle: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteAdminArticle(input.id);
+        return { success: true };
+      }),
+
+    // Articles pour les studios (côté client)
+    getPublishedArticles: protectedProcedure.query(async ({ ctx }) => {
+      const articles = await getAdminArticles('publie');
+      const readIds = await getArticleReadIds(ctx.user.id);
+      return articles.map(a => ({ ...a, isRead: readIds.includes(a.id) }));
+    }),
+
+    markArticleRead: protectedProcedure
+      .input(z.object({ articleId: z.number() }))
+      .mutation(async ({ ctx, input }) => {
+        await markArticleRead(input.articleId, ctx.user.id);
+        return { success: true };
+      }),
+
+    // ====== NOTIFICATIONS ======
+    sendNotification: publicProcedure
+      .input(z.object({
+        titre: z.string().min(1),
+        message: z.string().min(1),
+        type: z.enum(['info', 'warning', 'success', 'error']),
+        targetUserId: z.number().optional(),
+        targetPlanType: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const ownerOpenId = ENV.ownerOpenId;
+        let createdByUserId = 1;
+        if (ownerOpenId) {
+          const owner = await getUserByOpenId(ownerOpenId);
+          if (owner) createdByUserId = owner.id;
+        }
+        await createAdminNotification({ ...input, createdByUserId });
+        return { success: true };
+      }),
+
+    getMyNotifications: protectedProcedure.query(async ({ ctx }) => {
+      return getNotificationsForUser(ctx.user.id);
+    }),
+
+    markNotificationRead: protectedProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await markNotificationRead(input.id);
+        return { success: true };
+      }),
+
+    getAllNotifications: publicProcedure.query(async () => {
+      return getAllAdminNotifications();
+    }),
+
+    // ====== SERVICES PARTAGÉS ======
+    listSharedServices: publicProcedure
+      .input(z.object({ actifOnly: z.boolean().optional() }))
+      .query(async ({ input }) => {
+        return getSharedServices(input.actifOnly !== false);
+      }),
+
+    createSharedService: publicProcedure
+      .input(z.object({
+        nom: z.string().min(1),
+        description: z.string().optional(),
+        type: z.enum(['piercing', 'tatouage', 'dermographie']),
+        zone: z.string().optional(),
+        prixConseille: z.number().optional(),
+        dureeMinutes: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const ownerOpenId = ENV.ownerOpenId;
+        let createdByUserId = 1;
+        if (ownerOpenId) {
+          const owner = await getUserByOpenId(ownerOpenId);
+          if (owner) createdByUserId = owner.id;
+        }
+        await createSharedService({ ...input, createdByUserId });
+        return { success: true };
+      }),
+
+    updateSharedService: publicProcedure
+      .input(z.object({
+        id: z.number(),
+        nom: z.string().optional(),
+        description: z.string().optional(),
+        type: z.enum(['piercing', 'tatouage', 'dermographie']).optional(),
+        zone: z.string().optional(),
+        prixConseille: z.number().optional(),
+        dureeMinutes: z.number().optional(),
+        actif: z.boolean().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const { id, ...data } = input;
+        await updateSharedService(id, data as any);
+        return { success: true };
+      }),
+
+    deleteSharedService: publicProcedure
+      .input(z.object({ id: z.number() }))
+      .mutation(async ({ input }) => {
+        await deleteSharedService(input.id);
+        return { success: true };
+      }),
+
+    // ====== INVITATIONS ======
+    createInvitation: publicProcedure
+      .input(z.object({
+        email: z.string().email().optional(),
+        planType: z.enum(['trial', 'solo', 'studio', 'multi']),
+        trialDays: z.number().default(30),
+        expiresInDays: z.number().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const db = await import('./db').then(m => m.getDb());
+        if (!db) throw new Error('DB non disponible');
+        const { invitations } = await import('../drizzle/schema');
+        const ownerOpenId = ENV.ownerOpenId;
+        let createdByUserId = 1;
+        if (ownerOpenId) {
+          const owner = await getUserByOpenId(ownerOpenId);
+          if (owner) createdByUserId = owner.id;
+        }
+        // Générer un code unique
+        const code = Math.random().toString(36).substring(2, 10).toUpperCase() +
+                     Math.random().toString(36).substring(2, 10).toUpperCase();
+        const expiresAt = input.expiresInDays
+          ? new Date(Date.now() + input.expiresInDays * 24 * 60 * 60 * 1000)
+          : undefined;
+        await db.insert(invitations).values({
+          code,
+          email: input.email,
+          planType: input.planType,
+          trialDays: input.trialDays,
+          expiresAt,
+          createdByUserId,
+        });
+        return { success: true, code };
+      }),
+
+    listInvitations: publicProcedure.query(async () => {
+      const db = await import('./db').then(m => m.getDb());
+      if (!db) return [];
+      const { invitations } = await import('../drizzle/schema');
+      const { desc } = await import('drizzle-orm');
+      return db.select().from(invitations).orderBy(desc(invitations.createdAt));
+    }),
   }),
   rappels: router({
     getStatus: protectedProcedure.query(async ({ ctx }) => {

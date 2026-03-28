@@ -257,3 +257,109 @@ export const invitations = mysqlTable("invitations", {
 
 export type Invitation = typeof invitations.$inferSelect;
 export type InsertInvitation = typeof invitations.$inferInsert;
+
+/**
+ * Table des licences — gestion centralisée des accès et expirations
+ * Chaque studio a une licence qui détermine ses droits et sa date d'expiration
+ */
+export const licenses = mysqlTable("licenses", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull().unique(), // FK vers users.id
+  planType: mysqlEnum("planType", ["trial", "solo", "studio", "multi"]).default("trial").notNull(),
+  status: mysqlEnum("status", ["active", "suspended", "expired", "cancelled"]).default("active").notNull(),
+  expiresAt: timestamp("expiresAt"), // null = pas d'expiration (lifetime)
+  // Fonctionnalités activées/désactivées
+  featureClients: boolean("featureClients").default(true).notNull(),
+  featureDocuments: boolean("featureDocuments").default(true).notNull(),
+  featureAgenda: boolean("featureAgenda").default(true).notNull(),
+  featureSms: boolean("featureSms").default(false).notNull(),
+  featureMultiUsers: boolean("featureMultiUsers").default(false).notNull(),
+  featureExport: boolean("featureExport").default(true).notNull(),
+  maxClients: int("maxClients").default(100).notNull(), // 0 = illimité
+  maxUsers: int("maxUsers").default(1).notNull(), // nb d'utilisateurs autorisés
+  notes: text("notes"), // notes internes admin
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type License = typeof licenses.$inferSelect;
+export type InsertLicense = typeof licenses.$inferInsert;
+
+/**
+ * Table des articles admin — contenu partagé diffusé à tous les studios
+ * Annonces, mises à jour, informations légales, etc.
+ */
+export const adminArticles = mysqlTable("admin_articles", {
+  id: int("id").autoincrement().primaryKey(),
+  titre: varchar("titre", { length: 300 }).notNull(),
+  contenu: text("contenu").notNull(),
+  type: mysqlEnum("type", ["annonce", "mise_a_jour", "legal", "formation", "promo"]).default("annonce").notNull(),
+  statut: mysqlEnum("statut", ["brouillon", "publie", "archive"]).default("brouillon").notNull(),
+  // Ciblage
+  ciblePlanType: varchar("ciblePlanType", { length: 100 }), // null = tous, ou 'trial,solo,studio,multi'
+  important: boolean("important").default(false).notNull(), // afficher en priorité
+  // Dates
+  publieLe: timestamp("publieLe"),
+  expireLe: timestamp("expireLe"), // null = pas d'expiration
+  createdByUserId: int("createdByUserId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type AdminArticle = typeof adminArticles.$inferSelect;
+export type InsertAdminArticle = typeof adminArticles.$inferInsert;
+
+/**
+ * Table de suivi des lectures d'articles par les studios
+ */
+export const adminArticleReads = mysqlTable("admin_article_reads", {
+  id: int("id").autoincrement().primaryKey(),
+  articleId: int("articleId").notNull(),
+  userId: int("userId").notNull(),
+  readAt: timestamp("readAt").defaultNow().notNull(),
+});
+
+export type AdminArticleRead = typeof adminArticleReads.$inferSelect;
+export type InsertAdminArticleRead = typeof adminArticleReads.$inferInsert;
+
+/**
+ * Table des notifications admin — messages envoyés à des studios spécifiques ou tous
+ */
+export const adminNotifications = mysqlTable("admin_notifications", {
+  id: int("id").autoincrement().primaryKey(),
+  titre: varchar("titre", { length: 300 }).notNull(),
+  message: text("message").notNull(),
+  type: mysqlEnum("type", ["info", "warning", "success", "error"]).default("info").notNull(),
+  // Destinataires
+  targetUserId: int("targetUserId"), // null = tous les studios
+  targetPlanType: varchar("targetPlanType", { length: 100 }), // null = tous les plans
+  // Statut
+  lu: boolean("lu").default(false).notNull(),
+  luAt: timestamp("luAt"),
+  createdByUserId: int("createdByUserId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type AdminNotification = typeof adminNotifications.$inferSelect;
+export type InsertAdminNotification = typeof adminNotifications.$inferInsert;
+
+/**
+ * Catalogue de services partagés — modèles de prestations diffusés par l'admin
+ * Les studios peuvent importer ces modèles dans leur catalogue
+ */
+export const sharedServices = mysqlTable("shared_services", {
+  id: int("id").autoincrement().primaryKey(),
+  nom: varchar("nom", { length: 200 }).notNull(),
+  description: text("description"),
+  type: mysqlEnum("type", ["piercing", "tatouage", "dermographie"]).notNull(),
+  zone: varchar("zone", { length: 200 }),
+  prixConseille: int("prixConseille"), // en centimes
+  dureeMinutes: int("dureeMinutes"),
+  actif: boolean("actif").default(true).notNull(),
+  createdByUserId: int("createdByUserId").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type SharedService = typeof sharedServices.$inferSelect;
+export type InsertSharedService = typeof sharedServices.$inferInsert;

@@ -57,6 +57,13 @@
       "when": 1774629820078,
       "tag": "0007_majestic_hemingway",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "5",
+      "when": 1774702485495,
+      "tag": "0008_funny_azazel",
+      "breakpoints": true
     }
   ]
 }

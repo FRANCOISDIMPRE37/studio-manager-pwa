@@ -1,6 +1,6 @@
 import { eq, desc, and } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers, smsConfig } from "../drizzle/schema";
+import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers, smsConfig, licenses, adminArticles, adminArticleReads, adminNotifications, sharedServices } from "../drizzle/schema";
 import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig, InsertStudioUser, InsertSmsConfig } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -428,4 +428,230 @@ export async function getPasswordHashByEmail(email: string): Promise<string | nu
   if (!user) return null;
   const settings = await getSalonSettings(user.id);
   return (settings as any)?.passwordHash ?? null;
+}
+
+// ============ LICENCES ============
+
+export async function getLicenseByUserId(userId: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const { licenses } = await import('../drizzle/schema');
+  const result = await db.select().from(licenses).where(eq(licenses.userId, userId)).limit(1);
+  return result[0];
+}
+
+export async function upsertLicense(userId: number, data: Partial<typeof licenses.$inferInsert>) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { licenses } = await import('../drizzle/schema');
+  const existing = await getLicenseByUserId(userId);
+  if (existing) {
+    await db.update(licenses).set({ ...data, updatedAt: new Date() }).where(eq(licenses.userId, userId));
+  } else {
+    await db.insert(licenses).values({ userId, ...data } as any);
+  }
+}
+
+export async function getAllLicenses() {
+  const db = await getDb();
+  if (!db) return [];
+  const { licenses } = await import('../drizzle/schema');
+  return db.select().from(licenses).orderBy(desc(licenses.createdAt));
+}
+
+// ============ ARTICLES ADMIN ============
+
+export async function getAdminArticles(statut?: string) {
+  const db = await getDb();
+  if (!db) return [];
+  const { adminArticles } = await import('../drizzle/schema');
+  if (statut) {
+    return db.select().from(adminArticles)
+      .where(eq(adminArticles.statut, statut as any))
+      .orderBy(desc(adminArticles.createdAt));
+  }
+  return db.select().from(adminArticles).orderBy(desc(adminArticles.createdAt));
+}
+
+export async function getAdminArticleById(id: number) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const { adminArticles } = await import('../drizzle/schema');
+  const result = await db.select().from(adminArticles).where(eq(adminArticles.id, id)).limit(1);
+  return result[0];
+}
+
+export async function createAdminArticle(data: {
+  titre: string;
+  contenu: string;
+  type: 'annonce' | 'mise_a_jour' | 'legal' | 'formation' | 'promo';
+  statut: 'brouillon' | 'publie' | 'archive';
+  ciblePlanType?: string;
+  important?: boolean;
+  publieLe?: Date;
+  expireLe?: Date;
+  createdByUserId: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { adminArticles } = await import('../drizzle/schema');
+  await db.insert(adminArticles).values(data as any);
+}
+
+export async function updateAdminArticle(id: number, data: Partial<{
+  titre: string;
+  contenu: string;
+  type: 'annonce' | 'mise_a_jour' | 'legal' | 'formation' | 'promo';
+  statut: 'brouillon' | 'publie' | 'archive';
+  ciblePlanType: string;
+  important: boolean;
+  publieLe: Date;
+  expireLe: Date;
+}>) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { adminArticles } = await import('../drizzle/schema');
+  await db.update(adminArticles).set({ ...data, updatedAt: new Date() } as any).where(eq(adminArticles.id, id));
+}
+
+export async function deleteAdminArticle(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { adminArticles } = await import('../drizzle/schema');
+  await db.delete(adminArticles).where(eq(adminArticles.id, id));
+}
+
+export async function markArticleRead(articleId: number, userId: number) {
+  const db = await getDb();
+  if (!db) return;
+  const { adminArticleReads } = await import('../drizzle/schema');
+  // Vérifier si déjà lu
+  const existing = await db.select().from(adminArticleReads)
+    .where(and(eq(adminArticleReads.articleId, articleId), eq(adminArticleReads.userId, userId)))
+    .limit(1);
+  if (existing.length === 0) {
+    await db.insert(adminArticleReads).values({ articleId, userId });
+  }
+}
+
+export async function getArticleReadIds(userId: number): Promise<number[]> {
+  const db = await getDb();
+  if (!db) return [];
+  const { adminArticleReads } = await import('../drizzle/schema');
+  const result = await db.select({ articleId: adminArticleReads.articleId })
+    .from(adminArticleReads).where(eq(adminArticleReads.userId, userId));
+  return result.map(r => r.articleId);
+}
+
+// ============ NOTIFICATIONS ADMIN ============
+
+export async function createAdminNotification(data: {
+  titre: string;
+  message: string;
+  type: 'info' | 'warning' | 'success' | 'error';
+  targetUserId?: number;
+  targetPlanType?: string;
+  createdByUserId: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { adminNotifications } = await import('../drizzle/schema');
+  await db.insert(adminNotifications).values(data as any);
+}
+
+export async function getNotificationsForUser(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  const { adminNotifications } = await import('../drizzle/schema');
+  // Notifs pour cet utilisateur spécifique OU pour tous (targetUserId = null)
+  const result = await (db as any).$client.query(
+    'SELECT * FROM admin_notifications WHERE (targetUserId IS NULL OR targetUserId = ?) ORDER BY createdAt DESC LIMIT 20',
+    [userId]
+  );
+  return Array.isArray(result) ? result[0] as any[] : [];
+}
+
+export async function markNotificationRead(id: number) {
+  const db = await getDb();
+  if (!db) return;
+  const { adminNotifications } = await import('../drizzle/schema');
+  await db.update(adminNotifications).set({ lu: true, luAt: new Date() }).where(eq(adminNotifications.id, id));
+}
+
+export async function getAllAdminNotifications() {
+  const db = await getDb();
+  if (!db) return [];
+  const { adminNotifications } = await import('../drizzle/schema');
+  return db.select().from(adminNotifications).orderBy(desc(adminNotifications.createdAt));
+}
+
+// ============ SERVICES PARTAGÉS ============
+
+export async function getSharedServices(actifOnly = true) {
+  const db = await getDb();
+  if (!db) return [];
+  const { sharedServices } = await import('../drizzle/schema');
+  if (actifOnly) {
+    return db.select().from(sharedServices).where(eq(sharedServices.actif, true)).orderBy(sharedServices.nom);
+  }
+  return db.select().from(sharedServices).orderBy(sharedServices.nom);
+}
+
+export async function createSharedService(data: {
+  nom: string;
+  description?: string;
+  type: 'piercing' | 'tatouage' | 'dermographie';
+  zone?: string;
+  prixConseille?: number;
+  dureeMinutes?: number;
+  createdByUserId: number;
+}) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { sharedServices } = await import('../drizzle/schema');
+  await db.insert(sharedServices).values(data as any);
+}
+
+export async function updateSharedService(id: number, data: Partial<{
+  nom: string;
+  description: string;
+  type: 'piercing' | 'tatouage' | 'dermographie';
+  zone: string;
+  prixConseille: number;
+  dureeMinutes: number;
+  actif: boolean;
+}>) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { sharedServices } = await import('../drizzle/schema');
+  await db.update(sharedServices).set({ ...data, updatedAt: new Date() } as any).where(eq(sharedServices.id, id));
+}
+
+export async function deleteSharedService(id: number) {
+  const db = await getDb();
+  if (!db) throw new Error('DB not available');
+  const { sharedServices } = await import('../drizzle/schema');
+  await db.delete(sharedServices).where(eq(sharedServices.id, id));
+}
+
+// ============ STATS ADMIN ============
+
+export async function getAdminStats() {
+  const db = await getDb();
+  if (!db) return { totalStudios: 0, activeStudios: 0, trialStudios: 0, totalClients: 0 };
+  try {
+    const [studioCount] = await (db as any).$client.query('SELECT COUNT(*) as total FROM users WHERE role != "admin"');
+    const [clientCount] = await (db as any).$client.query('SELECT COUNT(*) as total FROM clients');
+    const [licenseStats] = await (db as any).$client.query(
+      'SELECT status, planType, COUNT(*) as count FROM licenses GROUP BY status, planType'
+    );
+    const rows = Array.isArray(studioCount) ? studioCount[0] : [];
+    const clientRows = Array.isArray(clientCount) ? clientCount[0] : [];
+    const licRows = Array.isArray(licenseStats) ? licenseStats[0] : [];
+    return {
+      totalStudios: (rows as any)[0]?.total || 0,
+      totalClients: (clientRows as any)[0]?.total || 0,
+      licenseStats: licRows as any[],
+    };
+  } catch { return { totalStudios: 0, totalClients: 0, licenseStats: [] }; }
 }
