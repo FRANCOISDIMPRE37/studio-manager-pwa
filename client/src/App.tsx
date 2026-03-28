@@ -47,6 +47,7 @@ function AppRoutes() {
   const path = window.location.pathname;
   if (path === '/inscription') return <Inscription />;
   if (path === '/connexion') return <ConnexionEmail />;
+  if (path === '/admin') return <Admin />;
 
   // Premier lancement : aucun PIN configuré → onboarding guidé
   const hasPin = !!localStorage.getItem('sm_pin');
