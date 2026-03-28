@@ -535,8 +535,8 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
       <FormSection title={t('q03.section_declaration')} />
       <CheckboxField label={t('q03.consent_adult')} value={data.consent_majeur || false} onToggle={() => update('consent_majeur', !data.consent_majeur)} />
       <CheckboxField label={t('q03.consent_honest')} value={data.consent_honnete || false} onToggle={() => update('consent_honnete', !data.consent_honnete)} />
-      <CheckboxField label={t('q03.consent_free')} value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
-      <CheckboxField label={t('q03.consent_care')} value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
+      <CheckboxField label={t('q03.consent_freely')} value={data.consent_librement || false} onToggle={() => update('consent_librement', !data.consent_librement)} />
+      <CheckboxField label={t('q03.consent_protocol')} value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
 
       <RgpdMentions />
       <FormSection title={t('q03.section_signatures')} />

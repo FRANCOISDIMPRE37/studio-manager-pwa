@@ -19,9 +19,8 @@ set -e
 # --- Paramètres ---
 SLUG="${1}"
 NOM_SALON="${2:-Studio Manager}"
-DOMAIN_BASE="intemporelle.eu"
-REPO_URL="https://FRANCOISDIMPRE37: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@github.com/INTEMPORELLE/studio-manager-pwa.git"
-APP_DIR="/var/www/${SLUG}"
+DOMAIN_BASE="studio.intemporelle.eu"
+REPO_URL="https://FRANCOISDIMPRE37:NOUVEAU_TOKEN@github.com/INTEMPORELLE/studio-manager-pwa.git"APP_DIR="/var/www/${SLUG}"
 PORT_BASE=4000  # Le port sera 4000 + numéro d'instance
 
 # --- Validation ---
@@ -36,7 +35,12 @@ if [[ ! "$SLUG" =~ ^[a-z0-9-]+$ ]]; then
   exit 1
 fi
 
-DOMAIN="${SLUG}.${DOMAIN_BASE}"
+DOMAIN="${SLUG}.${DOMAIN_BASE="intemporelle.eu"
+
+
+x
+x
+DOMAIN_BASE}"
 echo ""
 echo "╔══════════════════════════════════════════════════════════╗"
 echo "║     STUDIO MANAGER — Nouveau client : ${SLUG}"
