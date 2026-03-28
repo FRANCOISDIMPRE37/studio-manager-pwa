@@ -1145,6 +1145,200 @@ export const appRouter = router({
       return db.select().from(invitations).orderBy(desc(invitations.createdAt));
     }),
   }),
+  // ====== PROVISIONNEMENT SALON ======
+  provision: router({
+    // Crée un nouveau salon : DNS IONOS + Nginx OVH + licence DB
+    createStudio: publicProcedure
+      .input(z.object({
+        // Infos du salon
+        nomSalon: z.string().min(2).max(50),
+        slug: z.string().min(2).max(30).regex(/^[a-z0-9-]+$/, "Slug: lettres minuscules, chiffres, tirets uniquement"),
+        email: z.string().email(),
+        telephone: z.string().optional(),
+        ville: z.string().optional(),
+        // Licence
+        planType: z.enum(["starter", "studio", "premium"]).default("studio"),
+        trialDays: z.number().min(0).max(90).default(30),
+        maxClients: z.number().default(500),
+        maxUsers: z.number().default(3),
+        featureClients: z.boolean().default(true),
+        featureDocuments: z.boolean().default(true),
+        featureAgenda: z.boolean().default(true),
+        featureSms: z.boolean().default(false),
+        featureMultiUsers: z.boolean().default(false),
+        featureExport: z.boolean().default(true),
+        notes: z.string().optional(),
+      }))
+      .mutation(async ({ input }) => {
+        const steps: { step: string; status: 'ok' | 'error' | 'skip'; detail?: string }[] = [];
+        const IONOS_API_KEY = process.env.IONOS_API_KEY;
+        const IONOS_ZONE_ID = process.env.IONOS_ZONE_ID;
+        const VPS_IP = process.env.VPS_IP || '152.228.213.49';
+        const VPS_HOST = process.env.VPS_HOST || '152.228.213.49';
+        const subdomain = input.slug;
+        const domain = `${subdomain}.intemporelle.eu`;
+
+        // ── ÉTAPE 1 : Créer l'enregistrement DNS A chez IONOS ──
+        if (!IONOS_API_KEY || !IONOS_ZONE_ID) {
+          steps.push({ step: 'DNS IONOS', status: 'error', detail: 'Clé API IONOS non configurée' });
+        } else {
+          try {
+            const dnsRes = await fetch(
+              `https://api.hosting.ionos.com/dns/v1/zones/${IONOS_ZONE_ID}/records`,
+              {
+                method: 'POST',
+                headers: { 'X-API-Key': IONOS_API_KEY, 'Content-Type': 'application/json' },
+                body: JSON.stringify([{
+                  name: domain,
+                  type: 'A',
+                  content: VPS_IP,
+                  ttl: 3600,
+                  prio: 0,
+                  disabled: false,
+                }]),
+              }
+            );
+            if (dnsRes.ok) {
+              steps.push({ step: 'DNS IONOS', status: 'ok', detail: `Enregistrement A créé : ${domain} → ${VPS_IP}` });
+            } else {
+              const errText = await dnsRes.text();
+              steps.push({ step: 'DNS IONOS', status: 'error', detail: `HTTP ${dnsRes.status}: ${errText}` });
+            }
+          } catch (e: any) {
+            steps.push({ step: 'DNS IONOS', status: 'error', detail: e.message });
+          }
+        }
+
+        // ── ÉTAPE 2 : Provisionnement Nginx + SSL sur le VPS OVH via SSH ──
+        try {
+          const { NodeSSH } = await import('node-ssh');
+          const ssh = new NodeSSH();
+          // Lire la clé privée SSH depuis le système de fichiers du serveur
+          const fs = await import('fs/promises');
+          let privateKey: string | undefined;
+          const keyPaths = ['/home/ubuntu/.ssh/ovh_vps', '/root/.ssh/id_rsa', '/home/ubuntu/.ssh/id_rsa'];
+          for (const kp of keyPaths) {
+            try { privateKey = await fs.readFile(kp, 'utf-8'); break; } catch {}
+          }
+          if (!privateKey) throw new Error('Clé SSH introuvable sur le serveur');
+
+          await ssh.connect({ host: VPS_HOST, username: 'ubuntu', privateKey, readyTimeout: 15000 });
+
+          // Exécuter le script nouveau-client.sh qui gère Nginx + Certbot
+          const result = await ssh.execCommand(
+            `sudo bash /home/ubuntu/nouveau-client.sh ${subdomain}`,
+            { execOptions: { pty: true } }
+          );
+          await ssh.dispose();
+
+          if (result.code === 0 || result.stdout.includes('CLIENT CREE')) {
+            steps.push({ step: 'Nginx + SSL OVH', status: 'ok', detail: `https://${domain} configuré` });
+          } else {
+            steps.push({ step: 'Nginx + SSL OVH', status: 'error', detail: result.stderr || result.stdout });
+          }
+        } catch (e: any) {
+          steps.push({ step: 'Nginx + SSL OVH', status: 'error', detail: e.message });
+        }
+
+        // ── ÉTAPE 3 : Créer l'utilisateur et la licence en base de données ──
+        try {
+          const mysql2 = await import('mysql2/promise');
+          const conn = await mysql2.createConnection(process.env.DATABASE_URL!);
+
+          // Créer l'utilisateur
+          const tempPassword = Math.random().toString(36).slice(2, 10);
+          const bcrypt = await import('bcryptjs');
+          const passwordHash = await bcrypt.hash(tempPassword, 10);
+
+          const [userResult] = await conn.query(
+            `INSERT INTO users (name, email, loginMethod, role, passwordHash, createdAt, updatedAt)
+             VALUES (?, ?, 'email', 'user', ?, NOW(), NOW())`,
+            [input.nomSalon, input.email, passwordHash]
+          ) as any;
+          const newUserId = (userResult as any).insertId;
+
+          // Créer les paramètres salon
+          if (input.ville || input.telephone) {
+            await conn.query(
+              `INSERT INTO salon_settings (userId, nom, ville, telephone, updatedAt)
+               VALUES (?, ?, ?, ?, NOW())
+               ON DUPLICATE KEY UPDATE nom=VALUES(nom), ville=VALUES(ville), telephone=VALUES(telephone), updatedAt=NOW()`,
+              [newUserId, input.nomSalon, input.ville || null, input.telephone || null]
+            );
+          }
+
+          // Créer la licence
+          const expiresAt = new Date();
+          expiresAt.setDate(expiresAt.getDate() + (input.trialDays > 0 ? input.trialDays : 365));
+
+          await conn.query(
+            `INSERT INTO licenses (userId, planType, status, expiresAt, maxClients, maxUsers,
+               featureClients, featureDocuments, featureAgenda, featureSms, featureMultiUsers, featureExport,
+               notes, createdAt, updatedAt)
+             VALUES (?, ?, 'active', ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+            [
+              newUserId, input.planType, expiresAt, input.maxClients, input.maxUsers,
+              input.featureClients ? 1 : 0, input.featureDocuments ? 1 : 0,
+              input.featureAgenda ? 1 : 0, input.featureSms ? 1 : 0,
+              input.featureMultiUsers ? 1 : 0, input.featureExport ? 1 : 0,
+              input.notes || `Salon créé automatiquement — Plan ${input.planType}`,
+            ]
+          );
+
+          await conn.end();
+
+          steps.push({
+            step: 'Base de données',
+            status: 'ok',
+            detail: `Utilisateur #${newUserId} créé — licence ${input.planType} jusqu'au ${expiresAt.toLocaleDateString('fr-FR')} — mot de passe temp: ${tempPassword}`,
+          });
+
+          const allOk = steps.every(s => s.status === 'ok');
+          return {
+            success: allOk,
+            domain,
+            userId: newUserId,
+            tempPassword,
+            steps,
+          };
+        } catch (e: any) {
+          steps.push({ step: 'Base de données', status: 'error', detail: e.message });
+          return { success: false, domain, userId: null, tempPassword: null, steps };
+        }
+      }),
+
+    // Vérifier si un slug est disponible
+    checkSlug: publicProcedure
+      .input(z.object({ slug: z.string() }))
+      .query(async ({ input }) => {
+        if (!process.env.DATABASE_URL) return { available: false };
+        try {
+          const mysql2 = await import('mysql2/promise');
+          const conn = await mysql2.createConnection(process.env.DATABASE_URL);
+          const [rows] = await conn.query(
+            'SELECT id FROM users WHERE email LIKE ? LIMIT 1',
+            [`%${input.slug}%`]
+          ) as any;
+          await conn.end();
+          // Vérifier aussi via l'API IONOS si l'enregistrement DNS existe déjà
+          const IONOS_API_KEY = process.env.IONOS_API_KEY;
+          const IONOS_ZONE_ID = process.env.IONOS_ZONE_ID;
+          let dnsExists = false;
+          if (IONOS_API_KEY && IONOS_ZONE_ID) {
+            const dnsRes = await fetch(
+              `https://api.hosting.ionos.com/dns/v1/zones/${IONOS_ZONE_ID}`,
+              { headers: { 'X-API-Key': IONOS_API_KEY } }
+            );
+            if (dnsRes.ok) {
+              const zone = await dnsRes.json() as { records: { name: string }[] };
+              dnsExists = zone.records.some(r => r.name === `${input.slug}.intemporelle.eu`);
+            }
+          }
+          return { available: (rows as any[]).length === 0 && !dnsExists, dnsExists };
+        } catch { return { available: true, dnsExists: false }; }
+      }),
+  }),
+
   rappels: router({
     getStatus: protectedProcedure.query(async ({ ctx }) => {
       const db = await import('./db').then(m => m.getDb());

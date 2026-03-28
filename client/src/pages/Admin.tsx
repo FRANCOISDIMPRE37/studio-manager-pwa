@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
-type Tab = "dashboard" | "studios" | "licences" | "articles" | "notifications" | "services" | "invitations";
+type Tab = "dashboard" | "studios" | "licences" | "articles" | "notifications" | "services" | "invitations" | "nouveau-salon";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Essai",
@@ -129,6 +129,46 @@ export default function Admin() {
   const [newInvit, setNewInvit] = useState({ email: "", planType: "trial" as const, trialDays: 30 });
   const [invitCode, setInvitCode] = useState<string | null>(null);
 
+  // ====== NOUVEAU SALON ======
+  const [newSalon, setNewSalon] = useState({
+    nomSalon: "",
+    slug: "",
+    email: "",
+    telephone: "",
+    ville: "",
+    planType: "studio" as "starter" | "studio" | "premium",
+    trialDays: 30,
+    maxClients: 500,
+    maxUsers: 3,
+    featureClients: true,
+    featureDocuments: true,
+    featureAgenda: true,
+    featureSms: false,
+    featureMultiUsers: false,
+    featureExport: true,
+    notes: "",
+  });
+  const [provisionResult, setProvisionResult] = useState<any>(null);
+  const [slugAvailable, setSlugAvailable] = useState<boolean | null>(null);
+
+  const checkSlug = trpc.provision.checkSlug.useQuery(
+    { slug: newSalon.slug },
+    { enabled: newSalon.slug.length >= 2 }
+  );
+
+  const createStudio = trpc.provision.createStudio.useMutation({
+    onSuccess: (data) => {
+      setProvisionResult(data);
+      utils.admin.listStudiosWithLicenses.invalidate();
+      if (data.success) {
+        toast.success(`✅ Salon "${newSalon.nomSalon}" créé avec succès !`);
+      } else {
+        toast.error("Création partielle — vérifiez les étapes ci-dessous");
+      }
+    },
+    onError: (e) => toast.error("Erreur : " + e.message),
+  });
+
   const tabs: { id: Tab; label: string; icon: string }[] = [
     { id: "dashboard", label: "Tableau de bord", icon: "📊" },
     { id: "studios", label: "Studios", icon: "🏢" },
@@ -137,6 +177,7 @@ export default function Admin() {
     { id: "notifications", label: "Notifications", icon: "🔔" },
     { id: "services", label: "Services", icon: "⚙️" },
     { id: "invitations", label: "Invitations", icon: "✉️" },
+    { id: "nouveau-salon", label: "Nouveau Salon", icon: "🚀" },
   ];
 
   const inputStyle = { background: "#0f1117", border: "1px solid rgba(255,255,255,0.15)", color: "white", marginTop: 4 };
@@ -692,6 +733,194 @@ export default function Admin() {
                 </table>
                 {(invitations.data ?? []).length === 0 && <div style={{ padding: 40, textAlign: "center", color: "rgba(255,255,255,0.3)" }}>Aucun code d'invitation généré</div>}
               </div>
+            </div>
+          )}
+
+        {/* ====== NOUVEAU SALON ====== */}
+          {activeTab === "nouveau-salon" && (
+            <div>
+              <h2 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 700 }}>🚀 Créer un nouveau salon</h2>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, marginBottom: 24 }}>
+                Provisionnement automatique : DNS IONOS → Nginx + SSL OVH → Licence en base de données
+              </p>
+
+              {provisionResult ? (
+                <div>
+                  {/* Résultat du provisionnement */}
+                  <div style={{ background: provisionResult.success ? "#052e16" : "#2d0a0a", border: `1px solid ${provisionResult.success ? "#16a34a" : "#dc2626"}`, borderRadius: 12, padding: 24, marginBottom: 24 }}>
+                    <div style={{ fontSize: 24, marginBottom: 8 }}>{provisionResult.success ? "✅" : "⚠️"}</div>
+                    <h3 style={{ margin: "0 0 4px", color: provisionResult.success ? "#4ade80" : "#f87171" }}>
+                      {provisionResult.success ? "Salon créé avec succès !" : "Création partielle"}
+                    </h3>
+                    {provisionResult.domain && (
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.7)", fontSize: 14 }}>
+                        🌐 URL : <a href={`https://${provisionResult.domain}`} target="_blank" rel="noreferrer" style={{ color: "#818cf8" }}>https://{provisionResult.domain}</a>
+                      </p>
+                    )}
+                    {provisionResult.tempPassword && (
+                      <p style={{ margin: "4px 0", color: "rgba(255,255,255,0.7)", fontSize: 14 }}>
+                        🔑 Mot de passe temporaire : <code style={{ background: "rgba(255,255,255,0.1)", padding: "2px 8px", borderRadius: 4, color: "#fbbf24" }}>{provisionResult.tempPassword}</code>
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Détail des étapes */}
+                  <div style={{ marginBottom: 24 }}>
+                    <h4 style={{ margin: "0 0 12px", color: "rgba(255,255,255,0.7)", fontSize: 14, textTransform: "uppercase", letterSpacing: 1 }}>Détail des étapes</h4>
+                    {(provisionResult.steps || []).map((step: any, i: number) => (
+                      <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: 12, padding: "10px 16px", background: "#1a1f2e", borderRadius: 8, marginBottom: 8, border: `1px solid ${step.status === 'ok' ? '#16a34a' : step.status === 'error' ? '#dc2626' : '#6b7280'}33` }}>
+                        <span style={{ fontSize: 18, flexShrink: 0 }}>{step.status === 'ok' ? '✅' : step.status === 'error' ? '❌' : '⏭️'}</span>
+                        <div>
+                          <div style={{ fontWeight: 600, fontSize: 14, color: step.status === 'ok' ? '#4ade80' : step.status === 'error' ? '#f87171' : '#9ca3af' }}>{step.step}</div>
+                          {step.detail && <div style={{ fontSize: 12, color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{step.detail}</div>}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Button onClick={() => { setProvisionResult(null); setNewSalon({ nomSalon: "", slug: "", email: "", telephone: "", ville: "", planType: "studio", trialDays: 30, maxClients: 500, maxUsers: 3, featureClients: true, featureDocuments: true, featureAgenda: true, featureSms: false, featureMultiUsers: false, featureExport: true, notes: "" }); }} style={{ background: "#6366f1", color: "white" }}>
+                    Créer un autre salon
+                  </Button>
+                </div>
+              ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
+                  {/* Colonne gauche : infos salon */}
+                  <div>
+                    <Card style={{ background: "#1a1f2e", border: "1px solid rgba(255,255,255,0.08)", marginBottom: 16 }}>
+                      <CardHeader><CardTitle style={{ color: "white", fontSize: 16 }}>📋 Informations du salon</CardTitle></CardHeader>
+                      <CardContent style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        <div>
+                          <Label style={labelStyle}>Nom du salon *</Label>
+                          <Input style={inputStyle} placeholder="Ex: Salon Beauté Paris" value={newSalon.nomSalon}
+                            onChange={e => setNewSalon(s => ({ ...s, nomSalon: e.target.value, slug: s.slug || e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))} />
+                        </div>
+                        <div>
+                          <Label style={labelStyle}>Sous-domaine (slug) * — sera : slug.intemporelle.eu</Label>
+                          <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                            <Input style={{ ...inputStyle, marginTop: 0, flex: 1 }} placeholder="ex: salon-paris" value={newSalon.slug}
+                              onChange={e => setNewSalon(s => ({ ...s, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))} />
+                            <span style={{ fontSize: 12, color: checkSlug.data?.available === false ? '#f87171' : checkSlug.data?.available === true ? '#4ade80' : 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>
+                              {newSalon.slug.length >= 2 ? (checkSlug.isLoading ? '⏳' : checkSlug.data?.available ? '✅ Disponible' : '❌ Pris') : ''}
+                            </span>
+                          </div>
+                          {newSalon.slug && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>→ https://{newSalon.slug}.intemporelle.eu</div>}
+                        </div>
+                        <div>
+                          <Label style={labelStyle}>Email du gérant *</Label>
+                          <Input style={inputStyle} type="email" placeholder="contact@salon.fr" value={newSalon.email}
+                            onChange={e => setNewSalon(s => ({ ...s, email: e.target.value }))} />
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+                          <div>
+                            <Label style={labelStyle}>Téléphone</Label>
+                            <Input style={inputStyle} placeholder="06 XX XX XX XX" value={newSalon.telephone}
+                              onChange={e => setNewSalon(s => ({ ...s, telephone: e.target.value }))} />
+                          </div>
+                          <div>
+                            <Label style={labelStyle}>Ville</Label>
+                            <Input style={inputStyle} placeholder="Paris" value={newSalon.ville}
+                              onChange={e => setNewSalon(s => ({ ...s, ville: e.target.value }))} />
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Colonne droite : licence */}
+                  <div>
+                    <Card style={{ background: "#1a1f2e", border: "1px solid rgba(255,255,255,0.08)", marginBottom: 16 }}>
+                      <CardHeader><CardTitle style={{ color: "white", fontSize: 16 }}>🔑 Configuration de la licence</CardTitle></CardHeader>
+                      <CardContent style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                        <div>
+                          <Label style={labelStyle}>Plan</Label>
+                          <Select value={newSalon.planType} onValueChange={v => setNewSalon(s => ({ ...s, planType: v as any }))}>
+                            <SelectTrigger style={{ ...inputStyle, marginTop: 4 }}><SelectValue /></SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="starter">Starter</SelectItem>
+                              <SelectItem value="studio">Studio</SelectItem>
+                              <SelectItem value="premium">Premium</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        </div>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 8 }}>
+                          <div>
+                            <Label style={labelStyle}>Jours d'essai</Label>
+                            <Input style={inputStyle} type="number" min={0} max={90} value={newSalon.trialDays}
+                              onChange={e => setNewSalon(s => ({ ...s, trialDays: parseInt(e.target.value) || 0 }))} />
+                          </div>
+                          <div>
+                            <Label style={labelStyle}>Max clients</Label>
+                            <Input style={inputStyle} type="number" value={newSalon.maxClients}
+                              onChange={e => setNewSalon(s => ({ ...s, maxClients: parseInt(e.target.value) || 500 }))} />
+                          </div>
+                          <div>
+                            <Label style={labelStyle}>Max utilisateurs</Label>
+                            <Input style={inputStyle} type="number" value={newSalon.maxUsers}
+                              onChange={e => setNewSalon(s => ({ ...s, maxUsers: parseInt(e.target.value) || 1 }))} />
+                          </div>
+                        </div>
+                        <div>
+                          <Label style={labelStyle}>Fonctionnalités activées</Label>
+                          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, marginTop: 8 }}>
+                            {[
+                              { key: 'featureClients', label: '👥 Clients' },
+                              { key: 'featureDocuments', label: '📄 Documents' },
+                              { key: 'featureAgenda', label: '📅 Agenda' },
+                              { key: 'featureSms', label: '💬 SMS' },
+                              { key: 'featureMultiUsers', label: '👤 Multi-users' },
+                              { key: 'featureExport', label: '📤 Export' },
+                            ].map(f => (
+                              <label key={f.key} style={{ display: "flex", alignItems: "center", gap: 8, cursor: "pointer", padding: "6px 10px", background: (newSalon as any)[f.key] ? "rgba(99,102,241,0.15)" : "rgba(255,255,255,0.03)", borderRadius: 6, border: `1px solid ${(newSalon as any)[f.key] ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.08)'}` }}>
+                                <input type="checkbox" checked={(newSalon as any)[f.key]}
+                                  onChange={e => setNewSalon(s => ({ ...s, [f.key]: e.target.checked }))}
+                                  style={{ accentColor: '#6366f1' }} />
+                                <span style={{ fontSize: 13, color: "rgba(255,255,255,0.8)" }}>{f.label}</span>
+                              </label>
+                            ))}
+                          </div>
+                        </div>
+                        <div>
+                          <Label style={labelStyle}>Notes internes</Label>
+                          <Textarea style={{ ...inputStyle, resize: 'none' }} rows={2} placeholder="Notes sur ce salon..." value={newSalon.notes}
+                            onChange={e => setNewSalon(s => ({ ...s, notes: e.target.value }))} />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Bouton de création sur toute la largeur */}
+                  <div style={{ gridColumn: "1 / -1" }}>
+                    <Card style={{ background: "linear-gradient(135deg, #1e1b4b, #1a1f2e)", border: "1px solid rgba(99,102,241,0.3)" }}>
+                      <CardContent style={{ padding: 20 }}>
+                        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 16 }}>
+                          <div>
+                            <h3 style={{ margin: 0, color: "white", fontSize: 16 }}>Résumé du provisionnement</h3>
+                            <p style={{ margin: "4px 0 0", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>
+                              {newSalon.slug ? `https://${newSalon.slug}.intemporelle.eu` : "Renseignez le slug"}
+                              {" → "}
+                              {newSalon.planType} · {newSalon.trialDays}j essai · {newSalon.maxClients} clients max
+                            </p>
+                            <div style={{ display: "flex", gap: 8, marginTop: 8, flexWrap: "wrap" }}>
+                              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "rgba(99,102,241,0.2)", color: "#818cf8" }}>1. DNS IONOS</span>
+                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>→</span>
+                              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "rgba(99,102,241,0.2)", color: "#818cf8" }}>2. Nginx + SSL OVH</span>
+                              <span style={{ fontSize: 11, color: "rgba(255,255,255,0.3)" }}>→</span>
+                              <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: "rgba(99,102,241,0.2)", color: "#818cf8" }}>3. Licence DB</span>
+                            </div>
+                          </div>
+                          <Button
+                            disabled={!newSalon.nomSalon || !newSalon.slug || !newSalon.email || checkSlug.data?.available === false || createStudio.isPending}
+                            onClick={() => createStudio.mutate(newSalon)}
+                            style={{ background: "linear-gradient(135deg, #6366f1, #8b5cf6)", color: "white", padding: "12px 28px", fontSize: 15, fontWeight: 600, opacity: (!newSalon.nomSalon || !newSalon.slug || !newSalon.email || checkSlug.data?.available === false) ? 0.5 : 1 }}
+                          >
+                            {createStudio.isPending ? "⏳ Provisionnement en cours..." : "🚀 Créer le salon"}
+                          </Button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
