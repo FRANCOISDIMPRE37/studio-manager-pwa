@@ -200,7 +200,7 @@ export default function Onboarding() {
         {step === 'bienvenue' && (
           <div style={cardStyle}>
             <h2 className="text-lg font-700 mb-2" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 700 }}>
-              Bienvenue sur studio.intemporelle.eu
+              {form.nom ? `Bienvenue sur ${form.nom}` : 'Bienvenue sur studio.intemporelle.eu'}
             </h2>
             <p className="text-sm mb-4" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
               Cet assistant va vous guider pour configurer votre application en <strong style={{ color: 'var(--brand-cyan)' }}>2 minutes</strong>.
@@ -407,7 +407,7 @@ export default function Onboarding() {
               <strong style={{ color: 'var(--brand-cyan)' }}>{form.nom || 'Votre salon'}</strong> est configuré.
             </p>
             <p className="text-xs mb-6" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.6 }}>
-              Votre code PIN est enregistré. Vous pouvez commencer à utiliser Studio Manager.
+              Votre code PIN est enregistré. Vous pouvez commencer à utiliser {form.nom || 'Studio Manager'}.
             </p>
             <div className="p-3 rounded-lg mb-6" style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)' }}>
               <p className="text-xs" style={{ color: 'rgba(201,168,76,0.9)', lineHeight: 1.6 }}>
@@ -415,7 +415,7 @@ export default function Onboarding() {
               </p>
             </div>
             <button style={{ ...btnPrimary, width: '100%', justifyContent: 'center' }} onClick={handleFinish}>
-              Démarrer Studio Manager <ChevronRight size={16} />
+              Démarrer {form.nom || 'Studio Manager'} <ChevronRight size={16} />
             </button>
           </div>
         )}
