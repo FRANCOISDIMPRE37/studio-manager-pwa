@@ -77,7 +77,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             style={{ maxHeight: '52px', objectFit: 'contain' }}
           />
           <p className="text-xs mt-2 text-center leading-tight" style={{ color: 'var(--brand-cyan)', fontSize: '10px', fontFamily: 'Outfit' }}>
-            Studio Manager
+            {state.salonInfo?.nom || 'Studio Manager'}
           </p>
         </div>
 
