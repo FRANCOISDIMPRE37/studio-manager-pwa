@@ -35,7 +35,7 @@ jobs:
                 git pull origin main
                 pnpm install --frozen-lockfile
                 pnpm build
-                pm2 restart $name || true
+                pm2 restart $name 2>/dev/null || sudo pm2 restart $name 2>/dev/null || true
               fi
             done
 
