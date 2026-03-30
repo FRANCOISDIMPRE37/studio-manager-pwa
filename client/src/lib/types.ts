@@ -27,7 +27,11 @@ export type DocumentType =
   | 'soins_arcade_sourcil'
   | 'soins_surface_dermal'
   | 'soins_bouche_levres'
+  | 'questionnaire_tatouage_mineur'
+  | 'autorisation_parentale_tatouage'
   | 'questionnaire_tatouage_majeur'
+  | 'questionnaire_dermographe_mineur'
+  | 'autorisation_parentale_dermographie'
   | 'questionnaire_dermographe'
   | 'consentement_soins_tatouage'
   | 'soins_dermographe'
@@ -179,10 +183,14 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   soins_surface_dermal: 'G — Soins Post-Piercing Surface / Dermal',
   soins_bouche_levres: 'C — Soins Post Labret',
   // Tatouage
+  questionnaire_tatouage_mineur: '04 — Questionnaire Médical Tatouage Mineur',
+  autorisation_parentale_tatouage: '04b — Autorisation Parentale Soins Post-Tatouage',
   questionnaire_tatouage_majeur: '05 — Questionnaire Médical Tatouage Majeur',
   consentement_soins_tatouage: '06 — Consentement & Soins Post-Tatouage',
   fiche_seance_tatouage: '07 — Fiche de Séance Tatouage',
   // Dermographie
+  questionnaire_dermographe_mineur: '07b — Questionnaire Médical Dermographie Mineur',
+  autorisation_parentale_dermographie: '07c — Autorisation Parentale Soins Post-Dermographie',
   questionnaire_dermographe: '08 — Questionnaire Médical Dermographe',
   soins_dermographe: '09 — Soins Post-Dermographie (Maquillage Permanent)',
   fiche_seance_dermographe: '10 — Fiche de Séance Dermographe',

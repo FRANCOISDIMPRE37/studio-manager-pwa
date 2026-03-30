@@ -6,13 +6,8 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: '8080',
-      DATABASE_URL: 'mysql://studio:0319@localhost:3306/studio_manager',
-      JWT_SECRET: 'Intemporelle2026SecretKey!',
-      OAUTH_SERVER_URL: 'https://api.manus.im',
-      OWNER_OPEN_ID: 'fA4uz7AkyFZxVMEKonj4SK',
-      IONOS_ZONE_ID: '5acee674-de67-11ed-af23-0a5864441554',
-      VPS_HOST: '152.228.213.49',
-      VPS_IP: '152.228.213.49',
+      DATABASE_URL: 'mysql://studiomanager:StudioOvh2026!@bo810531-001.eu.clouddb.ovh.net:35120/studiomanager?ssl={"rejectUnauthorized":false}',
+      JWT_SECRET: '',
     }
   }]
 }

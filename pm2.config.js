@@ -6,7 +6,7 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: '8080',
-      DATABASE_URL: 'mysql://76m7R2Y4nhmPHZW.578c789cda17:MplL6ta4fiyP60aQ0Cg7@gateway03.us-east-1.prod.aws.tidbcloud.com:4000/kHAXDDN9mqMmBLtorFtFyT?ssl={rejectUnauthorized:true}',
+      DATABASE_URL: 'mysql://studiomanager:StudioOvh2026!@bo810531-001.eu.clouddb.ovh.net:35120/studiomanager?ssl={"rejectUnauthorized":false}',
       JWT_SECRET: '',
     }
   }]

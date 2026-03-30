@@ -34,14 +34,14 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.tatouage',
     icon: FileText,
     color: '#FF5722',
-    docs: ['questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'] as DocumentType[],
+    docs: ['questionnaire_tatouage_mineur', 'autorisation_parentale_tatouage', 'questionnaire_tatouage_majeur', 'consentement_soins_tatouage', 'fiche_seance_tatouage'] as DocumentType[],
     forMineur: null,
   },
   {
     titleKey: 'doc_categories.dermographie',
     icon: FileText,
     color: '#FF9800',
-    docs: ['questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'] as DocumentType[],
+    docs: ['questionnaire_dermographe_mineur', 'autorisation_parentale_dermographie', 'questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'] as DocumentType[],
     forMineur: null,
   },
   {
