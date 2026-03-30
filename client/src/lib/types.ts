@@ -186,8 +186,8 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   questionnaire_tatouage_mineur: '02 — Questionnaire Médical Tatouage Mineur',
   autorisation_parentale_tatouage: '03 — Autorisation Parentale',
   questionnaire_tatouage_majeur: '04 — Questionnaire Médical Tatouage Majeur',
-  consentement_soins_tatouage: '05 — Soins Post-Tatouage',
-  fiche_seance_tatouage: '06 — Fiche de Traçabilité Matériel Stérile (Tatouage)',
+  consentement_soins_tatouage: '06 — Soins Post-Tatouage',
+  fiche_seance_tatouage: '05 — Fiche de Traçabilité Matériel Stérile (Tatouage)',
   // Dermographie
   questionnaire_dermographe_mineur: '07b — Questionnaire Médical Dermographie Mineur',
   autorisation_parentale_dermographie: '07c — Autorisation Parentale Soins Post-Dermographie',
