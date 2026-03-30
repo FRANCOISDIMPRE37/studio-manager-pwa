@@ -358,7 +358,7 @@
     "questionnaire_mineur": "01 — Questionnaire Médical Mineur (Piercing)",
     "autorisation_parentale": "02 — Autorisation Parentale",
     "questionnaire_majeur": "03 — Questionnaire Médical Majeur (Piercing)",
-    "fiche_seance_piercing": "04 — Fiche de Traçabilité Matériel Stérile (Piercing)",
+    "fiche_seance_piercing": "07 — Fiche de Traçabilité Matériel Stérile",
     "soins_oreilles": "A — Soins Post-Piercing Oreilles",
     "soins_nez": "B — Soins Post-Piercing Nez",
     "soins_bouche_levres": "C — Soins Post Labret (Bouche & Lèvres)",

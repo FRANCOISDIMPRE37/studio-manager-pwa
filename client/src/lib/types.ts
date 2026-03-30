@@ -173,7 +173,7 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   autorisation_parentale: '02 — Autorisation Parentale',
   // Piercing — Majeurs
   questionnaire_majeur: '03 — Questionnaire Médical Majeur (Piercing)',
-  fiche_seance_piercing: '04 — Fiche de Traçabilité Matériel Stérile (Piercing)',
+  fiche_seance_piercing: '07 — Fiche de Traçabilité Matériel Stérile',
   // Soins Piercing
   soins_oreilles: 'A — Soins Post-Piercing Oreilles',
   soins_nez: 'B — Soins Post-Piercing Nez',
