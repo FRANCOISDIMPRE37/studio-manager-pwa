@@ -1239,35 +1239,9 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
       <FormField label="Date de naissance (JJ/MM/AAAA)" value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
       <FormField label="Téléphone" value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
-      <RadioField label="Pièce d'identité présentée" options={['CNI', 'Passeport', 'Titre de séjour', 'Non présentée']} value={data.pieceIdType || ''} onChange={v => update('pieceIdType', v)} />
-      {data.pieceIdType && data.pieceIdType !== 'Non présentée' && (
-        <FormField label="Numéro de la pièce d'identité" value={data.pieceIdNumero || ''} onChange={v => update('pieceIdNumero', v)} />
-      )}
-
-      {/* Prestation */}
-      <FormSection title="2 — PRESTATION RÉALISÉE" />
-      <FormField label="Zone tatouée" value={data.zoneTatouage || ''} onChange={v => update('zoneTatouage', v)} required />
-      <FormField label="Description du motif" value={data.descriptionMotif || ''} onChange={v => update('descriptionMotif', v)} multiline />
-      <RadioField label="Style" options={['Noir & gris', 'Couleur', 'Minimaliste', 'Traditionnel', 'Réaliste', 'Géométrique', 'Aquarelle', 'Autre']} value={data.styleTatouage || ''} onChange={v => update('styleTatouage', v)} />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="Taille approximative" value={data.tailleTatouage || ''} onChange={v => update('tailleTatouage', v)} />
-        <FormField label="Durée de séance" value={data.dureeSéance || ''} onChange={v => update('dureeSéance', v)} />
-      </div>
-      <RadioField label="Premier tatouage" options={['Oui', 'Non']} value={data.premierTatouage || 'Non'} onChange={v => update('premierTatouage', v)} />
-
-      {/* Traçabilité encres */}
-      <FormSection title="3 — TRAÇABILITÉ DES ENCRES (UE 2020/2081)" />
-      <WarningBox>Conformément au Règlement UE 2020/2081, les encres utilisées doivent être conformes et traçables. Conserver ces informations 5 ans minimum.</WarningBox>
-      <FormField label="Marque(s) d'encre utilisée(s)" value={data.marqueEncre || ''} onChange={v => update('marqueEncre', v)} />
-      <div className="grid grid-cols-2 gap-3">
-        <FormField label="N° de lot" value={data.lotEncre || ''} onChange={v => update('lotEncre', v)} />
-        <FormField label="Date de péremption" value={data.perempEncre || ''} onChange={v => update('perempEncre', v)} />
-      </div>
-      <FormField label="Couleurs utilisées" value={data.couleursEncre || ''} onChange={v => update('couleursEncre', v)} />
-      <CheckboxField label="Encres conformes UE 2020/2081 vérifiées" value={data.encresConformes || false} onToggle={() => update('encresConformes', !data.encresConformes)} />
 
       {/* Consentement éclairé */}
-      <FormSection title="4 — CONSENTEMENT ÉCLAIRÉ" />
+      <FormSection title="2 — CONSENTEMENT ÉCLAIRÉ" />
       <LegalBox color="green">
         En signant ce document, le client déclare avoir été informé(e) des éléments suivants et y consent librement :
       </LegalBox>
@@ -1280,21 +1254,6 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
       <CheckboxField label="Je m'engage à respecter le protocole de cicatrisation" value={data.consent_protocole || false} onToggle={() => update('consent_protocole', !data.consent_protocole)} />
       <CheckboxField label="Je consens librement à la réalisation de cette prestation" value={data.consent_libre || false} onToggle={() => update('consent_libre', !data.consent_libre)} />
 
-      {/* Contre-indications rappel */}
-      <FormSection title="5 — DÉCLARATIONS MÉDICALES PRÉALABLES" />
-      <WarningBox>Toute réponse « Oui » peut suspendre la prestation jusqu'à avis médical. Ces informations sont confidentielles et protégées par le secret professionnel.</WarningBox>
-      <RadioField label="Enceinte ou allaitante" options={['Non', 'Oui', 'Ne sait pas']} value={data.grossesse || 'Non'} onChange={v => update('grossesse', v)} />
-      <RadioField label="Traitement anticoagulant en cours (Xarelto, Eliquis, Warfarine, Aspirine…)" options={['Non', 'Oui']} value={data.anticoagulants || 'Non'} onChange={v => update('anticoagulants', v)} />
-      <RadioField label="Roaccutane / Isotrétinoïne (en cours ou arrêt < 6 mois)" options={['Non', 'Oui']} value={data.roaccutane || 'Non'} onChange={v => update('roaccutane', v)} />
-      <RadioField label="Diabète ou troubles de la cicatrisation" options={['Non', 'Oui']} value={data.diabete || 'Non'} onChange={v => update('diabete', v)} />
-      <RadioField label="Allergie aux encres de tatouage connue" options={['Non', 'Oui']} value={data.allergieEncre || 'Non'} onChange={v => update('allergieEncre', v)} />
-      <RadioField label="Tendance aux cicatrices chéloïdes" options={['Non', 'Oui']} value={data.cheloide || 'Non'} onChange={v => update('cheloide', v)} />
-      <RadioField label="Immunodépression (VIH, chimiothérapie, greffe)" options={['Non', 'Oui']} value={data.immunodepression || 'Non'} onChange={v => update('immunodepression', v)} />
-      <RadioField label="A bien mangé dans les 4h précédant la séance" options={['Oui', 'Non']} value={data.aBienMange || 'Oui'} onChange={v => update('aBienMange', v)} />
-      <RadioField label="Consommation d'alcool dans les 24h précédentes" options={['Non', 'Oui']} value={data.alcool || 'Non'} onChange={v => update('alcool', v)} />
-      <FormField label="Informations médicales complémentaires" value={data.infosMedicales || ''} onChange={v => update('infosMedicales', v)} multiline />
-
-      {/* Protocole de cicatrisation J1-J30 */}
       <FormSection title="6 — PROTOCOLE DE CICATRISATION — J1 À J30" />
       <LegalBox color="cyan">
         <strong>Ce protocole est remis au client à l'issue de chaque séance.</strong> Il constitue la fiche de soins officielle conforme à l'Arrêté du 3 décembre 2008. Le respect de ces consignes conditionne la qualité du résultat et prévient tout risque infectieux.
