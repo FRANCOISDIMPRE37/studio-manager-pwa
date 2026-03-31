@@ -6,7 +6,6 @@ import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
 import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, ChevronRight } from 'lucide-react';
 import { Link } from 'wouter';
-import GestionUtilisateurs from './GestionUtilisateurs';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
@@ -359,15 +358,6 @@ export default function Parametres() {
             {t('settings.import_data')}
           </button>
         </div>
-      </div>
-
-      {/* Gestion des utilisateurs */}
-      <div className="studio-card p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Users size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.user_management', 'Gestion des utilisateurs')}</h2>
-        </div>
-        <GestionUtilisateurs />
       </div>
 
       {/* Logout */}
