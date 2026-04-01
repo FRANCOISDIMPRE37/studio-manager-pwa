@@ -1590,16 +1590,20 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
       </div>
     </>
   );
-}// ─── Formulaire Questionnaire Médical Tatouage Mineur ────────────────────────
+}
 
-function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+// ─── Formulaire Questionnaire Médical Dermographe Mineur ─────────────────────
+
+function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
   const { t } = useTranslation();
   const yesNo = [t('forms.no'), t('forms.yes')];
   return (
     <>
       <LegalBox color="orange">{t('legal.minor_legal_frame')}</LegalBox>
       <LegalBox color="cyan"><em>{t('legal.rgpd_minor')}</em></LegalBox>
+
       <FormField label={t('forms.salon_name')} value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
+
       <FormSection title={t('q01.section_minor_identity')} />
       <div className="grid grid-cols-2 gap-3">
         <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
@@ -1608,6 +1612,7 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
       <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
       <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
       <FormField label={t('forms.phone')} value={data.telephone || client.telephone || ''} onChange={v => update('telephone', v)} type="tel" />
+
       <FormSection title="Représentant légal" />
       <div className="grid grid-cols-2 gap-3">
         <FormField label="Nom du représentant légal" value={data.nomRepresentant || client.nomRepresentantLegal || ''} onChange={v => update('nomRepresentant', v)} required />
@@ -1615,31 +1620,39 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
       </div>
       <FormField label="Lien avec le mineur" value={data.lienRepresentant || client.lienRepresentantLegal || ''} onChange={v => update('lienRepresentant', v)} />
       <FormField label="Téléphone du représentant légal" value={data.telephoneRepresentant || client.telephoneRepresentantLegal || ''} onChange={v => update('telephoneRepresentant', v)} type="tel" />
-      <FormSection title={t('q05.section_tattoo_project')} />
-      <FormField label={t('q05.zone_to_tattoo')} value={data.zoneTatouage || ''} onChange={v => update('zoneTatouage', v)} required />
-      <FormField label={t('q05.motif_description')} value={data.descriptionMotif || ''} onChange={v => update('descriptionMotif', v)} multiline />
-      <RadioField label={t('q05.first_tattoo')} options={[t('forms.yes'), t('forms.no')]} value={data.premierTatouage || t('forms.no')} onChange={v => update('premierTatouage', v)} />
-      <FormSection title={t('q05.section_health')} />
-      <WarningBox>{t('q01.warning_health')}</WarningBox>
+
+      <FormSection title="Zone de dermographie" />
+      <RadioField
+        label="Zone à traiter"
+        options={['Sourcils', 'Lèvres', 'Eye-liner supérieur', 'Eye-liner inférieur', 'Autre']}
+        value={data.zoneDermographie || ''}
+        onChange={v => update('zoneDermographie', v)}
+      />
+
+      <FormSection title="Santé du mineur" />
+      <WarningBox>Répondez honnêtement. Ces informations sont essentielles pour la sécurité du mineur.</WarningBox>
       <RadioField label={t('q01.skin_diseases')} options={yesNo} value={data.maladiesPeau || t('forms.no')} onChange={v => update('maladiesPeau', v)} />
       <RadioField label={t('q01.diabetes')} options={yesNo} value={data.diabete || t('forms.no')} onChange={v => update('diabete', v)} />
       <RadioField label={t('q01.coagulation')} options={yesNo} value={data.troublesCoagulation || t('forms.no')} onChange={v => update('troublesCoagulation', v)} />
       <RadioField label={t('q01.keloid')} options={yesNo} value={data.cheloide || t('forms.no')} onChange={v => update('cheloide', v)} />
+      <RadioField label="Herpès labial" options={[t('forms.no'), t('forms.yes'), 'Non applicable']} value={data.herpesLabial || 'Non applicable'} onChange={v => update('herpesLabial', v)} />
       <RadioField label={t('q01.allergy_inks')} options={yesNo} value={data.allergieEncres || t('forms.no')} onChange={v => update('allergieEncres', v)} />
       <RadioField label={t('q01.allergy_latex')} options={yesNo} value={data.allergieLatex || t('forms.no')} onChange={v => update('allergieLatex', v)} />
       <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
+
       <FormSection title="Consentement du représentant légal" />
       <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Le représentant légal donne son consentement pour le tatouage du mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
+      <CheckboxField label="Le représentant légal autorise la prestation de dermographie sur le mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
       <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
       <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} />
+
       <RgpdMentions />
-      <FormSection title={t('q05.section_signatures')} />
+      <FormSection title="Signatures" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du mineur</p>
           <FormField label="Nom du mineur" value={data.nomMineurSign || `${client.prenom} ${client.nom}`} onChange={v => update('nomMineurSign', v)} />
-          <FormField label={t('forms.date')} value={data.dateSignatureMineur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureMineur', v)} />
+          <FormField label="Date" value={data.dateSignatureMineur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureMineur', v)} />
           <div className="mt-3">
             <SignaturePad label="Signature du mineur" value={data.signatureImageMineur || ''} onChange={v => update('signatureImageMineur', v ?? '')} />
           </div>
@@ -1647,22 +1660,90 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
-          <FormField label={t('forms.date')} value={data.dateSignatureRepresentant || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureRepresentant', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
             <SignaturePad label="Signature du représentant légal" value={data.signatureImageRepresentant || ''} onChange={v => update('signatureImageRepresentant', v ?? '')} />
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
-          <FormField label={t('forms.date')} value={data.dateSignatureTatoueur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureTatoueur', v)} />
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label="Date" value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
-            <SignaturePad label={t('forms.tattoo_artist_signature')} value={data.signatureImageTatoueur || ''} onChange={v => update('signatureImageTatoueur', v ?? '')} />
+            <SignaturePad label="Signature du dermographe" value={data.signatureImageDermographe || ''} onChange={v => update('signatureImageDermographe', v ?? '')} />
           </div>
         </div>
       </div>
     </>
   );
 }
+
+// ─── Formulaire Autorisation Parentale Dermographie ──────────────────────────
+
+function FormAutorisationParentaleDermographie({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { t } = useTranslation();
+  return (
+    <>
+      <LegalBox color="green">
+        <em>Ce document constitue l'autorisation parentale pour la réalisation d'une prestation de dermographie (maquillage permanent) sur un mineur, conformément à la réglementation en vigueur.</em>
+      </LegalBox>
+
+      <FormField label={t('forms.salon_name')} value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
+
+      <FormSection title="Identité du mineur" />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label={t('forms.last_name')} value={data.nom || client.nom} onChange={v => update('nom', v)} required />
+        <FormField label={t('forms.first_name')} value={data.prenom || client.prenom} onChange={v => update('prenom', v)} required />
+      </div>
+      <FormField label={t('forms.dob')} value={data.dateNaissance || client.dateNaissance || ''} onChange={v => update('dateNaissance', v)} />
+      <AgeVerif dateNaissance={data.dateNaissance || client.dateNaissance || ''} />
+
+      <FormSection title="Représentant légal" />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Nom du représentant légal" value={data.nomRepresentant || client.nomRepresentantLegal || ''} onChange={v => update('nomRepresentant', v)} required />
+        <FormField label="Prénom du représentant légal" value={data.prenomRepresentant || client.prenomRepresentantLegal || ''} onChange={v => update('prenomRepresentant', v)} required />
+      </div>
+      <FormField label="Lien avec le mineur" value={data.lienRepresentant || client.lienRepresentantLegal || ''} onChange={v => update('lienRepresentant', v)} />
+      <FormField label="Téléphone" value={data.telephoneRepresentant || client.telephoneRepresentantLegal || ''} onChange={v => update('telephoneRepresentant', v)} type="tel" />
+
+      <FormSection title="Détails de la prestation" />
+      <RadioField
+        label="Zone à traiter"
+        options={['Sourcils', 'Lèvres', 'Eye-liner supérieur', 'Eye-liner inférieur', 'Autre']}
+        value={data.zoneDermographie || ''}
+        onChange={v => update('zoneDermographie', v)}
+      />
+      <FormField label="Date de la séance" value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} />
+      <FormField label="Nom du dermographe" value={data.nomDermographe || ''} onChange={v => update('nomDermographe', v)} />
+
+      <FormSection title="Engagement du représentant légal" />
+      <CheckboxField label="Je certifie avoir pris connaissance des risques liés à la dermographie sur un mineur" value={data.connaitRisques || false} onToggle={() => update('connaitRisques', !data.connaitRisques)} />
+      <CheckboxField label="Je m'engage à superviser les soins post-dermographie du mineur" value={data.engageSoins || false} onToggle={() => update('engageSoins', !data.engageSoins)} />
+      <CheckboxField label="Je confirme donner mon autorisation parentale pour cette prestation" value={data.autorisationDonnee || false} onToggle={() => update('autorisationDonnee', !data.autorisationDonnee)} />
+      <CheckboxField label="Je confirme ma présence physique lors de la séance" value={data.presenceConfirmee || false} onToggle={() => update('presenceConfirmee', !data.presenceConfirmee)} />
+
+      <RgpdMentions />
+      <FormSection title="Signatures" />
+      <div className="grid grid-cols-1 gap-6">
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad label="Signature du représentant légal" value={data.signatureImageRepresentant || ''} onChange={v => update('signatureImageRepresentant', v ?? '')} />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label="Date" value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
+          <div className="mt-3">
+            <SignaturePad label="Signature du dermographe" value={data.signatureImageDermographe || ''} onChange={v => update('signatureImageDermographe', v ?? '')} />
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
 // ─── Formulaire Questionnaire Médical Tatouage Majeur ────────────────────────
 
 function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
