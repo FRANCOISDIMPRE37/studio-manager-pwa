@@ -432,6 +432,17 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <FormField label={t('forms.piercer_name')} value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignaturePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignaturePierceur', v)} />
           <div className="mt-3">
@@ -549,6 +560,17 @@ function FormQuestionnaireMajeur({ data, update, client }: { data: Record<string
               label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
             />
           </div>
         </div>
@@ -999,6 +1021,17 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <FormField label="Nom du pierceur" value={data.nomPierceurSign || ''} onChange={v => update('nomPierceurSign', v)} />
           <FormField label="Date" value={data.dateSignaturePierceur || ''} onChange={v => update('dateSignaturePierceur', v)} />
           <div className="mt-3">
@@ -1039,6 +1072,18 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
   const photos: string[] = data.photosTracabilite || [];
 
+  // Calcul automatique de l'âge
+  const calculateAge = (dateNaissance: string): string => {
+    if (!dateNaissance) return '';
+    const today = new Date();
+    const birth = new Date(dateNaissance);
+    if (isNaN(birth.getTime())) return '';
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+    return age >= 0 ? String(age) : '';
+  };
+
   const addPhotos = (files: FileList | null) => {
     if (!files) return;
     Array.from(files).forEach(file => {
@@ -1060,7 +1105,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
   return (
     <>
       <LegalBox>
-        <strong>Traçabilité du matériel & Suivi de la prestation</strong><br />
+        <strong>Fiche de Traçabilité Matériel Stérile</strong><br />
         Conforme ARS — Arrêté du 13 mars 2009 & Décret 2008-149
       </LegalBox>
 
@@ -1070,15 +1115,28 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
         <FormField label="Prénom(s)" value={data.prenomClient || client.prenom} onChange={v => update('prenomClient', v)} />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField label="Téléphone" value={data.telephoneClient || client.telephone || ''} onChange={v => update('telephoneClient', v)} type="tel" />
-        <RadioField label="Statut" options={['Majeur', 'Mineur (autorisation jointe)']} value={data.statutClient || 'Majeur'} onChange={v => update('statutClient', v)} />
+        <FormField
+          label="Date de naissance"
+          value={data.dateNaissanceClient || client.dateNaissance || ''}
+          onChange={v => {
+            update('dateNaissanceClient', v);
+            update('ageClient', calculateAge(v));
+          }}
+          type="date"
+        />
+        <div className="mb-3">
+          <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 500 }}>Âge (calculé automatiquement)</label>
+          <div className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', opacity: 0.8 }}>
+            {data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '') || '—'} {(data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '')) ? 'ans' : ''}
+          </div>
+        </div>
       </div>
-      <CheckboxField label="Questionnaire médical signé" value={data.questionnaireSigne || false} onToggle={() => update('questionnaireSigne', !data.questionnaireSigne)} />
+      <div className="grid grid-cols-2 gap-3">
+        <FormField label="Téléphone" value={data.telephoneClient || client.telephone || ''} onChange={v => update('telephoneClient', v)} type="tel" />
+        <FormField label="Courriel" value={data.emailClient || client.email || ''} onChange={v => update('emailClient', v)} type="email" />
+      </div>
 
-      <FormSection title="2 — PRESTATION RÉALISÉE" />
-      <FormField label="Zone percée" value={data.zonePiercing || ''} onChange={v => update('zonePiercing', v)} required />
-
-      <FormSection title="3 — TRAÇABILITÉ DU MATÉRIEL À USAGE UNIQUE" />
+      <FormSection title="2 — TRAÇABILITÉ DU MATÉRIEL RÉUTILISABLE STÉRILISÉ" />
       <WarningBox>Photographiez les étiquettes de traçabilité du matériel stérile. L'emballage stérile est ouvert devant le client. Conserver les photos 5 ans minimum.</WarningBox>
 
 
@@ -1167,7 +1225,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
 
       <LegalBox>
-        <em>Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
+        <em>Conservation : 5 ans minimum à compter de la dernière prestation (Art. R 1311-7 CSP + Arrêté 13/03/2009). Copie conservée par le salon. VOS DROITS RGPD — Pour exercer vos droits : francois-dimpre@intemporelle.eu<br />
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
@@ -1373,6 +1431,17 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || ''} onChange={v => update('nomTatoueurSign', v)} />
           <FormField label="Date" value={data.dateSignatureTatoueur || ''} onChange={v => update('dateSignatureTatoueur', v)} />
           <div className="mt-3">
@@ -1510,6 +1579,17 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
               label="Signature du client"
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
             />
           </div>
         </div>
@@ -2081,6 +2161,17 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
           <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || ''} onChange={v => update('nomDermographeSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureDermographe || ''} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
@@ -2216,6 +2307,17 @@ function FormQuestionnaireDermographe({ data, update, client }: { data: Record<s
               label={t('forms.client_signature')}
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
             />
           </div>
         </div>
@@ -2486,6 +2588,17 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
               label="Signature du client"
               value={data.signatureImageClient || ''}
               onChange={v => update('signatureImageClient', v ?? '')}
+            />
+          </div>
+        </div>
+        <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
+          <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
+          <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
+          <div className="mt-3">
+            <SignaturePad
+              label="Signature du représentant légal"
+              value={data.signatureImageRepresentant || ''}
+              onChange={v => update('signatureImageRepresentant', v ?? '')}
             />
           </div>
         </div>
