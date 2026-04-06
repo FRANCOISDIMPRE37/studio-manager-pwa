@@ -14,10 +14,41 @@ export default function Login() {
   const { state, setAuthenticated, enterDemoMode, verifyPin, setPin, hasPin } = useApp();
   const { t } = useTranslation();
   const [pin, setLocalPin] = useState('');
+  const [selEmp, setSelEmp] = useState<any>(null);
+  const { data: emps } = trpc.studioUsers.listForPin.useQuery();
+  const empLogin = trpc.studioUsers.loginWithPin.useMutation({ onSuccess:(d)=>{ try{sessionStorage.setItem('studio_employe_session',JSON.stringify({...d.employe,loginAt:new Date().toISOString()}))}catch(e){} setAuthenticated(true); toast.success('Bonjour '+d.employe.prenom+' !'); }, onError:(e)=>{ toast.error(e.message||'PIN incorrect'); setLocalPin(''); } });
   const [confirmPin, setConfirmPin] = useState('');
   const [isCreatingPin, setIsCreatingPin] = useState(false);
   const [shake, setShake] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showEmailLogin, setShowEmailLogin] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleEmailLogin = async () => {
+    if (!email || !password) return;
+    setIsLoading(true);
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+      const data = await res.json();
+      if (data.success) {
+        localStorage.setItem('sm_setup_done', '1');
+        setAuthenticated(true);
+        toast.success('Connexion réussie !');
+      } else {
+        toast.error(data.error || 'Email ou mot de passe incorrect');
+      }
+    } catch (err) {
+      toast.error('Erreur de connexion');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const pinLoginMutation = trpc.auth.pinLogin.useMutation();
   const pinSetupMutation = trpc.auth.pinSetup.useMutation();
@@ -81,7 +112,7 @@ export default function Login() {
               return;
             }
             setIsLoading(true);
-            pinLoginMutation.mutate(
+            if(selEmp){ empLogin.mutate({employeId:selEmp.id,pin:newPin}); } else { pinLoginMutation.mutate(
               { pin: newPin },
               {
                 onSuccess: () => {
@@ -89,12 +120,11 @@ export default function Login() {
                 },
                 onError: (err) => {
                   console.error('[PinLogin] Server error:', err);
-                  // Fallback: auth locale si serveur indisponible
                   setAuthenticated(true);
                 },
                 onSettled: () => setIsLoading(false),
               }
-            );
+            ); }
           }, 200);
         }
       }
@@ -238,6 +268,58 @@ export default function Login() {
           </div>
         </div>
 
+        {/* Email/Password login */}
+        {showEmailLogin ? (
+          <div style={{ width: '100%', maxWidth: 320, marginTop: 16 }}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              style={{
+                width: '100%', padding: '10px 14px', marginBottom: 8,
+                background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)',
+                borderRadius: 8, color: 'var(--brand-text)', fontFamily: 'Outfit',
+              }}
+            />
+            <input
+              type="password"
+              placeholder="Mot de passe"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleEmailLogin()}
+              style={{
+                width: '100%', padding: '10px 14px', marginBottom: 12,
+                background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)',
+                borderRadius: 8, color: 'var(--brand-text)', fontFamily: 'Outfit',
+              }}
+            />
+            <button
+              onClick={handleEmailLogin}
+              disabled={isLoading}
+              style={{
+                width: '100%', padding: '10px 0', borderRadius: 8,
+                background: 'var(--brand-cyan)', color: '#0A1628',
+                fontFamily: 'Outfit', fontWeight: 700, fontSize: 15,
+                border: 'none', cursor: 'pointer',
+              }}
+            >
+              {isLoading ? 'Connexion...' : 'Se connecter'}
+            </button>
+            <button onClick={() => setShowEmailLogin(false)}
+              style={{ marginTop: 8, color: 'var(--brand-text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13 }}>
+              ← Retour
+            </button>
+          </div>
+        ) : (
+          <button onClick={() => setShowEmailLogin(true)}
+            className="mt-4 text-sm transition-all duration-200 hover:opacity-100 opacity-60"
+            style={{ color: 'var(--brand-cyan)' }}>
+            Se connecter avec email →
+          </button>
+        )}
+
+        {emps && emps.filter((e) => e.hasPinSet).length > 0 && !showEmailLogin && (<div style={{marginTop:16,paddingTop:12,borderTop:"1px solid var(--brand-border)"}}><p style={{color:"var(--brand-text-muted)",fontSize:12,textAlign:"center",marginBottom:8}}>Connexion salarie</p><div style={{display:"flex",flexWrap:"wrap",gap:8,justifyContent:"center"}}>{selEmp ? <p style={{color:"var(--brand-cyan)",fontSize:12}}>PIN de {selEmp.prenom} <button onClick={()=>{setSelEmp(null);setLocalPin("");}} style={{background:"none",border:"none",color:"var(--brand-text-muted)",cursor:"pointer"}}>x</button></p> : emps.filter((e) => e.hasPinSet).map((e) => (<button key={e.id} onClick={()=>{setSelEmp(e);setLocalPin("");}} style={{padding:"6px 14px",borderRadius:8,border:"1px solid var(--brand-cyan)",background:"rgba(131,208,245,0.1)",color:"var(--brand-cyan)",cursor:"pointer",fontWeight:600}}>{e.prenom}</button>))}</div></div>)}
         {/* Demo mode button */}
         <button
           onClick={enterDemoMode}

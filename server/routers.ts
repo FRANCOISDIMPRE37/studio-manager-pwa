@@ -787,6 +787,7 @@ export const appRouter = router({
         nom: z.string().min(1, 'Le nom est requis'),
         login: z.string().min(3, 'Le login doit faire au moins 3 caractères').regex(/^[a-zA-Z0-9._-]+$/, 'Login invalide (lettres, chiffres, . _ - uniquement)'),
         password: z.string().min(6, 'Le mot de passe doit faire au moins 6 caractères'),
+        pin: z.string().length(4).regex(/^[0-9]{4}$/, 'Le PIN doit être composé de 4 chiffres').optional(),
         role: z.enum(['admin', 'employe', 'stagiaire']).default('employe'),
         specialite: z.string().optional(),
         actif: z.boolean().default(true),
@@ -795,12 +796,14 @@ export const appRouter = router({
         const exists = await loginExistsForOwner(input.login, ctx.user.id);
         if (exists) throw new Error(`Le login "${input.login}" est déjà utilisé.`);
         const passwordHash = await bcrypt.hash(input.password, 10);
+        const pinHash = input.pin ? await bcrypt.hash(input.pin, 10) : null;
         await createStudioUser({
           ownerId: ctx.user.id,
           prenom: input.prenom,
           nom: input.nom,
           login: input.login,
           passwordHash,
+          pinHash,
           role: input.role,
           specialite: input.specialite || null,
           actif: input.actif,
@@ -816,12 +819,13 @@ export const appRouter = router({
         nom: z.string().min(1).optional(),
         login: z.string().min(3).regex(/^[a-zA-Z0-9._-]+$/).optional(),
         password: z.string().min(6).optional(), // vide = ne pas changer
+        pin: z.string().length(4).regex(/^[0-9]{4}$/).optional(), // vide = ne pas changer
         role: z.enum(['admin', 'employe', 'stagiaire']).optional(),
         specialite: z.string().optional(),
         actif: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        const { id, password, ...rest } = input;
+        const { id, password, pin, ...rest } = input;
         if (rest.login) {
           const exists = await loginExistsForOwner(rest.login, ctx.user.id, id);
           if (exists) throw new Error(`Le login "${rest.login}" est déjà utilisé.`);
@@ -829,6 +833,9 @@ export const appRouter = router({
         const updateData: Record<string, unknown> = { ...rest };
         if (password && password.length > 0) {
           updateData.passwordHash = await bcrypt.hash(password, 10);
+        }
+        if (pin && pin.length === 4) {
+          updateData.pinHash = await bcrypt.hash(pin, 10);
         }
         await updateStudioUser(id, ctx.user.id, updateData as any);
         return { success: true };
@@ -1358,24 +1365,6 @@ export const appRouter = router({
   }),
 
   // ========== EMPLOYÉS ==========
-  createEmployee: protectedProcedure
-    .input(z.object({
-      prenom: z.string(),
-      nom: z.string(),
-      email: z.string().optional(),
-      pin: z.string().length(4),
-      password: z.string()
-    }))
-    .mutation(async ({ ctx, input }) => {
-      const db = await getDb();
-      if (!db) throw new Error('Database error');
-      const passwordHash = await bcrypt.hash(input.password, 10);
-      await db.query(
-        'INSERT INTO employees (prenom, nom, email, pin, passwordHash, typeContrat, ownerId) VALUES (?, ?, ?, ?, ?, ?, ?)',
-        [input.prenom, input.nom, input.email, input.pin, passwordHash, 'employe', ctx.ownerId]
-      );
-      return { success: true };
-    }),
 
   listEmployees: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();

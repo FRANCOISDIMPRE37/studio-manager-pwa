@@ -6,10 +6,13 @@ import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppProvider, useApp } from "./lib/app-context";
 import Layout from "./components/Layout";
+import EcranPIN from '@/pages/EcranPIN';
+import GestionUtilisateurs from '@/pages/GestionUtilisateurs';
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
+import SuperAdmin from "./pages/SuperAdmin";
 import Documents from "./pages/Documents";
 import Parametres from "./pages/Parametres";
 import NotFound from "./pages/NotFound";
@@ -51,8 +54,9 @@ function AppRoutes() {
 
   // Premier lancement : aucun PIN configuré → onboarding guidé
   const hasPin = !!localStorage.getItem('sm_pin');
-  if (!hasPin) {
-    return <Onboarding />;
+  const hasSetup = !!localStorage.getItem('sm_setup_done');
+  if (!hasPin && !hasSetup) {
+    return <Login />;
   }
   if (!state.isAuthenticated) {
     return <Login />;
@@ -62,7 +66,8 @@ function AppRoutes() {
   return (
     <Layout>
       <Switch>
-        <Route path="/" component={Dashboard} />
+        <Route path="/admin" component={SuperAdmin} />
+        <Route path="/pin" component={EcranPIN} /><Route path="/gestion-utilisateurs" component={GestionUtilisateurs} /><Route path="/" component={Dashboard} />
         <Route path="/clients" component={Clients} />
         <Route path="/clients/:id" component={ClientDetail} />
         <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />

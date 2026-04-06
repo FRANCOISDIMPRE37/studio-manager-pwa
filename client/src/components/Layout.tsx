@@ -36,7 +36,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     {
       sectionKey: 'nav.section_rgpd',
       items: [
-        { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.rgpd_employee' },
         { path: '/info-client-rgpd', icon: Info, labelKey: 'nav.client_info' },
         { path: '/archives', icon: Archive, labelKey: 'nav.archives' },
       ],
@@ -45,6 +44,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       sectionKey: 'nav.section_admin',
       items: [
         { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
+
       ],
     },
   ];

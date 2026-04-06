@@ -28,7 +28,8 @@
     "rgpd_alert": "GDPR alert",
     "rgpd_alerts": "GDPR alerts",
     "section_rgpd": "GDPR",
-    "section_admin": "Administration"
+    "section_admin": "Administration",
+    "employees": "Employees"
   },
   "auth": {
     "pin_title": "Create your PIN code",

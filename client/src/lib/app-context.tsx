@@ -255,6 +255,8 @@ function AppProviderInner({ children, dispatch, state }: {
   const updateRDVMutation = trpc.rdv.update.useMutation();
   const deleteRDVMutation = trpc.rdv.delete.useMutation();
   const updateSalonMutation = trpc.salon.update.useMutation();
+  const createDocumentMutation = trpc.documents.create.useMutation();
+  const updateDocumentMutation = trpc.documents.update.useMutation();
 
   // Sync from cloud
   const syncFromCloud = useCallback(async () => {
@@ -467,8 +469,25 @@ function AppProviderInner({ children, dispatch, state }: {
       } catch (err) {
         console.warn('[Sync] Client create failed:', err);
       }
+      
+      // Créer les documents associés sur le serveur
+      if (newClient.documentsAssocies && newClient.documentsAssocies.length > 0) {
+        for (const docType of newClient.documentsAssocies) {
+          try {
+            await createDocumentMutation.mutateAsync({
+              id: `doc-${Date.now()}-${Math.random().toString(36).slice(2,8)}`,
+              clientId: newClient.id,
+              type: docType,
+              status: 'empty',
+              data: {},
+            });
+          } catch (err) {
+            console.error('[Sync] Document create failed:', err);
+          }
+        }
+      }
     }
-  }, [state.isDemo, createClientMutation]);
+  }, [state.isDemo, createClientMutation, createDocumentMutation]);
 
   const updateClient = useCallback(async (client: Client) => {
     dispatch({ type: 'UPDATE_CLIENT', payload: client });
@@ -608,19 +627,10 @@ function AppProviderInner({ children, dispatch, state }: {
       (c.email || '').toLowerCase().includes(q)
     );
   }, [state.clients]);
-
-  const verifyPin = useCallback((pin: string) => {
-    const stored = localStorage.getItem(STORAGE_KEYS.pin);
-    return stored === pin;
-  }, []);
-
-  const setPin = useCallback((pin: string) => {
-    localStorage.setItem(STORAGE_KEYS.pin, pin);
-  }, []);
-
-  const hasPin = useCallback(() => {
-    return !!localStorage.getItem(STORAGE_KEYS.pin);
-  }, []);
+  const hashPin = async (pin: string): Promise<string> => { const data = new TextEncoder().encode("sm_salt_2026_" + pin); const buf = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""); };
+  const verifyPin = useCallback((pin: string) => { const stored = localStorage.getItem(STORAGE_KEYS.pin); if (!stored) return false; if (stored.length === 4) { const match = stored === pin; if (match) { hashPin(pin).then(h => localStorage.setItem(STORAGE_KEYS.pin, h)); } return match; } return hashPin(pin).then(h => h === stored) as unknown as boolean; }, []);
+  const setPin = useCallback((pin: string) => { hashPin(pin).then(h => localStorage.setItem(STORAGE_KEYS.pin, h)); }, []);
+  const hasPin = useCallback(() => { return !!localStorage.getItem(STORAGE_KEYS.pin); }, []);
 
   return (
     <AppContext.Provider value={{

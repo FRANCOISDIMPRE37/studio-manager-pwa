@@ -28,7 +28,8 @@
     "rgpd_alert": "AVG-waarschuwing",
     "rgpd_alerts": "AVG-waarschuwingen",
     "section_rgpd": "AVG",
-    "section_admin": "Beheer"
+    "section_admin": "Beheer",
+    "employees": "Medewerkers"
   },
   "auth": {
     "pin_title": "Maak uw PIN-code aan",

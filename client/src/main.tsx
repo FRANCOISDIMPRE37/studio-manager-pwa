@@ -4,6 +4,7 @@ import { UNAUTHED_ERR_MSG } from '@shared/const';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { httpBatchLink, TRPCClientError } from "@trpc/client";
 import { createRoot } from "react-dom/client";
+import { EmployeSessionProvider } from "./contexts/EmployeSessionContext";
 import superjson from "superjson";
 import App from "./App";
 import { getLoginUrl } from "./const";
@@ -54,9 +55,11 @@ const trpcClient = trpc.createClient({
 });
 
 createRoot(document.getElementById("root")!).render(
-  <trpc.Provider client={trpcClient} queryClient={queryClient}>
+  <EmployeSessionProvider><trpc.Provider client={trpcClient} queryClient={queryClient}>
     <QueryClientProvider client={queryClient}>
       <App />
     </QueryClientProvider>
-  </trpc.Provider>
+  </trpc.Provider></EmployeSessionProvider>
 );
+// Force rebuild Fri Apr  3 01:21:52 UTC 2026
+// Force rebuild Fri Apr  3 04:58:19 UTC 2026

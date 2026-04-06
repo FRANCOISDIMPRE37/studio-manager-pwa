@@ -7,7 +7,7 @@ import { useState } from 'react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import {
-  UserPlus, Pencil, Trash2, KeyRound, Eye, EyeOff,
+  UserPlus, Pencil, Trash2, KeyRound, Eye, EyeOff, Lock,
   ShieldCheck, User, GraduationCap, CheckCircle, XCircle, Loader2,
 } from 'lucide-react';
 
@@ -17,6 +17,7 @@ type Role = 'admin' | 'employe' | 'stagiaire';
 interface FormState {
   prenom: string;
   nom: string;
+  email: string;
   login: string;
   password: string;
   confirmPassword: string;
@@ -25,7 +26,7 @@ interface FormState {
 }
 
 const EMPTY_FORM: FormState = {
-  prenom: '', nom: '', login: '', password: '', confirmPassword: '',
+  prenom: '', nom: '', email: '', login: '', password: '', confirmPassword: '',
   role: 'employe', actif: true,
 };
 
@@ -100,6 +101,9 @@ export default function GestionUtilisateurs() {
   const [form, setForm] = useState<FormState>(EMPTY_FORM);
   const [showPassword, setShowPassword] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [pinModalId, setPinModalId] = useState<number | null>(null);
+  const [newPin, setNewPin] = useState('');
+  const setPin = trpc.studioUsers.setPin.useMutation({ onSuccess: () => { toast.success('PIN défini !'); setPinModalId(null); setNewPin(''); }, onError: (e) => toast.error(e.message) });
   const [resetPasswordId, setResetPasswordId] = useState<number | null>(null);
   const [newPassword, setNewPassword] = useState('');
   const [showNewPassword, setShowNewPassword] = useState(false);
@@ -117,6 +121,7 @@ export default function GestionUtilisateurs() {
     setForm({
       prenom: user.prenom,
       nom: user.nom,
+      email: (user as any).email || '',
       login: user.login,
       password: '',
       confirmPassword: '',
@@ -143,6 +148,7 @@ export default function GestionUtilisateurs() {
         id: editingId,
         prenom: form.prenom,
         nom: form.nom,
+        email: form.email||undefined,
         login: form.login,
         password: form.password || undefined,
         role: form.role,
@@ -152,6 +158,7 @@ export default function GestionUtilisateurs() {
       createUser.mutate({
         prenom: form.prenom,
         nom: form.nom,
+        email: form.email||undefined,
         login: form.login,
         password: form.password,
         role: form.role,
@@ -220,6 +227,16 @@ export default function GestionUtilisateurs() {
               </div>
             </div>
 
+            <div>
+              <label className="block text-xs font-semibold text-[#8892B0] mb-1.5 uppercase tracking-wide">Email</label>
+              <input
+                type="email"
+                value={form.email}
+                onChange={e => setForm(f => ({ ...f, email: e.target.value }))}
+                className="w-full bg-[#0A192F] border border-[#64FFDA]/20 rounded-lg px-3 py-2 text-[#E6F1FF] text-sm focus:outline-none focus:border-[#64FFDA]/60"
+                placeholder="ex: marie@salon.fr"
+              />
+            </div>
             <div>
               <label className="block text-xs font-semibold text-[#8892B0] mb-1.5 uppercase tracking-wide">Login (identifiant de connexion) *</label>
               <input
@@ -376,6 +393,13 @@ export default function GestionUtilisateurs() {
                   <Pencil size={16} />
                 </button>
                 <button
+                  onClick={() => { setPinModalId(user.id); setNewPin(''); }}
+                  title="Définir PIN"
+                  className="p-2 text-[#8892B0] hover:text-yellow-400 hover:bg-yellow-900/20 rounded-lg transition-colors"
+                >
+                  <Lock size={16} />
+                </button>
+                <button
                   onClick={() => setConfirmDeleteId(user.id)}
                   title="Supprimer"
                   className="p-2 text-[#8892B0] hover:text-red-400 hover:bg-red-900/20 rounded-lg transition-colors"
@@ -389,6 +413,7 @@ export default function GestionUtilisateurs() {
       )}
 
       {/* Modal confirmation suppression */}
+      {pinModalId !== null && (<div className="fixed inset-0 z-50 flex items-center justify-center" style={{background:"rgba(0,0,0,0.7)"}}><div className="rounded-xl p-6 w-80" style={{background:"#0F2040",border:"1px solid var(--brand-border)"}}><h3 className="text-base font-bold text-white mb-4">Definir le code PIN</h3><input type="text" maxLength={4} value={newPin} onChange={e=>setNewPin(e.target.value.replace(/[^0-9]/g,"").slice(0,4))} placeholder="4 chiffres" className="w-full bg-[#0A192F] border border-[#64FFDA]/20 rounded-lg px-3 py-2 text-white text-center text-2xl tracking-widest mb-4" /><div className="flex gap-2"><button onClick={()=>setPin.mutate({employeId:pinModalId,pin:newPin})} disabled={newPin.length!==4} className="flex-1 py-2 rounded-lg text-sm" style={{background:"var(--brand-cyan)",color:"#0A1628"}}>Enregistrer</button><button onClick={()=>setPinModalId(null)} className="flex-1 py-2 rounded-lg text-sm" style={{background:"rgba(255,255,255,0.05)",color:"var(--brand-text-muted)"}}>Annuler</button></div></div></div>)}
       {confirmDeleteId !== null && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-[#112240] border border-red-700/50 rounded-xl p-6 max-w-sm w-full">

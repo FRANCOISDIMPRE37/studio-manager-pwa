@@ -1,0 +1,190 @@
+import { useState, useEffect } from 'react';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogFooter } from './ui/dialog';
+import { Button } from './ui/button';
+import { Checkbox } from './ui/checkbox';
+import { ScrollArea } from './ui/scroll-area';
+import { Shield, Lock, AlertTriangle } from 'lucide-react';
+
+interface ConfidentialityEngagementProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onAccept: (accepted: boolean, ipAddress: string) => void;
+  documentType: string;
+  salonInfo: {
+    nom: string;
+    adresse: string;
+    email: string;
+    telephone: string;
+  };
+}
+
+export function ConfidentialityEngagement({
+  isOpen,
+  onClose,
+  onAccept,
+  documentType,
+  salonInfo,
+}: ConfidentialityEngagementProps) {
+  const [acceptedConfidentiality, setAcceptedConfidentiality] = useState(false);
+  const [acceptedObligations, setAcceptedObligations] = useState(false);
+  const [ipAddress, setIpAddress] = useState<string>('');
+
+  useEffect(() => {
+    if (isOpen) {
+      fetch('https://api.ipify.org?format=json')
+        .then(res => res.json())
+        .then(data => setIpAddress(data.ip))
+        .catch(() => setIpAddress('unknown'));
+    }
+  }, [isOpen]);
+
+  const handleAccept = () => {
+    if (acceptedConfidentiality && acceptedObligations) {
+      onAccept(true, ipAddress);
+      handleClose();
+    }
+  };
+
+  const handleRefuse = () => {
+    onAccept(false, ipAddress);
+    handleClose();
+  };
+
+  const handleClose = () => {
+    setAcceptedConfidentiality(false);
+    setAcceptedObligations(false);
+    onClose();
+  };
+
+  const canProceed = acceptedConfidentiality && acceptedObligations;
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleClose}>
+      <DialogContent className="max-w-3xl max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2 text-xl">
+            <Lock className="w-6 h-6 text-orange-600" />
+            Engagement de Confidentialité
+          </DialogTitle>
+          <DialogDescription>
+            Document requis pour {documentType}
+          </DialogDescription>
+        </DialogHeader>
+
+        <ScrollArea className="h-[400px] pr-4">
+          <div className="space-y-6">
+            <div className="border-b-2 border-orange-600 pb-4">
+              <h3 className="text-lg font-semibold text-center mb-2">
+                🔐 ENGAGEMENT DE CONFIDENTIALITÉ
+              </h3>
+              <p className="text-sm text-gray-600 text-center">
+                Conformément au RGPD et au Code pénal français
+              </p>
+            </div>
+
+            <div className="bg-gray-50 p-4 rounded-lg">
+              <h4 className="font-semibold mb-2">Responsable du traitement :</h4>
+              <p className="text-sm">{salonInfo.nom}</p>
+              <p className="text-sm">{salonInfo.adresse}</p>
+              <p className="text-sm">Email : {salonInfo.email}</p>
+              <p className="text-sm">Téléphone : {salonInfo.telephone}</p>
+            </div>
+
+            <div className="space-y-4">
+              <h4 className="font-semibold flex items-center gap-2">
+                <Shield className="w-5 h-5 text-blue-600" />
+                En signant ce document, vous vous engagez à :
+              </h4>
+
+              <div className="space-y-3 ml-4">
+                <div className="flex gap-3">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <p className="text-sm">
+                    <strong>Ne pas divulguer</strong> les informations confidentielles
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <p className="text-sm">
+                    <strong>Respecter la confidentialité</strong> des données personnelles
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <p className="text-sm">
+                    <strong>Ne pas photographier ou filmer</strong> sans autorisation
+                  </p>
+                </div>
+
+                <div className="flex gap-3">
+                  <span className="text-green-600 font-bold">✓</span>
+                  <p className="text-sm">
+                    <strong>Ne pas diffuser</strong> sur les réseaux sociaux
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-red-50 border border-red-200 p-4 rounded-lg">
+              <h4 className="font-semibold flex items-center gap-2 text-red-800 mb-2">
+                <AlertTriangle className="w-5 h-5" />
+                CLAUSE PÉNALE
+              </h4>
+              <p className="text-sm text-red-900">
+                Toute violation pourra entraîner des poursuites conformément aux 
+                <strong> articles 226-13 et suivants du Code pénal</strong>.
+              </p>
+            </div>
+
+            <div className="text-xs text-gray-500 border-t pt-3">
+              <p><strong>Traçabilité :</strong></p>
+              <p>IP : {ipAddress || 'En cours...'}</p>
+              <p>Date : {new Date().toLocaleString('fr-FR')}</p>
+            </div>
+          </div>
+        </ScrollArea>
+
+        <DialogFooter className="flex flex-col gap-4">
+          <div className="space-y-3 w-full">
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="confidentiality"
+                checked={acceptedConfidentiality}
+                onCheckedChange={(checked) => setAcceptedConfidentiality(checked as boolean)}
+              />
+              <label htmlFor="confidentiality" className="text-sm font-medium cursor-pointer">
+                J'ai lu et j'accepte l'engagement de confidentialité
+              </label>
+            </div>
+
+            <div className="flex items-start gap-3">
+              <Checkbox
+                id="obligations"
+                checked={acceptedObligations}
+                onCheckedChange={(checked) => setAcceptedObligations(checked as boolean)}
+              />
+              <label htmlFor="obligations" className="text-sm font-medium cursor-pointer">
+                Je m'engage à respecter ces obligations sous peine de sanctions
+              </label>
+            </div>
+          </div>
+
+          <div className="flex gap-3 w-full justify-end">
+            <Button variant="outline" onClick={handleRefuse}>
+              Refuser
+            </Button>
+            <Button
+              onClick={handleAccept}
+              disabled={!canProceed}
+              className="bg-green-600 hover:bg-green-700"
+            >
+              Accepter et continuer
+            </Button>
+          </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}

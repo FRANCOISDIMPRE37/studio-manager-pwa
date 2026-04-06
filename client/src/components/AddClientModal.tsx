@@ -20,8 +20,8 @@ const PRESTATION_DOCS_MAJEUR: Record<string, DocumentType[]> = {
   'Arcade / Sourcil':  ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_arcade_sourcil'],
   'Surface / Dermal':  ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_surface_dermal'],
   'Labret':   ['questionnaire_majeur', 'fiche_seance_piercing', 'soins_bouche_levres'],
-  'Tatouage':          ['autorisation_parentale', 'questionnaire_tatouage_mineur', 'fiche_seance_tatouage'],
-  'Dermographie':      ['questionnaire_dermographe_mineur', 'autorisation_parentale_dermographie', 'questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
+  'Tatouage':          ['questionnaire_tatouage_majeur', 'fiche_seance_tatouage', 'consentement_soins_tatouage'],
+  'Dermographie':      ['questionnaire_dermographe', 'fiche_seance_dermographe', 'soins_dermographe'],
 };
 
 const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
@@ -33,7 +33,7 @@ const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
   'Surface / Dermal':  ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_surface_dermal'],
   'Labret':   ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_bouche_levres'],
   'Tatouage':          ['autorisation_parentale', 'questionnaire_tatouage_mineur', 'fiche_seance_tatouage'],
-  'Dermographie':      ['questionnaire_dermographe_mineur', 'autorisation_parentale_dermographie', 'questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
+  'Dermographie':      ['autorisation_parentale_dermographie', 'questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
 };
 
 function buildDocumentsAssocies(prestations: string[], isMineur: boolean): DocumentType[] {
@@ -60,6 +60,7 @@ function buildDocumentsAssocies(prestations: string[], isMineur: boolean): Docum
 
 interface Props {
   onClose: () => void;
+  client?: any;
 }
 
 function calcAge(j: string, m: string, a: string): number {
@@ -73,7 +74,7 @@ function calcAge(j: string, m: string, a: string): number {
   return age;
 }
 
-export default function AddClientModal({ onClose }: Props) {
+export default function AddClientModal({ onClose, client }: Props) {
   const { addClient, state } = useApp();
 
   // Champs du formulaire
@@ -85,13 +86,18 @@ export default function AddClientModal({ onClose }: Props) {
   const refTelephone = useRef<HTMLInputElement>(null);
   const refEmail = useRef<HTMLInputElement>(null);
 
-  const [prenom, setPrenom] = useState('');
-  const [nom, setNom] = useState('');
+  const [prenom, setPrenom] = useState(client?.prenom || '');
+  const [nom, setNom] = useState(client?.prenom || '');
   const [dateJour, setDateJour] = useState('');
   const [dateMois, setDateMois] = useState('');
   const [dateAnnee, setDateAnnee] = useState('');
-  const [telephone, setTelephone] = useState('');
-  const [email, setEmail] = useState('');
+  const [telephone, setTelephone] = useState(client?.prenom || '');
+  const [email, setEmail] = useState(client?.prenom || '');
+  const [adresse, setAdresse] = useState(client?.prenom || '');
+  const [codePostal, setCodePostal] = useState(client?.prenom || '');
+  const [ville, setVille] = useState(client?.prenom || '');
+  const [pieceIdentiteType, setPieceIdentiteType] = useState(client?.prenom || '');
+  const [pieceIdentiteNumero, setPieceIdentiteNumero] = useState(client?.prenom || '');
   const [prestationsSouhaitees, setPrestationsSouhaitees] = useState<string[]>([]);
 
   const PRESTATIONS_OPTIONS = [
@@ -176,11 +182,11 @@ export default function AddClientModal({ onClose }: Props) {
       dateNaissance: dateNaissanceISO,
       telephone: telephone.trim(),
       email: email.trim() || undefined,
-      adresse: '',
-      codePostal: '',
-      ville: '',
-      pieceIdentiteType: undefined,
-      pieceIdentiteNumero: undefined,
+      adresse: adresse.trim(),
+      codePostal: codePostal.trim(),
+      ville: ville.trim(),
+      pieceIdentiteType: pieceIdentiteType as any || undefined,
+      pieceIdentiteNumero: pieceIdentiteNumero.trim() || undefined,
       prestationsSouhaitees: prestationsSouhaitees.length > 0 ? prestationsSouhaitees : undefined,
       estMineur: isMineur,
       prestations: [],
@@ -435,6 +441,16 @@ export default function AddClientModal({ onClose }: Props) {
                   autoComplete="off"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* ADRESSE ET PIECE D'IDENTITE */}
+          <div style={{ marginTop: 12 }}>
+            <p className="text-xs mb-2 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Adresse</p>
+            <input type="text" style={{ width: '100%', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', borderRadius: 8, color: 'var(--brand-text)', marginBottom: 8 }} value={adresse} onChange={e => setAdresse(e.target.value)} placeholder="Rue, numéro..." />
+            <div style={{ display: 'flex', gap: 8 }}>
+              <input type="text" style={{ width: '30%', padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', borderRadius: 8, color: 'var(--brand-text)' }} value={codePostal} onChange={e => setCodePostal(e.target.value)} placeholder="37000" />
+              <input type="text" style={{ flex: 1, padding: '8px 12px', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', borderRadius: 8, color: 'var(--brand-text)' }} value={ville} onChange={e => setVille(e.target.value)} placeholder="Tours" />
             </div>
           </div>
 

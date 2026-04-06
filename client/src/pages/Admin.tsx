@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 
-type Tab = "dashboard" | "studios" | "licences" | "articles" | "notifications" | "services" | "invitations" | "nouveau-salon";
+type Tab = "dashboard" | "studios" | "licences" | "articles" | "notifications" | "services" | "invitations" | "nouveau-salon" | "acces";
 
 const PLAN_LABELS: Record<string, string> = {
   trial: "Essai",
@@ -178,6 +178,7 @@ export default function Admin() {
     { id: "services", label: "Services", icon: "⚙️" },
     { id: "invitations", label: "Invitations", icon: "✉️" },
     { id: "nouveau-salon", label: "Nouveau Salon", icon: "🚀" },
+    { id: "acces", label: "Accès Studios", icon: "🔐" },
   ];
 
   const inputStyle = { background: "#0f1117", border: "1px solid rgba(255,255,255,0.15)", color: "white", marginTop: 4 };
@@ -290,6 +291,11 @@ export default function Admin() {
                         <td style={{ padding: "10px 12px" }}>
                           <div style={{ color: "white", fontWeight: 500 }}>{s.salonNom || s.name || "—"}</div>
                           <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{s.loginMethod === "email" ? "📧 Email" : "🔢 PIN"}</div>
+                          {s.loginMethod === "email" && s.email && (
+                            <a href={`https://studio.intemporelle.eu`} target="_blank" style={{ color: "#34d399", fontSize: 10 }}>
+                              studio.intemporelle.eu
+                            </a>
+                          )}
                         </td>
                         <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.6)" }}>{s.email || "—"}</td>
                         <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.5)" }}>{s.ville || "—"}</td>
@@ -308,6 +314,34 @@ export default function Admin() {
                         </td>
                         <td style={{ padding: "10px 12px" }}>
                           <div style={{ display: "flex", gap: 6 }}>
+                            <button
+                              onClick={() => {
+                                const url = s.salonNom ? `https://${s.email?.split('@')[0]}.intemporelle.eu` : 'https://studio.intemporelle.eu';
+                                window.open('https://studio.intemporelle.eu', '_blank');
+                              }}
+                              style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, border: "1px solid #10b981", background: "transparent", color: "#34d399", cursor: "pointer" }}
+                            >
+                              Voir
+                            </button>
+                            <button
+                              onClick={() => {
+                                const newPwd = prompt(`Nouveau mot de passe pour ${s.name || s.email}:`);
+                                if (newPwd && newPwd.length >= 6) {
+                                  fetch('/api/auth/set-password', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ email: s.email, password: newPwd }),
+                                    credentials: 'include',
+                                  }).then(r => r.json()).then(d => {
+                                    if (d.success) alert('Mot de passe mis à jour !');
+                                    else alert('Erreur: ' + d.error);
+                                  });
+                                }
+                              }}
+                              style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, border: "1px solid #f59e0b", background: "transparent", color: "#fbbf24", cursor: "pointer" }}
+                            >
+                              MDP
+                            </button>
                             <button
                               onClick={() => {
                                 setEditingLicense(s.id);
@@ -737,6 +771,33 @@ export default function Admin() {
           )}
 
         {/* ====== NOUVEAU SALON ====== */}
+          {activeTab === "acces" && (
+            <div>
+              <h2 style={{ margin: "0 0 20px", fontSize: 22, fontWeight: 700 }}>🔐 Accès Studios</h2>
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+                  <thead><tr style={{ borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+                    <th style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.5)" }}>Salon</th>
+                    <th style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.5)" }}>Ville</th>
+                    <th style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.5)" }}>Email</th>
+                    <th style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.5)" }}>URL</th>
+                    <th style={{ textAlign: "left", padding: "8px 12px", color: "rgba(255,255,255,0.5)" }}>Mot de passe (notes)</th>
+                  </tr></thead>
+                  <tbody>
+                    {(studiosWithLicenses.data ?? []).map((s: any) => (
+                      <tr key={s.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <td style={{ padding: "10px 12px", fontWeight: 600 }}>{s.name}</td>
+                        <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.6)" }}>{s.city ?? "-"}</td>
+                        <td style={{ padding: "10px 12px", color: "#818cf8" }}>{s.email ?? "-"}</td>
+                        <td style={{ padding: "10px 12px" }}><a href={"https://" + (s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".intemporelle.eu"} target="_blank" style={{ color: "#22c55e", textDecoration: "none" }}>{(s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".intemporelle.eu"}</a></td>
+                        <td style={{ padding: "10px 12px" }}><span style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, padding: "3px 10px", fontFamily: "monospace", fontSize: 12 }}>{s.licenseNotes ?? "—"}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
           {activeTab === "nouveau-salon" && (
             <div>
               <h2 style={{ margin: "0 0 8px", fontSize: 22, fontWeight: 700 }}>🚀 Créer un nouveau salon</h2>

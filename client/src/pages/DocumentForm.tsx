@@ -47,7 +47,7 @@ function FormField({
   };
   return (
     <div className="mb-3">
-      <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 500 }}>
+      <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>
         {label}{required && <span style={{ color: 'var(--brand-rose)' }}> *</span>}
       </label>
       {multiline ? (
@@ -60,7 +60,7 @@ function FormField({
           style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid var(--brand-border)',
-            color: 'var(--brand-text)',
+            color: '#111827',
             fontFamily: 'Outfit',
           }}
         />
@@ -77,7 +77,7 @@ function FormField({
           style={{
             background: 'rgba(255,255,255,0.04)',
             border: '1px solid var(--brand-border)',
-            color: 'var(--brand-text)',
+            color: '#111827',
             fontFamily: 'Outfit',
           }}
         />
@@ -91,7 +91,7 @@ function RadioField({ label, options, value, onChange }: {
 }) {
   return (
     <div className="mb-3">
-      <label className="block text-xs mb-2" style={{ color: 'var(--brand-text-muted)', fontWeight: 500 }}>{label}</label>
+      <label className="block text-xs mb-2" style={{ color: '#374151', fontWeight: 500 }}>{label}</label>
       <div className="flex flex-wrap gap-2">
         {(Array.isArray(options) ? options : []).map(opt => (
           <button
@@ -169,21 +169,21 @@ function RgpdMentions() {
       padding: '10px 12px',
       fontFamily: 'Outfit, sans-serif',
       lineHeight: 1.6,
-      color: 'var(--brand-text-muted)',
+      color: '#374151',
     }}>
       <div style={{ fontWeight: 700, color: 'var(--brand-cyan)', marginBottom: 4, fontSize: 11 }}>VOS DROITS RGPD</div>
       <div style={{ marginBottom: 4 }}>
-        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Conservation (mineurs) :</span>{' '}
+        <span style={{ fontWeight: 600, color: '#111827' }}>Conservation (mineurs) :</span>{' '}
         3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux.
       </div>
       <div style={{ marginBottom: 4 }}>
         Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants :{' '}
-        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition</span>{' '}
+        <span style={{ fontWeight: 600, color: '#111827' }}>Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition</span>{' '}
         — Conservation : données de santé 3 ans — Pour exercer vos droits :{' '}
         <span style={{ fontWeight: 600, color: 'var(--brand-cyan)' }}>francois-dimpre@intemporelle.eu</span>
       </div>
       <div>
-        <span style={{ fontWeight: 600, color: 'var(--brand-text)' }}>Support :</span>{' '}
+        <span style={{ fontWeight: 600, color: '#111827' }}>Support :</span>{' '}
         L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil). Le salon s'engage à ne pas utiliser les données personnelles à des fins publicitaires.
       </div>
     </div>
@@ -617,11 +617,11 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <FormSection title={t('q02.section_legal_rep')} />
       <div className="p-3 rounded-xl mb-3" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.2)' }}>
         <p className="text-xs mb-1" style={{ color: 'var(--brand-cyan)' }}>{t('q02.sync_from_01')}</p>
-        <p className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
+        <p className="text-sm font-600" style={{ color: '#111827', fontWeight: 600 }}>
           {data.nomRep || client.nom} {data.prenomRep || client.prenom}
         </p>
-        {data.telRep || client.telephone ? <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{data.telRep || client.telephone}</p> : null}
-        {data.lienRep ? <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Lien : {data.lienRep}</p> : null}
+        {data.telRep || client.telephone ? <p className="text-xs mt-1" style={{ color: '#374151' }}>{data.telRep || client.telephone}</p> : null}
+        {data.lienRep ? <p className="text-xs mt-1" style={{ color: '#374151' }}>Lien : {data.lienRep}</p> : null}
       </div>
 
       <FormSection title={t('q02.section_declarations')} />
@@ -863,13 +863,13 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
   const soinsEviter = soinsKey
     ? (t(`soins.${soinsKey}.eviter`, { returnObjects: true }) as string[])
     : (fallback?.eviter || []);
-  if (!fallback && !soinsKey) return <p style={{ color: 'var(--brand-text-muted)' }}>Fiche de soins non disponible pour ce type.</p>;
+  if (!fallback && !soinsKey) return <p style={{ color: '#374151' }}>Fiche de soins non disponible pour ce type.</p>;
 
   return (
     <>
       <div className="p-4 rounded-xl mb-4 text-center" style={{ background: 'rgba(131,208,245,0.05)', border: '1px solid rgba(131,208,245,0.2)' }}>
         <p className="text-base font-700" style={{ color: 'var(--brand-cyan)', fontWeight: 700, fontFamily: 'Outfit' }}>{t('soins.fiche_title', 'FICHE DE SOINS')} — {soinsTitle}</p>
-        <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>{t('soins.doc_subtitle', 'Document à remettre au client après chaque séance')}</p>
+        <p className="text-xs mt-1" style={{ color: '#374151' }}>{t('soins.doc_subtitle', 'Document à remettre au client après chaque séance')}</p>
       </div>
 
       <FormSection title={t('soins.identity_section', 'IDENTITÉ DU CLIENT')} />
@@ -896,8 +896,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
           <tbody>
             {(Array.isArray(soinsZones) ? soinsZones : []).map((z: any, i: number) => (
               <tr key={i} style={{ background: i % 2 === 0 ? 'transparent' : 'rgba(255,255,255,0.02)' }}>
-                <td className="p-2 font-600" style={{ color: 'var(--brand-text)', border: '1px solid var(--brand-border)', fontWeight: 600 }}>{z.zone}</td>
-                <td className="p-2" style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)' }}>{z.desc}</td>
+                <td className="p-2 font-600" style={{ color: '#111827', border: '1px solid var(--brand-border)', fontWeight: 600 }}>{z.zone}</td>
+                <td className="p-2" style={{ color: '#374151', border: '1px solid var(--brand-border)' }}>{z.desc}</td>
                 <td className="p-2" style={{ color: 'var(--brand-cyan)', border: '1px solid var(--brand-border)' }}>{z.cica}</td>
               </tr>
             ))}
@@ -910,13 +910,13 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
         <div className="p-3 rounded-xl" style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)' }}>
           <p className="text-xs font-700 mb-2" style={{ color: '#4CAF50', fontWeight: 700 }}>{t('soins.todo_label', '✓ À FAIRE')}</p>
           {(Array.isArray(soinsFaire) ? soinsFaire : []).map((item: string, i: number) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>• {item}</p>
           ))}
         </div>
         <div className="p-3 rounded-xl" style={{ background: 'rgba(244,67,54,0.05)', border: '1px solid rgba(244,67,54,0.2)' }}>
           <p className="text-xs font-700 mb-2" style={{ color: '#F44336', fontWeight: 700 }}>{t('soins.avoid_label', '✗ À ÉVITER')}</p>
           {(Array.isArray(soinsEviter) ? soinsEviter : []).map((item: string, i: number) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>• {item}</p>
           ))}
         </div>
       </div>
@@ -931,7 +931,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Oreilles — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -942,7 +942,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins Post Labret — Chlorhexidine matin et soir 15j, Eludril après chaque repas 15 premiers jours, Sérum Physiologique + compresses matin et soir derniers 15j"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -953,7 +953,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins Post Nombril — Chlorhexidine matin et soir 2 semaines, Sérum Physiologique matin et soir 6 semaines, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -964,7 +964,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Nez — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -975,7 +975,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Téton — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -986,7 +986,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Arcade/Sourcil — Chlorhexidine matin et soir 15 jours, Sérum Physiologique matin et soir derniers 15 jours, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>Marque déposée — usage descriptif uniquement, sans affiliation commerciale</p>
         </div>
       )}
 
@@ -997,7 +997,7 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
             alt="Soins post-piercing Surface/Dermal — Sérum Physiologique matin et soir 1 mois, compresses non-tissées"
             style={{ width: '100%', borderRadius: '8px', border: '1px solid var(--brand-border)' }}
           />
-          <p className="text-xs mt-1 text-center italic" style={{ color: 'var(--brand-text-muted)', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
+          <p className="text-xs mt-1 text-center italic" style={{ color: '#374151', opacity: 0.7, fontSize: '10px' }}>{t('soins.trademark', 'Marque déposée — usage descriptif uniquement, sans affiliation commerciale')}</p>
         </div>
       )}
 
@@ -1048,13 +1048,13 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
       <div className="mt-4 p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
         <label className="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" className="mt-0.5 accent-cyan-400" />
-          <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
+          <span className="text-sm" style={{ color: '#111827' }}>
             {t('soins.declaration_1', 'Je déclare avoir pris connaissance des risques liés à la pratique du piercing')}
           </span>
         </label>
         <label className="flex items-start gap-3 cursor-pointer">
           <input type="checkbox" className="mt-0.5 accent-cyan-400" />
-          <span className="text-sm" style={{ color: 'var(--brand-text)' }}>
+          <span className="text-sm" style={{ color: '#111827' }}>
             {t('soins.declaration_2', "J'ai pu poser toutes les questions que je voulais")}
           </span>
         </label>
@@ -1125,8 +1125,8 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
           type="date"
         />
         <div className="mb-3">
-          <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 500 }}>Âge (calculé automatiquement)</label>
-          <div className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', opacity: 0.8 }}>
+          <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>Âge (calculé automatiquement)</label>
+          <div className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--brand-border)', color: '#111827', opacity: 0.8 }}>
             {data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '') || '—'} {(data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '')) ? 'ans' : ''}
           </div>
         </div>
@@ -1145,7 +1145,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
             <span style={{ fontSize: 16 }}>📷</span>
-            <span className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>Photos de traçabilité</span>
+            <span className="text-sm font-600" style={{ color: '#111827', fontWeight: 600 }}>Photos de traçabilité</span>
           </div>
           <div className="flex gap-2">
             {/* Bouton caméra */}
@@ -1162,7 +1162,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
               type="button"
               onClick={() => photoInputRef.current?.click()}
               className="flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-lg"
-              style={{ background: 'rgba(255,255,255,0.06)', color: 'var(--brand-text)', border: '1px solid var(--brand-border)' }}
+              style={{ background: 'rgba(255,255,255,0.06)', color: '#111827', border: '1px solid var(--brand-border)' }}
             >
               ↗ Importer
             </button>
@@ -1175,7 +1175,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
         {/* Galerie ou état vide */}
         {photos.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8" style={{ color: 'var(--brand-text-muted)' }}>
+          <div className="flex flex-col items-center justify-center py-8" style={{ color: '#374151' }}>
             <span style={{ fontSize: 32, opacity: 0.3 }}>📷</span>
             <p className="text-sm mt-2">Aucune photo de traçabilité</p>
             <p className="text-xs mt-1" style={{ opacity: 0.6 }}>Prenez des photos de vos documents, bijoux, encres ou matériels</p>
@@ -1344,9 +1344,9 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
                   fontWeight: 700,
                   fontFamily: 'Outfit',
                 }}>{etape.jour}</span>
-                <span className="text-xs font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{etape.titre}</span>
+                <span className="text-xs font-600" style={{ color: '#111827', fontWeight: 600 }}>{etape.titre}</span>
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>{etape.instructions}</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>{etape.instructions}</p>
             </div>
           ))}
         </div>
@@ -1368,7 +1368,7 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
             'Rasage de la zone tatouée avant cicatrisation complète',
             'Sport de contact ou activité provoquant une transpiration excessive J1-J7',
           ].map((item, i) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>✗ {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>✗ {item}</p>
           ))}
         </div>
         <div className="p-3 rounded-xl" style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)' }}>
@@ -1383,7 +1383,7 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
             'Porter des vêtements amples en coton sur la zone',
             "Boire suffisamment d'eau pour favoriser la régénération cellulaire",
           ].map((item, i) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>✓ {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>✓ {item}</p>
           ))}
         </div>
       </div>
@@ -1645,7 +1645,7 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
       <FormSection title={t('q05.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du mineur</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du mineur</p>
           <FormField label="Nom du mineur" value={data.nomMineurSign || `${client.prenom} ${client.nom}`} onChange={v => update('nomMineurSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureMineur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureMineur', v)} />
           <div className="mt-3">
@@ -1653,7 +1653,7 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureRepresentant || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
@@ -1730,7 +1730,7 @@ function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Re
       <FormSection title="Signatures" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du mineur</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du mineur</p>
           <FormField label="Nom du mineur" value={data.nomMineurSign || `${client.prenom} ${client.nom}`} onChange={v => update('nomMineurSign', v)} />
           <FormField label="Date" value={data.dateSignatureMineur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureMineur', v)} />
           <div className="mt-3">
@@ -1738,7 +1738,7 @@ function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Re
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
           <FormField label="Date" value={data.dateSignatureRepresentant || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
@@ -1805,7 +1805,7 @@ function FormAutorisationParentaleDermographie({ data, update, client }: { data:
       <FormSection title="Signatures" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
           <FormField label="Date" value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
@@ -1919,7 +1919,7 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
       <FormSection title={t('q05.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du mineur</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du mineur</p>
           <FormField label="Nom du mineur" value={data.nomMineurSign || ''} onChange={v => update('nomMineurSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureMineur || ''} onChange={v => update('dateSignatureMineur', v)} />
           <div className="mt-3">
@@ -1927,7 +1927,7 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
@@ -2002,7 +2002,7 @@ function FormAutorisationParentaleTatouage({ data, update, client }: { data: Rec
       <FormSection title={t('q05.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: 'var(--brand-text-muted)' }}>Signature du représentant légal</p>
+          <p className="text-xs mb-3" style={{ color: '#374151' }}>Signature du représentant légal</p>
           <FormField label="Nom du représentant légal" value={data.nomRepresentantSign || ''} onChange={v => update('nomRepresentantSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureRepresentant || ''} onChange={v => update('dateSignatureRepresentant', v)} />
           <div className="mt-3">
@@ -2456,9 +2456,9 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
                   fontWeight: 700,
                   fontFamily: 'Outfit',
                 }}>{etape.jour}</span>
-                <span className="text-xs font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{etape.titre}</span>
+                <span className="text-xs font-600" style={{ color: '#111827', fontWeight: 600 }}>{etape.titre}</span>
               </div>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>{etape.instructions}</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>{etape.instructions}</p>
             </div>
           ))}
         </div>
@@ -2479,7 +2479,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
           'Ne pas se teindre les sourcils pendant 4 semaines',
           'Appliquer la crème cicatrisante 2 à 3 fois par jour en couche ultra-fine (pas épaisse)',
         ].map((item, i) => (
-          <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
+          <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>• {item}</p>
         ))}
       </div>
 
@@ -2495,7 +2495,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
           'Ne pas faire de soins dentaires invasifs pendant 2 semaines',
           'Protéger les lèvres du soleil avec un stick lèvres SPF 50+ pendant 3 mois',
         ].map((item, i) => (
-          <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
+          <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>• {item}</p>
         ))}
       </div>
 
@@ -2510,7 +2510,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
           'Appliquer la crème cicatrisante 2 à 3 fois par jour en couche ultra-fine',
           'Ne pas faire de traitement laser ou IPL autour des yeux pendant 3 mois',
         ].map((item, i) => (
-          <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>• {item}</p>
+          <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>• {item}</p>
         ))}
       </div>
 
@@ -2528,7 +2528,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
             "Ne pas faire de traitement laser ou IPL sur la zone pendant 3 mois",
             "Ne pas nager en piscine chlorée ou en mer pendant 14 jours",
           ].map((item, i) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>✗ {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>✗ {item}</p>
           ))}
         </div>
         <div className="p-3 rounded-xl" style={{ background: 'rgba(76,175,80,0.05)', border: '1px solid rgba(76,175,80,0.2)' }}>
@@ -2541,7 +2541,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
             "Planifier la retouche entre 4 et 6 semaines après la première séance",
             "Contacter le salon en cas de doute sur la cicatrisation",
           ].map((item, i) => (
-            <p key={i} className="text-xs mb-1" style={{ color: 'var(--brand-text-muted)' }}>✓ {item}</p>
+            <p key={i} className="text-xs mb-1" style={{ color: '#374151' }}>✓ {item}</p>
           ))}
         </div>
       </div>
@@ -2625,9 +2625,9 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
     <>
       {/* En-tête */}
       <div className="text-center mb-6">
-        <h2 className="text-xl font-900 mb-1" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 900, letterSpacing: '-0.02em' }}>ENGAGEMENT DE CONFIDENTIALITÉ</h2>
+        <h2 className="text-xl font-900 mb-1" style={{ color: '#111827', fontFamily: 'Outfit', fontWeight: 900, letterSpacing: '-0.02em' }}>ENGAGEMENT DE CONFIDENTIALITÉ</h2>
         <p className="text-sm italic mb-1" style={{ color: '#C8860A' }}>Données personnelles clients — RGPD Art. 29</p>
-        <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>À signer par tout employé, stagiaire ou prestataire ayant accès aux données clients</p>
+        <p className="text-xs" style={{ color: '#374151' }}>À signer par tout employé, stagiaire ou prestataire ayant accès aux données clients</p>
       </div>
 
       {/* Identité du signataire */}
@@ -2651,8 +2651,8 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         <div className="px-3 py-2 mb-3" style={{ background: '#1a1a1a', borderRadius: 6 }}>
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>PRÉAMBULE</p>
         </div>
-        <div className="p-4 rounded-xl text-xs leading-relaxed space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
-          <p>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: 'var(--brand-text)' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
+        <div className="p-4 rounded-xl text-xs leading-relaxed space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: '#374151', lineHeight: 1.7 }}>
+          <p>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: '#111827' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
           <p>Conformément à l'article 29 du RGPD, les personnes agissant sous l'autorité du responsable de traitement ne peuvent traiter ces données que sur instruction de ce dernier, sauf obligation légale contraire.</p>
         </div>
       </div>
@@ -2672,10 +2672,10 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
             { num: '6', titre: 'DROITS DES PERSONNES CONCERNÉES', texte: "En cas de demande d'un client visant à exercer ses droits RGPD (accès, rectification, effacement, opposition), le signataire s'engage à transmettre immédiatement cette demande au responsable du salon sans y répondre directement." },
           ].map((item) => (
             <div key={item.num} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-              <p className="text-xs font-700 mb-1" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>
+              <p className="text-xs font-700 mb-1" style={{ color: '#111827', fontWeight: 700 }}>
                 {item.num} — {item.titre}
               </p>
-              <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>{item.texte}</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>{item.texte}</p>
             </div>
           ))}
         </div>
@@ -2683,7 +2683,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
 
       {/* Avertissement pénal */}
       <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.3)' }}>
-        <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
+        <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>
           ■ Tout manquement expose le signataire à des sanctions disciplinaires pouvant aller jusqu'au licenciement pour faute grave, sans préjudice des poursuites pénales au titre de l'article 226-13 du Code pénal (violation du secret professionnel : <strong style={{ color: '#E53935' }}>1 an d'emprisonnement et 15 000 € d'amende</strong>).
         </p>
       </div>
@@ -2693,8 +2693,8 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         <div className="px-3 py-2 mb-3" style={{ background: '#1a1a1a', borderRadius: 6 }}>
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>DURÉE DE L'ENGAGEMENT</p>
         </div>
-        <div className="p-4 rounded-xl text-xs leading-relaxed" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
-          <p>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: 'var(--brand-text)' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
+        <div className="p-4 rounded-xl text-xs leading-relaxed" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: '#374151', lineHeight: 1.7 }}>
+          <p>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: '#111827' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
         </div>
       </div>
 
@@ -2705,7 +2705,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-            <p className="text-xs font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>LE SIGNATAIRE — Lu et approuvé</p>
+            <p className="text-xs font-700" style={{ color: '#111827', fontWeight: 700 }}>LE SIGNATAIRE — Lu et approuvé</p>
             <FormField label="Nom, Prénom" value={data.signataireNomSignature || ''} onChange={v => update('signataireNomSignature', v)} />
             <FormField label="Date" value={data.signataireDate || ''} onChange={v => update('signataireDate', v)} />
             <SignaturePad
@@ -2715,7 +2715,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
             />
           </div>
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-            <p className="text-xs font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>LE RESPONSABLE DU SALON</p>
+            <p className="text-xs font-700" style={{ color: '#111827', fontWeight: 700 }}>LE RESPONSABLE DU SALON</p>
             <FormField label="Nom, Prénom" value={data.responsableNomSignature || ''} onChange={v => update('responsableNomSignature', v)} />
             <FormField label="Date" value={data.responsableDate || ''} onChange={v => update('responsableDate', v)} />
             <SignaturePad
@@ -2728,7 +2728,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
       </div>
 
       <div className="text-center mt-4">
-        <p className="text-xs italic" style={{ color: 'var(--brand-text-muted)' }}>Document à établir en deux exemplaires originaux — Un exemplaire conservé par le salon, un exemplaire remis au signataire.</p>
+        <p className="text-xs italic" style={{ color: '#374151' }}>Document à établir en deux exemplaires originaux — Un exemplaire conservé par le salon, un exemplaire remis au signataire.</p>
       </div>
     </>
   );
@@ -2780,7 +2780,7 @@ function FormAffichageSalon({ data, update, client }: { data: Record<string, any
     <>
       {/* En-tête */}
       <div className="text-center mb-6">
-        <h2 className="text-xl font-900 mb-1" style={{ color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.3 }}>
+        <h2 className="text-xl font-900 mb-1" style={{ color: '#111827', fontFamily: 'Outfit', fontWeight: 900, letterSpacing: '-0.02em', lineHeight: 1.3 }}>
           INFORMATION CLIENT – PROTECTION DE VOS DONNÉES (RGPD)
         </h2>
       </div>
@@ -2799,7 +2799,7 @@ function FormAffichageSalon({ data, update, client }: { data: Record<string, any
             <p className="text-sm font-700 mb-2" style={{ color: bloc.titleColor, fontWeight: 700 }}>
               {bloc.titre}
             </p>
-            <p className="text-xs leading-relaxed" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
+            <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>
               {bloc.texte}
             </p>
           </div>
@@ -2820,7 +2820,7 @@ function FormAffichageSalon({ data, update, client }: { data: Record<string, any
       </div>
 
       <div className="p-4 rounded-xl" style={{ background: 'rgba(229,57,53,0.05)', border: '1px solid rgba(229,57,53,0.2)' }}>
-        <p className="text-xs" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.7 }}>
+        <p className="text-xs" style={{ color: '#374151', lineHeight: 1.7 }}>
           <strong style={{ color: '#E53935' }}>Base légale :</strong> Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 (RGPD). Ce document est destiné à être affiché dans le salon ou remis au client lors de chaque prestation.
         </p>
       </div>
@@ -3009,7 +3009,7 @@ export default function DocumentForm() {
 
   if (!client && !isStandaloneMode) {
     return (
-      <div className="p-6 text-center" style={{ color: 'var(--brand-text-muted)' }}>
+      <div className="p-6 text-center" style={{ color: '#374151' }}>
         <p>Client introuvable</p>
         <button onClick={() => navigate('/clients')} className="mt-4 text-sm" style={{ color: 'var(--brand-cyan)' }}>
           Retour aux clients
@@ -3241,7 +3241,7 @@ export default function DocumentForm() {
           return <FormSoins docType={docType} data={formData} update={updateField} client={effectiveClient} />;
         }
         return (
-          <div className="text-center py-8" style={{ color: 'var(--brand-text-muted)' }}>
+          <div className="text-center py-8" style={{ color: '#374151' }}>
             <Info size={32} className="mx-auto mb-3" style={{ color: 'var(--brand-cyan)' }} />
             <p>Formulaire en cours de développement</p>
           </div>
@@ -3259,15 +3259,15 @@ export default function DocumentForm() {
         <button
           onClick={() => isStandaloneMode ? navigate('/documents') : navigate(`/clients/${clientId}`)}
           className="p-2 rounded-lg transition-all hover:bg-white/10"
-          style={{ color: 'var(--brand-text-muted)' }}
+          style={{ color: '#374151' }}
         >
           <ArrowLeft size={20} />
         </button>
         <div className="flex-1 min-w-0">
-          <h1 className="text-sm font-700 truncate" style={{ color: 'var(--brand-text)', fontWeight: 700, fontFamily: 'Outfit' }}>
+          <h1 className="text-sm font-700 truncate" style={{ color: '#111827', fontWeight: 700, fontFamily: 'Outfit' }}>
             {docTitle}
           </h1>
-          <p className="text-xs truncate" style={{ color: 'var(--brand-text-muted)' }}>
+          <p className="text-xs truncate" style={{ color: '#374151' }}>
             {isStandaloneMode ? 'Sans client associé' : `${effectiveClient.prenom} ${effectiveClient.nom}`} · {today}
           </p>
         </div>
@@ -3277,7 +3277,7 @@ export default function DocumentForm() {
             onClick={() => setShowPreview(true)}
             title="Aperçu avant impression"
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
-            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+            style={{ color: '#374151', border: '1px solid var(--brand-border)', fontWeight: 600 }}
           >
             <Eye size={15} />
             <span className="hidden sm:inline">Aperçu</span>
@@ -3287,7 +3287,7 @@ export default function DocumentForm() {
             onClick={handlePrint}
             title="Imprimer le document"
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-600 transition-all hover:bg-white/10"
-            style={{ color: 'var(--brand-text-muted)', border: '1px solid var(--brand-border)', fontWeight: 600 }}
+            style={{ color: '#374151', border: '1px solid var(--brand-border)', fontWeight: 600 }}
           >
             <Printer size={15} />
             <span className="hidden sm:inline">Imprimer</span>
@@ -3371,8 +3371,8 @@ export default function DocumentForm() {
             <div className="flex items-center gap-3">
               <Eye size={18} style={{ color: 'var(--brand-cyan)' }} />
               <div>
-                <h3 className="text-sm font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Aperçu avant impression</h3>
-                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{docTitle} — {effectiveClient.prenom} {effectiveClient.nom}</p>
+                <h3 className="text-sm font-700" style={{ color: '#111827', fontWeight: 700 }}>Aperçu avant impression</h3>
+                <p className="text-xs" style={{ color: '#374151' }}>{docTitle} — {effectiveClient.prenom} {effectiveClient.nom}</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
@@ -3387,7 +3387,7 @@ export default function DocumentForm() {
               <button
                 onClick={() => setShowPreview(false)}
                 className="p-2 rounded-lg transition-all hover:bg-white/10"
-                style={{ color: 'var(--brand-text-muted)' }}
+                style={{ color: '#374151' }}
                 title="Fermer l'aperçu"
               >
                 <X size={18} />
@@ -3477,7 +3477,7 @@ export default function DocumentForm() {
 
           {/* Barre de bas de page */}
           <div className="flex items-center justify-center gap-4 px-4 py-3 flex-shrink-0" style={{ background: '#1a2540', borderTop: '1px solid rgba(131,208,245,0.2)' }}>
-            <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Vérifiez le contenu avant d'imprimer. Les couleurs et la mise en page peuvent légèrement différer selon votre navigateur.</p>
+            <p className="text-xs" style={{ color: '#374151' }}>Vérifiez le contenu avant d'imprimer. Les couleurs et la mise en page peuvent légèrement différer selon votre navigateur.</p>
             <button
               onClick={() => { setShowPreview(false); setTimeout(handlePrint, 100); }}
               className="flex items-center gap-2 px-6 py-2.5 rounded-lg text-sm font-700 flex-shrink-0"
@@ -3501,19 +3501,19 @@ export default function DocumentForm() {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
                 <Mail size={18} style={{ color: 'var(--brand-cyan)' }} />
-                <h3 className="text-sm font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Envoyer par email</h3>
+                <h3 className="text-sm font-700" style={{ color: '#111827', fontWeight: 700 }}>Envoyer par email</h3>
               </div>
-              <button type="button" onClick={() => setEmailModal(false)} style={{ color: 'var(--brand-text-muted)' }}><X size={18} /></button>
+              <button type="button" onClick={() => setEmailModal(false)} style={{ color: '#374151' }}><X size={18} /></button>
             </div>
 
             <div className="mb-4 p-3 rounded-lg" style={{ background: 'rgba(131,208,245,0.06)', border: '1px solid rgba(131,208,245,0.15)' }}>
-              <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Document : <strong style={{ color: 'var(--brand-text)' }}>{docTitle}</strong></p>
-              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Client : <strong style={{ color: 'var(--brand-text)' }}>{effectiveClient.prenom} {effectiveClient.nom}</strong></p>
+              <p className="text-xs" style={{ color: '#374151' }}>Document : <strong style={{ color: '#111827' }}>{docTitle}</strong></p>
+              <p className="text-xs mt-1" style={{ color: '#374151' }}>Client : <strong style={{ color: '#111827' }}>{effectiveClient.prenom} {effectiveClient.nom}</strong></p>
             </div>
 
             <form onSubmit={handleSendEmail} className="space-y-3">
               <div>
-                <label className="block text-xs mb-1" style={{ color: 'var(--brand-text-muted)', fontWeight: 500 }}>Adresse email du destinataire</label>
+                <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>Adresse email du destinataire</label>
                 <input
                   type="email"
                   required
@@ -3521,7 +3521,7 @@ export default function DocumentForm() {
                   onChange={e => setEmailTo(e.target.value)}
                   placeholder="client@exemple.fr"
                   className="w-full px-3 py-2 rounded-lg text-sm"
-                  style={{ background: 'var(--brand-navy)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', outline: 'none' }}
+                  style={{ background: 'var(--brand-navy)', border: '1px solid var(--brand-border)', color: '#111827', outline: 'none' }}
                 />
               </div>
               <div className="flex gap-3 pt-2">
@@ -3529,7 +3529,7 @@ export default function DocumentForm() {
                   type="button"
                   onClick={() => setEmailModal(false)}
                   className="flex-1 py-2.5 rounded-lg text-sm"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: '#374151' }}
                 >
                   Annuler
                 </button>
@@ -3551,7 +3551,7 @@ export default function DocumentForm() {
               </div>
             </form>
 
-            <p className="text-xs mt-3" style={{ color: 'var(--brand-text-muted)', opacity: 0.7 }}>
+            <p className="text-xs mt-3" style={{ color: '#374151', opacity: 0.7 }}>
               L'email est envoyé via votre serveur SMTP configuré dans Paramètres.
             </p>
           </div>

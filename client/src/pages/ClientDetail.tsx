@@ -6,6 +6,7 @@ import { useApp } from '@/lib/app-context';
 import { useLocation, useParams } from 'wouter';
 import { ArrowLeft, Phone, Mail, CreditCard, FileText, Trash2, Archive, Edit, PlusCircle, Send, X, Loader2, StickyNote, ShieldCheck, Clock, AlertTriangle, CheckCircle2, Lock, Printer } from 'lucide-react';
 import { DOCUMENT_LABELS, DocumentType } from '@/lib/types';
+import AddClientModal from '../components/AddClientModal';
 
 // Ordre canonique des documents (01 avant 02, etc.)
 const DOC_ORDER: DocumentType[] = [
@@ -54,6 +55,7 @@ export default function ClientDetail() {
   const { getClientById, updateClient, deleteClient } = useApp();
   const [, navigate] = useLocation();
   const [tab, setTab] = useState<Tab>('infos');
+  const [showEditModal, setShowEditModal] = useState(false);
   const [showDossierModal, setShowDossierModal] = useState(false);
   const [dossierEmail, setDossierEmail] = useState('');
   const [editingNotes, setEditingNotes] = useState(false);
@@ -186,11 +188,18 @@ export default function ClientDetail() {
         {tab === 'infos' && (
           <>
             <div className="studio-card p-4 space-y-3">
-              <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Identité</p>
+              <div className="flex items-center justify-between">
+                <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Identité</p>
+                <button onClick={() => setShowEditModal(true)} className="text-xs px-2 py-1 rounded" style={{ background: 'var(--brand-cyan)', color: '#000' }}>Modifier</button>
+              </div>
               {[
+                { icon: CreditCard, label: 'Nom', value: `${client.prenom} ${client.nom}` },
                 ...(client.numeroClient ? [{ icon: CreditCard, label: 'N° client', value: client.numeroClient }] : []),
                 { icon: CreditCard, label: 'Né(e) le', value: new Date(client.dateNaissance).toLocaleDateString('fr-FR') + ` (${age} ans)` },
                 { icon: Phone, label: 'Téléphone', value: client.telephone },
+                ...(client.email ? [{ icon: CreditCard, label: 'Email', value: client.email }] : []),
+                ...(client.adresse ? [{ icon: CreditCard, label: 'Adresse', value: `${client.adresse} ${client.codePostal || ''} ${client.ville || ''}`.trim() }] : []),
+                ...(client.pieceIdentiteType ? [{ icon: CreditCard, label: "Pièce d'identité", value: `${client.pieceIdentiteType}${client.pieceIdentiteNumero ? ' — ' + client.pieceIdentiteNumero : ''}` }] : []),
 
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -577,6 +586,7 @@ export default function ClientDetail() {
     )}
 
 
+      {showEditModal && <AddClientModal client={client} onClose={() => setShowEditModal(false)} />}
     </>
   );
 }

@@ -28,7 +28,8 @@
     "rgpd_alert": "DSGVO-Warnung",
     "rgpd_alerts": "DSGVO-Warnungen",
     "section_rgpd": "DSGVO",
-    "section_admin": "Verwaltung"
+    "section_admin": "Verwaltung",
+    "employees": "Mitarbeiter"
   },
   "auth": {
     "pin_title": "PIN-Code erstellen",

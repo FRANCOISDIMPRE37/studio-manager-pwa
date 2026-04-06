@@ -31,7 +31,8 @@
     "rgpd_alert": "alerta RGPD",
     "rgpd_alerts": "alertas RGPD",
     "section_rgpd": "RGPD",
-    "section_admin": "Administração"
+    "section_admin": "Administração",
+    "employees": "Funcionarios"
   },
   "auth": {
     "pin_title": "Crie o seu código PIN",

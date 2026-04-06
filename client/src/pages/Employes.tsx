@@ -51,6 +51,7 @@ interface FormState {
   login: string;
   password: string;
   confirmPassword: string;
+  pin: string;
   role: Role;
   specialite: string;
   actif: boolean;
@@ -58,7 +59,7 @@ interface FormState {
 
 const EMPTY_FORM: FormState = {
   prenom: '', nom: '', login: '', password: '', confirmPassword: '',
-  role: 'employe', specialite: '', actif: true,
+  pin: '', role: 'employe', specialite: '', actif: true,
 };
 
 // ─── Composant principal ──────────────────────────────────────────────────────
@@ -114,6 +115,7 @@ export default function Employes() {
       login: emp.login || '',
       password: '',
       confirmPassword: '',
+      pin: '',
       role: emp.role || 'employe',
       specialite: emp.specialite || '',
       actif: emp.actif ?? true,
@@ -140,14 +142,20 @@ export default function Employes() {
         actif: form.actif,
       };
       if (form.password) payload.password = form.password;
+      if (form.pin && form.pin.length === 4) payload.pin = form.pin;
       updateMutation.mutate(payload);
     } else {
       if (!form.password) { toast.error('Le mot de passe est requis.'); return; }
+      if (form.pin && form.pin.length > 0 && form.pin.length !== 4) {
+        toast.error('Le code PIN doit être exactement 4 chiffres.');
+        return;
+      }
       createMutation.mutate({
         prenom: form.prenom,
         nom: form.nom,
         login: form.login,
         password: form.password,
+        pin: form.pin && form.pin.length === 4 ? form.pin : undefined,
         role: form.role,
         specialite: form.specialite || undefined,
         actif: true,
@@ -234,50 +242,30 @@ export default function Employes() {
             </div>
 
             {/* Login */}
-            <div>
-              <label className="block text-xs mb-1 font-500" style={{ color: 'var(--brand-text-muted)' }}>Identifiant de connexion *</label>
-              <input
-                type="text" required value={form.login}
-                onChange={e => setForm(f => ({ ...f, login: e.target.value.toLowerCase().replace(/[^a-z0-9._-]/g, '') }))}
-                placeholder="marie.dupont"
-                className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
-              />
-              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Lettres, chiffres, . _ - uniquement</p>
-            </div>
 
-            {/* Mot de passe */}
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs mb-1 font-500" style={{ color: 'var(--brand-text-muted)' }}>
-                  Mot de passe {editingId ? '(laisser vide = inchangé)' : '*'}
-                </label>
-                <div className="relative">
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    value={form.password}
-                    onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                    placeholder="6 caractères minimum"
-                    className="w-full px-3 py-2 pr-9 rounded-lg text-sm outline-none"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
-                  />
-                  <button type="button" onClick={() => setShowPassword(v => !v)}
-                    className="absolute right-2.5 top-1/2 -translate-y-1/2" style={{ color: 'var(--brand-text-muted)' }}>
-                    {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                  </button>
-                </div>
-              </div>
-              <div>
-                <label className="block text-xs mb-1 font-500" style={{ color: 'var(--brand-text-muted)' }}>Confirmer le mot de passe</label>
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={form.confirmPassword}
-                  onChange={e => setForm(f => ({ ...f, confirmPassword: e.target.value }))}
-                  placeholder="Répéter le mot de passe"
-                  className="w-full px-3 py-2 rounded-lg text-sm outline-none"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
-                />
-              </div>
+            {/* Code PIN */}
+            <div>
+              <label className="block text-xs mb-1 font-500" style={{ color: 'var(--brand-text-muted)' }}>
+                🔐 Code PIN (4 chiffres) {editingId ? '— laisser vide = inchangé' : '— optionnel'}
+              </label>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={4}
+                value={form.pin}
+                onChange={e => setForm(f => ({ ...f, pin: e.target.value.replace(/[^0-9]/g, '').slice(0, 4) }))}
+                placeholder="Ex : 1234"
+                className="w-full px-3 py-2 rounded-lg text-sm outline-none tracking-widest font-mono"
+                style={{
+                  background: 'rgba(255,255,255,0.05)',
+                  border: `1px solid ${form.pin.length > 0 && form.pin.length < 4 ? '#f59e0b' : 'var(--brand-border)'}`,
+                  color: 'var(--brand-text)',
+                  letterSpacing: '0.3em',
+                }}
+              />
+              <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>
+                Permet à l’employé de se connecter rapidement sur tablette partagée
+              </p>
             </div>
 
             {/* Rôle & Spécialité */}

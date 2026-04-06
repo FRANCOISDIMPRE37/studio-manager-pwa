@@ -1,0 +1,2 @@
+ALTER TABLE `studio_users`
+  ADD COLUMN `pinHash` TEXT NULL AFTER `passwordHash`;

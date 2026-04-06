@@ -5,13 +5,9 @@ import { useRef, useEffect, useCallback, useState } from 'react';
 import { RotateCcw, PenLine, CheckCircle } from 'lucide-react';
 import { ConfidentialityEngagement } from './ConfidentialityEngagement';
 import { trpc } from '@/lib/trpc';
-import { trpc } from '@/lib/trpc';
 
 interface SignaturePadProps {
   documentId?: string;
-  requireConfidentiality?: boolean;
-  documentId?: string;
-  requireConfidentiality?: boolean;
   value?: string;
   onChange: (base64: string | null) => void;
   label?: string;
@@ -27,8 +23,6 @@ export default function SignaturePad({
   disabled = false,
   width = 480,
   height = 160,
-  documentId,
-  requireConfidentiality = true,
 }: SignaturePadProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
@@ -37,7 +31,6 @@ export default function SignaturePad({
   // État pour l'engagement de confidentialité
   const [showConfidentiality, setShowConfidentiality] = useState(false);
   const [confidentialityAccepted, setConfidentialityAccepted] = useState(false);
-  const updateDocument = trpc.documents.update.useMutation();
   const [confidentialityData, setConfidentialityData] = useState<{
     accepted: boolean;
     ip: string;
@@ -177,7 +170,6 @@ export default function SignaturePad({
     };
   }, [startDrawing, draw, stopDrawing]);
 
-
   const handleConfidentialityAccept = (accepted: boolean, ip: string) => {
     const data = {
       accepted,
@@ -186,17 +178,8 @@ export default function SignaturePad({
     };
     setConfidentialityData(data);
     setConfidentialityAccepted(accepted);
+    
     console.log('Engagement de confidentialité:', data);
-
-    // Sauvegarder en base si documentId fourni
-    if (documentId && accepted) {
-      updateDocument.mutate({
-        id: documentId,
-        confidentialityAccepted: true,
-        confidentialityAcceptedAt: data.timestamp,
-        confidentialityIpAddress: ip,
-      });
-    }
   };
 
   return (
@@ -239,7 +222,7 @@ export default function SignaturePad({
         />
       </div>
 
-      {requireConfidentiality && !confidentialityAccepted && (
+      {!confidentialityAccepted && (
         <div className="text-xs text-orange-600 flex items-center gap-2 bg-orange-50 p-2 rounded">
           <span>⚠️</span>
           <span>

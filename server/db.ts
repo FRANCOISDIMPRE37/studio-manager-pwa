@@ -642,8 +642,16 @@ export async function deleteSharedService(id: number) {
 // ============ STATS ADMIN ============
 
 export async function getAdminStats() {
-  const db = await getDb();
-  if (!db) return { totalStudios: 0, activeStudios: 0, trialStudios: 0, totalClients: 0 };
+  if (!process.env.DATABASE_URL) return { totalStudios: 0, totalClients: 0, licenseStats: [] };
+  try {
+    const mysql2 = await import("mysql2/promise");
+    const conn = await mysql2.createConnection(process.env.DATABASE_URL);
+    const [sr] = await conn.query("SELECT COUNT(*) as total FROM users WHERE role != 'admin'") as any;
+    const [cr] = await conn.query("SELECT COUNT(*) as total FROM clients") as any;
+    const [lr] = await conn.query("SELECT status, planType, COUNT(*) as count FROM licenses GROUP BY status, planType") as any;
+    await conn.end();
+    return { totalStudios: sr[0]?.total||0, totalClients: cr[0]?.total||0, licenseStats: lr };
+  } catch(e) { return { totalStudios: 0, totalClients: 0, licenseStats: [] }; }
   try {
     const [studioCount] = await (db as any).$client.query('SELECT COUNT(*) as total FROM users WHERE role != "admin"');
     const [clientCount] = await (db as any).$client.query('SELECT COUNT(*) as total FROM clients');
