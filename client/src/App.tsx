@@ -15,6 +15,8 @@ import ClientDetail from "./pages/ClientDetail";
 import SuperAdmin from "./pages/SuperAdmin";
 import Documents from "./pages/Documents";
 import Parametres from "./pages/Parametres";
+import Salaries from "./pages/Salaries";
+import Engagements from "./pages/Engagements";
 import NotFound from "./pages/NotFound";
 import DocumentForm from "./pages/DocumentForm";
 import AffichageSalon from '@/pages/AffichageSalon';
@@ -74,6 +76,8 @@ function AppRoutes() {
         <Route path="/document/:docType" component={DocumentForm} />
         <Route path="/documents" component={Documents} />
         <Route path="/parametres" component={Parametres} />
+        <Route path="/salaries" component={Salaries} />
+        <Route path="/engagements" component={Engagements} />
         <Route path="/archives" component={Archives} />
         <Route path="/rgpd-salarie" component={RgpdSalarie} />
           <Route path="/info-client-rgpd" component={AffichageSalon} />

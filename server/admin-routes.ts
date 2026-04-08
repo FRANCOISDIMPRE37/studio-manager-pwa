@@ -7,7 +7,7 @@ const router = Router();
 router.post('/api/super-admin/login', async (req, res) => {
   const { username, password } = req.body;
   
-  if (username === 'admin' && password === 'Fd031944') {
+  if (username === 'admin' && password === 'NOUVEAU_MDP') {
     const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET || 'Intemporelle2026!');
     const token = await new SignJWT({ role: 'super-admin', username: 'admin' })
       .setProtectedHeader({ alg: 'HS256' })
@@ -32,7 +32,7 @@ router.get('/api/super-admin/studios', async (req, res) => {
   const db = await import('./db').then(m => m.getDb());
   if (!db) return res.status(500).json({ error: 'Database error' });
   
-  const studios = await db.query('SELECT id, nom, email, slug, createdAt FROM studios ORDER BY createdAt DESC');
+  const [rows] = await (db as any).$client.query('SELECT id, nom, email, slug, createdAt FROM studios ORDER BY createdAt DESC'); const studios = rows;
   
   res.json(studios);
 });

@@ -152,30 +152,6 @@ export default function SignaturePad({
     onChange(base64);
   }, [isDrawing, onChange]);
 
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    canvas.addEventListener('mousedown', startDrawing as any);
-    canvas.addEventListener('mousemove', draw as any);
-    canvas.addEventListener('mouseup', stopDrawing);
-    canvas.addEventListener('mouseleave', stopDrawing);
-    canvas.addEventListener('touchstart', startDrawing as any);
-    canvas.addEventListener('touchmove', draw as any);
-    canvas.addEventListener('touchend', stopDrawing);
-    canvas.addEventListener('touchcancel', stopDrawing);
-
-    return () => {
-      canvas.removeEventListener('mousedown', startDrawing as any);
-      canvas.removeEventListener('mousemove', draw as any);
-      canvas.removeEventListener('mouseup', stopDrawing);
-      canvas.removeEventListener('mouseleave', stopDrawing);
-      canvas.removeEventListener('touchstart', startDrawing as any);
-      canvas.removeEventListener('touchmove', draw as any);
-      canvas.removeEventListener('touchend', stopDrawing);
-      canvas.removeEventListener('touchcancel', stopDrawing);
-    };
-  }, [startDrawing, draw, stopDrawing]);
 
 
   const handleConfidentialityAccept = (accepted: boolean, ip: string) => {
@@ -187,6 +163,22 @@ export default function SignaturePad({
     setConfidentialityData(data);
     setConfidentialityAccepted(accepted);
     console.log('Engagement de confidentialité:', data);
+    // Réinitialiser la taille du canvas après acceptation
+    setTimeout(() => {
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width;
+      canvas.height = rect.height;
+      const ctx = canvas.getContext('2d');
+      if (ctx) { ctx.strokeStyle = '#000000'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; }
+    }, 50);
+    if (accepted) {
+      setTimeout(() => {
+        const el = document.querySelector('[data-signature-pad]');
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }, 300);
+    }
 
     // Sauvegarder en base si documentId fourni
     if (documentId && accepted) {
@@ -199,8 +191,68 @@ export default function SignaturePad({
     }
   };
 
+  const isDrawingRef = useRef(false);
+
+  const getPos = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    const canvas = canvasRef.current!;
+    const rect = canvas.getBoundingClientRect();
+    return { x: e.clientX - rect.left, y: e.clientY - rect.top };
+  };
+
+  // Initialiser la taille du canvas à chaque changement d'état
+  const initCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const rect = canvas.getBoundingClientRect();
+    if (rect.width === 0) return;
+    canvas.width = rect.width;
+    canvas.height = rect.height;
+    const ctx = canvas.getContext('2d');
+    if (ctx) {
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+    }
+  }, []);
+
+  useEffect(() => { initCanvas(); }, []);
+  useEffect(() => { if (confidentialityAccepted) setTimeout(initCanvas, 100); }, [confidentialityAccepted, initCanvas]);
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (disabled) return;
+    if (!confidentialityAccepted) { if (!showConfidentiality) setShowConfidentiality(true); return; }
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch(err) {}
+    isDrawingRef.current = true;
+    setIsDrawing(true);
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const pos = getPos(e);
+    ctx.beginPath();
+    ctx.moveTo(pos.x, pos.y);
+  };
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
+    if (!isDrawingRef.current || disabled) return;
+    const ctx = canvasRef.current?.getContext('2d');
+    if (!ctx) return;
+    const pos = getPos(e);
+    ctx.lineTo(pos.x, pos.y);
+    ctx.stroke();
+    setIsEmpty(false);
+  };
+
+  const handlePointerUp = () => {
+    if (!isDrawingRef.current) return;
+    isDrawingRef.current = false;
+    setIsDrawing(false);
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    onChange(canvas.toDataURL('image/png'));
+  };
+
   return (
-    <div className="space-y-2">
+    <div className="space-y-2" data-signature-pad>
       <div className="flex items-center justify-between">
         <label className="text-sm font-medium flex items-center gap-2">
           <PenLine className="w-4 h-4" />
@@ -235,11 +287,15 @@ export default function SignaturePad({
           width={width}
           height={height}
           className="w-full touch-none"
-          style={{ touchAction: 'none' }}
+          style={{ touchAction: 'none', WebkitUserSelect: 'none' }}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+          onPointerLeave={handlePointerUp}
         />
       </div>
 
-      {requireConfidentiality && !confidentialityAccepted && (
+      {requireConfidentiality && showConfidentiality && !confidentialityAccepted && (
         <div className="text-xs text-orange-600 flex items-center gap-2 bg-orange-50 p-2 rounded">
           <span>⚠️</span>
           <span>
@@ -257,13 +313,32 @@ export default function SignaturePad({
         </div>
       )}
 
-      <ConfidentialityEngagement
-        isOpen={showConfidentiality}
-        onClose={() => setShowConfidentiality(false)}
-        onAccept={handleConfidentialityAccept}
-        documentType={label}
-        salonInfo={salonInfo}
-      />
+      {showConfidentiality && !confidentialityAccepted && (
+        <div style={{ background: 'white', border: '2px solid #6366f1', borderRadius: 16, padding: '24px 20px', marginTop: 8 }}>
+          <div style={{ textAlign: 'center', marginBottom: 16 }}>
+            <div style={{ fontSize: 36 }}>🔐</div>
+            <h3 style={{ margin: '8px 0 4px', fontSize: 18, fontWeight: 700, color: '#1a1f2e' }}>Engagement de Confidentialité</h3>
+          </div>
+          <div style={{ background: '#f3f4f6', borderRadius: 8, padding: '10px 14px', marginBottom: 14, borderLeft: '4px solid #6366f1' }}>
+            <p style={{ margin: 0, fontWeight: 700, color: '#1a1f2e', fontSize: 14 }}>{salonInfo.nom}</p>
+            <p style={{ margin: '2px 0 0', fontSize: 12, color: '#6b7280' }}>{salonInfo.adresse}</p>
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            {['🔒 Ne pas divulguer les informations confidentielles', '📋 Respecter la confidentialité des données', '📷 Ne pas photographier sans autorisation'].map((item, i) => (
+              <div key={i} style={{ padding: '8px 12px', marginBottom: 6, background: '#f9fafb', borderRadius: 8, fontSize: 13, color: '#374151' }}>{item}</div>
+            ))}
+          </div>
+          <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 8, padding: '10px 14px', marginBottom: 14 }}>
+            <p style={{ margin: 0, fontWeight: 700, color: '#dc2626', fontSize: 13 }}>⚠️ CLAUSE PÉNALE</p>
+            <p style={{ margin: '2px 0 0', fontSize: 11, color: '#7f1d1d' }}>Articles 226-13 et suivants du Code pénal</p>
+          </div>
+          <p style={{ fontSize: 10, color: '#9ca3af', textAlign: 'center', marginBottom: 14 }}>Date : {new Date().toLocaleString('fr-FR')}</p>
+          <div style={{ display: 'flex', gap: 10 }}>
+            <button onClick={() => setShowConfidentiality(false)} style={{ flex: 1, padding: '12px', borderRadius: 8, border: '1px solid #e5e7eb', background: 'white', color: '#6b7280', fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>Refuser</button>
+            <button onClick={() => handleConfidentialityAccept(true, '')} style={{ flex: 2, padding: '12px', borderRadius: 8, border: 'none', background: 'linear-gradient(135deg,#22c55e,#16a34a)', color: 'white', fontSize: 14, fontWeight: 700, cursor: 'pointer' }}>✓ Accepter</button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

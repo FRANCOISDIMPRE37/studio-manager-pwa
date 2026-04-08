@@ -92,15 +92,15 @@ export default function Clients() {
           c.telephone.includes(search)
         : true;
       const matchFilter =
-        filter === 'mineurs' ? c.estMineur && !c.estArchive :
-        !c.estMineur && !c.estArchive;
+        filter === 'mineurs' ? c.estMineur && !c.estArchive && !c.estSalarie :
+        !c.estMineur && !c.estArchive && !c.estSalarie;
       return matchSearch && matchFilter;
     });
   }, [state.clients, search, filter]);
 
   const FILTERS: { key: FilterType; label: string; count: number }[] = [
-    { key: 'mineurs', label: t('clients.minor') + 's', count: state.clients.filter(c => c.estMineur && !c.estArchive).length },
-    { key: 'majeurs', label: t('clients.adult') + 's', count: state.clients.filter(c => !c.estMineur && !c.estArchive).length },
+    { key: 'mineurs', label: t('clients.minor') + 's', count: state.clients.filter(c => c.estMineur && !c.estArchive && !c.estSalarie).length },
+    { key: 'majeurs', label: t('clients.adult') + 's', count: state.clients.filter(c => !c.estMineur && !c.estArchive && !c.estSalarie).length },
   ];
 
   return (

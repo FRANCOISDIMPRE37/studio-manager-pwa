@@ -41,6 +41,7 @@ export const clients = mysqlTable("clients", {
   telephoneRepresentantLegal: varchar("telephoneRepresentantLegal", { length: 20 }),
   lienRepresentantLegal: varchar("lienRepresentantLegal", { length: 50 }),
   estArchive: boolean("estArchive").default(false).notNull(),
+  estSalarie: boolean("est_salarie").default(false),
   dateArchivage: varchar("dateArchivage", { length: 10 }),
   dateConsentement: varchar("dateConsentement", { length: 10 }),
   dateSuppressionPrevue: varchar("dateSuppressionPrevue", { length: 10 }).notNull(),

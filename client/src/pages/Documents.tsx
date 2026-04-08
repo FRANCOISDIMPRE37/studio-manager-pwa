@@ -48,7 +48,7 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.rgpd',
     icon: Shield,
     color: '#E53935',
-    docs: ['engagement_confidentialite', 'affichage_salon'] as DocumentType[],
+    docs: ['affichage_salon'] as DocumentType[],
     forMineur: null,
   },
 ];
@@ -91,6 +91,11 @@ export default function Documents() {
   const handleOpenWithoutClient = () => {
     if (!selectedDoc) return;
     navigate(`/document/${selectedDoc}`);
+    setSelectedDoc(null);
+  };
+
+  const handleOpenWithoutSalarie = () => {
+    navigate('/rgpd-salarie');
     setSelectedDoc(null);
   };
 
@@ -206,6 +211,23 @@ export default function Documents() {
               </div>
               <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
             </button>
+
+            {selectedDoc === 'engagement_confidentialite' && (
+              <button
+                onClick={handleOpenWithoutSalarie}
+                className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:opacity-80"
+                style={{ background: 'rgba(255,193,7,0.1)', border: '1px solid rgba(255,193,7,0.35)' }}
+              >
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(255,193,7,0.2)' }}>
+                  <User size={16} style={{ color: '#FFC107' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-600" style={{ color: '#FFC107', fontWeight: 600 }}>Ouvrir sans salarié</p>
+                  <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Gérer les salariés · RGPD Art. 29</p>
+                </div>
+                <ChevronRight size={16} style={{ color: '#FFC107', flexShrink: 0 }} />
+              </button>
+            )}
 
             {/* Séparateur */}
             <div className="flex items-center gap-2">

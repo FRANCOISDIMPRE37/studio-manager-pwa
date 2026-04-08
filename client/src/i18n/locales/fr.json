@@ -32,7 +32,8 @@
     "legal_cgu": "CGU / CGV",
     "section_rgpd": "RGPD",
     "section_admin": "Administration",
-    "employees": "Salaries"
+    "employees": "Salaries",
+    "salaries": "Salariés"
   },
   "auth": {
     "pin_title": "Créez votre code PIN",
@@ -1085,5 +1086,7 @@
     "consent_free": "Je consens librement à la réalisation de cette prestation",
     "consent_accurate": "Je certifie que toutes les informations fournies sont exactes",
     "section_signatures": "7 — SIGNATURES"
-  }
+  },
+  "nav.salaries": "Salaries",
+  "nav.engagements": "Engagements RGPD"
 }

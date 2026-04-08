@@ -51,3 +51,39 @@ export function registerOAuthRoutes(app: Express) {
     }
   });
 }
+
+// Bypass login endpoint — remplace Manus OAuth
+export function registerBypassLogin(app: Express) {
+  app.get('/api/auth/direct-login', async (req: Request, res: Response) => {
+    const secret = req.query['secret'];
+    if (secret !== process.env.JWT_SECRET) {
+      res.status(403).json({ error: 'Forbidden' });
+      return;
+    }
+    try {
+      const openId = process.env.OWNER_OPEN_ID || 'admin-intemporelle';
+      await db.upsertUser({
+        openId,
+        name: 'Admin',
+        email: null,
+        loginMethod: 'direct',
+        lastSignedIn: new Date(),
+      });
+      const sessionToken = await sdk.createSessionToken(openId, {
+        name: 'Admin',
+        expiresInMs: 1000 * 60 * 60 * 24 * 365,
+      });
+      res.cookie('app_session_id', sessionToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'lax',
+        maxAge: 1000 * 60 * 60 * 24 * 365,
+        path: '/',
+      });
+      res.redirect(302, '/');
+    } catch (error) {
+      console.error('[DirectLogin] Failed', error);
+      res.status(500).json({ error: 'Login failed' });
+    }
+  });
+}

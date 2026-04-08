@@ -61,5 +61,33 @@ createRoot(document.getElementById("root")!).render(
     </QueryClientProvider>
   </trpc.Provider></EmployeSessionProvider>
 );
+
+// Auto-tab on maxLength fields
+document.addEventListener('input', (e) => {
+  const input = e.target as HTMLInputElement;
+  if (!input.maxLength || input.maxLength < 0) return;
+  if (input.value.length >= input.maxLength) {
+    const inputs = Array.from(document.querySelectorAll('input, select, textarea')) as HTMLElement[];
+    const idx = inputs.indexOf(input);
+    if (idx >= 0 && idx < inputs.length - 1) {
+      inputs[idx + 1].focus();
+    }
+  }
+});
+
 // Force rebuild Fri Apr  3 01:21:52 UTC 2026
+
+// Auto-tab on maxLength fields
+document.addEventListener('input', (e) => {
+  const input = e.target as HTMLInputElement;
+  if (!input.maxLength || input.maxLength < 0) return;
+  if (input.value.length >= input.maxLength) {
+    const inputs = Array.from(document.querySelectorAll('input, select, textarea')) as HTMLElement[];
+    const idx = inputs.indexOf(input);
+    if (idx >= 0 && idx < inputs.length - 1) {
+      inputs[idx + 1].focus();
+    }
+  }
+});
+
 // Force rebuild Fri Apr  3 04:58:19 UTC 2026

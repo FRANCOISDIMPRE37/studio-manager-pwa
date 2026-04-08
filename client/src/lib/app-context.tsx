@@ -2,6 +2,7 @@ import React, { createContext, useContext, useReducer, useEffect, useCallback } 
 import { Client, SalonInfo, DashboardStats, RGPDStatus, RendezVous, Prestation, ClientDocument, calculateRGPDStatus } from './types';
 import { nanoid } from 'nanoid';
 import { trpc } from './trpc';
+import { useEmployeSession } from '@/contexts/EmployeSessionContext';
 
 interface AppState {
   clients: Client[];
@@ -246,6 +247,7 @@ function AppProviderInner({ children, dispatch, state }: {
   state: AppState;
 }) {
   const utils = trpc.useUtils();
+  const { employe: employeeSession } = useEmployeSession();
 
   // tRPC mutations
   const createClientMutation = trpc.clients.create.useMutation();
@@ -264,7 +266,7 @@ function AppProviderInner({ children, dispatch, state }: {
     try {
       dispatch({ type: 'SET_SYNCING', payload: true });
       const [dbClients, dbRDV, dbSalon, dbPrestations, dbDocuments] = await Promise.all([
-        utils.clients.list.fetch(),
+        utils.clients.list.fetch(employeeSession ? { employeeId: employeeSession.id } : undefined),
         utils.rdv.list.fetch(),
         utils.salon.get.fetch(),
         utils.prestations.listAll.fetch(),
@@ -461,10 +463,12 @@ function AppProviderInner({ children, dispatch, state }: {
           pieceIdentiteNumero: newClient.pieceIdentiteNumero,
           estMineur: newClient.estMineur,
           estArchive: newClient.estArchive,
+          estSalarie: newClient.estSalarie ?? false,
           dateArchivage: newClient.dateArchivage,
           dateConsentement: newClient.dateConsentement,
           dateSuppressionPrevue: newClient.dateSuppressionPrevue,
           rgpdDroitsExerces: newClient.rgpdDroitsExerces || [],
+          employeeId: employeeSession?.id || undefined,
         });
       } catch (err) {
         console.warn('[Sync] Client create failed:', err);

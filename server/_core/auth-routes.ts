@@ -58,7 +58,7 @@ export function registerAuthRoutes(app: Express) {
       for (const user of rows as any[]) {
         if (user.pinHash && await bcrypt.compare(pin, user.pinHash)) {
           const token = await new SignJWT({ openId: user.id.toString(), userId: user.id }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("365d").sign(JWT_SECRET);
-          res.cookie("local_session", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 365 * 24 * 60 * 60 * 1000 });
+          res.cookie("local_session", token, { httpOnly: true, secure: true, sameSite: "none", maxAge: 365 * 24 * 60 * 60 * 1000 });
           return res.json({ success: true, name: user.prenom + " " + user.nom, role: user.role });
         }
       }

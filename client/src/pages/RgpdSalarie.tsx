@@ -10,6 +10,9 @@ import {
   Clock,
   UserPlus,
   X,
+  Trash2,
+  Pencil,
+  Printer,
 } from 'lucide-react';
 import type { Client, ClientDocument } from '@/lib/types';
 
@@ -19,14 +22,17 @@ const emptyForm = { prenom: '', nom: '', poste: '', telephone: '' };
 
 export default function RgpdSalarie() {
   const [, navigate] = useLocation();
-  const { state, addClient } = useApp();
+  const { state, addClient, updateClient, deleteClient } = useApp();
   const [activeTab, setActiveTab] = useState<Tab>('engagement');
   const [selectedClientId, setSelectedClientId] = useState('');
   const [showNewForm, setShowNewForm] = useState(false);
   const [form, setForm] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [editingClient, setEditingClient] = useState<Client | null>(null);
+  const [editForm, setEditForm] = useState({ prenom: '', nom: '', poste: '', telephone: '' });
+  const [editSaving, setEditSaving] = useState(false);
 
-  const clients: Client[] = state.clients || [];
+  const clients: Client[] = (state.clients || []).filter((c: Client) => c.estSalarie === true);
 
   const hasSignedEngagement = (client: Client): boolean => {
     return (
@@ -62,7 +68,7 @@ export default function RgpdSalarie() {
       await addClient({
         nom: form.nom.trim(),
         prenom: form.prenom.trim(),
-        dateNaissance: '',
+        dateNaissance: new Date().toISOString().split('T')[0],
         adresse: '',
         codePostal: '',
         ville: '',
@@ -77,6 +83,7 @@ export default function RgpdSalarie() {
         dateSuppressionPrevue: suppression,
         rgpdDroitsExerces: [],
         estArchive: false,
+        estSalarie: true,
         notes: form.poste ? `Poste : ${form.poste.trim()}` : undefined,
       });
       setForm(emptyForm);
@@ -86,6 +93,55 @@ export default function RgpdSalarie() {
     }
   };
 
+  const handleEditSalarie = async () => {
+    if (!editingClient || !editForm.prenom.trim() || !editForm.nom.trim()) return;
+    setEditSaving(true);
+    try {
+      await updateClient({
+        ...editingClient,
+        nom: editForm.nom.trim(),
+        prenom: editForm.prenom.trim(),
+        telephone: editForm.telephone.trim(),
+        notes: editForm.poste ? `Poste : ${editForm.poste.trim()}` : editingClient.notes,
+      });
+      setEditingClient(null);
+    } finally {
+      setEditSaving(false);
+    }
+  };
+  const handlePrintEngagement = (client: Client) => {
+    const doc = client.documents?.find(d => d.type === 'engagement_confidentialite');
+    const dateSigned = doc?.dateSigned ? new Date(doc.dateSigned).toLocaleDateString('fr-FR') : 'Non signé';
+    const poste = client.notes?.startsWith('Poste :') ? client.notes.replace('Poste : ', '') : '';
+    const win = window.open('', '_blank');
+    if (!win) return;
+    win.document.write(`<!DOCTYPE html><html><head><meta charset="utf-8"><title>Engagement RGPD — ${client.prenom} ${client.nom}</title><style>
+      body { font-family: Arial, sans-serif; max-width: 700px; margin: 40px auto; color: #1a1a2e; }
+      h1 { color: #0088a9; border-bottom: 2px solid #0088a9; padding-bottom: 8px; }
+      .badge { display: inline-block; background: #e8f5e9; color: #2e7d32; padding: 4px 12px; border-radius: 20px; font-size: 13px; margin-bottom: 20px; }
+      .info-row { display: flex; gap: 20px; margin-bottom: 8px; }
+      .label { font-weight: bold; min-width: 140px; color: #555; }
+      .section { margin-top: 24px; padding: 16px; background: #f5f5f5; border-radius: 8px; }
+      .footer { margin-top: 40px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #888; }
+      @media print { body { margin: 20px; } }
+    </style></head><body>
+      <h1>Engagement de Confidentialité — RGPD Art. 29</h1>
+      <div class="badge">✓ Signé le ${dateSigned}</div>
+      <div class="info-row"><span class="label">Nom complet :</span><span>${client.prenom} ${client.nom}</span></div>
+      <div class="info-row"><span class="label">Poste :</span><span>${poste || '—'}</span></div>
+      <div class="info-row"><span class="label">Téléphone :</span><span>${client.telephone || '—'}</span></div>
+      <div class="info-row"><span class="label">Date de signature :</span><span>${dateSigned}</span></div>
+      <div class="section">
+        <strong>Objet :</strong> Données personnelles clients — Fiche 15<br><br>
+        Je soussigné(e) <strong>${client.prenom} ${client.nom}</strong>, en qualité de <strong>${poste || 'employé(e)'}</strong>,
+        m'engage à respecter la confidentialité des données personnelles des clients auxquelles j'ai accès dans le cadre de mes fonctions,
+        conformément au Règlement Général sur la Protection des Données (RGPD — Art. 29).
+      </div>
+      <div class="footer">Document généré par Studio Manager · Intemporelle · ${new Date().toLocaleDateString('fr-FR')}</div>
+      <script>window.onload = function(){ window.print(); }<\/script>
+    </body></html>`);
+    win.document.close();
+  };
   const signedClients = clients.filter(hasSignedEngagement);
   const unsignedClients = clients.filter(c => !hasSignedEngagement(c));
 
@@ -96,6 +152,7 @@ export default function RgpdSalarie() {
   };
 
   return (
+    <>
     <div className="p-6 max-w-3xl mx-auto">
       {/* Header */}
       <button
@@ -427,7 +484,7 @@ export default function RgpdSalarie() {
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 shrink-0">
+                    <div className="flex items-center gap-2 shrink-0" onClick={e => e.stopPropagation()}>
                       {isSigned ? (
                         <span
                           className="flex items-center gap-1 text-xs px-2 py-1 rounded-full"
@@ -445,6 +502,29 @@ export default function RgpdSalarie() {
                           En attente
                         </span>
                       )}
+                      <button
+                        onClick={e => { e.stopPropagation(); setEditForm({ prenom: client.prenom || '', nom: client.nom || '', poste: client.notes?.startsWith('Poste :') ? client.notes.replace('Poste : ', '') : '', telephone: client.telephone || '' }); setEditingClient(client); }}
+                        title="Modifier ce salarié"
+                        style={{ padding: '5px 8px', borderRadius: 8, background: 'rgba(0,188,212,0.1)', border: '1px solid rgba(0,188,212,0.2)', color: 'var(--brand-cyan)', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                      >
+                        <Pencil size={13} />
+                      </button>
+                      {isSigned && (
+                        <button
+                          onClick={e => { e.stopPropagation(); handlePrintEngagement(client); }}
+                          title="Imprimer l'engagement signé"
+                          style={{ padding: '5px 8px', borderRadius: 8, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.2)', color: '#22c55e', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                        >
+                          <Printer size={13} />
+                        </button>
+                      )}
+                      <button
+                        onClick={e => { e.stopPropagation(); if(window.confirm('Supprimer ce salarié ?')) deleteClient(client.id); }}
+                        title="Supprimer ce salarié"
+                        style={{ padding: '5px 8px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', color: '#ef4444', cursor: 'pointer', display: 'flex', alignItems: 'center' }}
+                      >
+                        <Trash2 size={13} />
+                      </button>
                     </div>
                   </div>
                 );
@@ -454,5 +534,47 @@ export default function RgpdSalarie() {
         </div>
       )}
     </div>
+
+    {/* Modal d'édition salarié */}
+    {editingClient && (
+      <div
+        style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.7)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 16 }}
+        onClick={() => setEditingClient(null)}
+      >
+        <div
+          style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)', borderRadius: 16, padding: 24, width: '100%', maxWidth: 400 }}
+          onClick={e => e.stopPropagation()}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+            <h3 style={{ color: 'var(--brand-cyan)', fontWeight: 700, fontSize: 16 }}>Modifier le salarié</h3>
+            <button onClick={() => setEditingClient(null)} style={{ background: 'none', border: 'none', color: 'var(--brand-text-muted)', cursor: 'pointer' }}><X size={18} /></button>
+          </div>
+          {[
+            { label: 'Prénom *', key: 'prenom', placeholder: 'Prénom' },
+            { label: 'Nom *', key: 'nom', placeholder: 'Nom de famille' },
+            { label: 'Poste', key: 'poste', placeholder: 'Ex: Tatoueur, Gérant…' },
+            { label: 'Téléphone', key: 'telephone', placeholder: '06 XX XX XX XX' },
+          ].map(({ label, key, placeholder }) => (
+            <div key={key} style={{ marginBottom: 12 }}>
+              <label style={{ display: 'block', fontSize: 12, color: 'var(--brand-text-muted)', marginBottom: 4 }}>{label}</label>
+              <input
+                value={editForm[key as keyof typeof editForm]}
+                onChange={e => setEditForm(f => ({ ...f, [key]: e.target.value }))}
+                placeholder={placeholder}
+                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontSize: 14, boxSizing: 'border-box' }}
+              />
+            </div>
+          ))}
+          <button
+            onClick={handleEditSalarie}
+            disabled={!editForm.prenom.trim() || !editForm.nom.trim() || editSaving}
+            style={{ width: '100%', padding: '10px 0', borderRadius: 8, background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700, fontSize: 14, border: 'none', cursor: 'pointer', marginTop: 8 }}
+          >
+            {editSaving ? 'Enregistrement…' : 'Enregistrer les modifications'}
+          </button>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

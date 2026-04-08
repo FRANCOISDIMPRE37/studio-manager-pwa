@@ -29,7 +29,8 @@
     "rgpd_alerts": "DSGVO-Warnungen",
     "section_rgpd": "DSGVO",
     "section_admin": "Verwaltung",
-    "employees": "Mitarbeiter"
+    "employees": "Mitarbeiter",
+    "salaries": "Mitarbeiter"
   },
   "auth": {
     "pin_title": "PIN-Code erstellen",

@@ -80,6 +80,7 @@ export interface Client {
   pieceIdentiteType?: 'CNI' | 'Passeport' | 'Permis' | 'Autre';
   pieceIdentiteNumero?: string;
   estMineur: boolean;
+  estSalarie?: boolean;
   prestations: Prestation[];
   documentsAssocies: DocumentType[];
   documents: ClientDocument[];

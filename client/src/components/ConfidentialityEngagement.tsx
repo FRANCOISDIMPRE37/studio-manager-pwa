@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-
+import { createPortal } from 'react-dom';
 interface ConfidentialityEngagementProps {
   isOpen: boolean;
   onClose: () => void;
@@ -12,7 +12,6 @@ interface ConfidentialityEngagementProps {
     telephone: string;
   };
 }
-
 export function ConfidentialityEngagement({
   isOpen,
   onClose,
@@ -21,7 +20,6 @@ export function ConfidentialityEngagement({
   salonInfo,
 }: ConfidentialityEngagementProps) {
   const [ipAddress, setIpAddress] = useState<string>('');
-
   useEffect(() => {
     if (isOpen) {
       fetch('https://api.ipify.org?format=json')
@@ -30,69 +28,142 @@ export function ConfidentialityEngagement({
         .catch(() => setIpAddress('unknown'));
     }
   }, [isOpen]);
-
   if (!isOpen) return null;
-
   const handleAccept = () => {
     onAccept(true, ipAddress);
     onClose();
   };
-
   return (
-    <div 
-      className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50" 
-      style={{ zIndex: 9999 }}
+    <div
+      style={{
+        position: 'fixed',
+        top: 0, left: 0, right: 0, bottom: 0,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: 'rgba(0,0,0,0.75)',
+        zIndex: 9999,
+        padding: '16px',
+      }}
       onClick={onClose}
     >
-      <div 
-        className="bg-white rounded-lg p-6 max-w-2xl max-h-[90vh] overflow-auto shadow-2xl"
-        style={{ zIndex: 10000 }}
+      <div
+        style={{
+          background: 'white',
+          borderRadius: '16px',
+          padding: '32px 24px',
+          width: '100%',
+          maxWidth: '480px',
+          maxHeight: '90vh',
+          overflowY: 'auto',
+          boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
+          zIndex: 10000,
+        }}
         onClick={(e) => e.stopPropagation()}
       >
-        <h2 className="text-2xl font-bold mb-4">🔐 Engagement de Confidentialité</h2>
-        
-        <div className="space-y-4 mb-6">
-          <p className="text-sm">Pour {documentType}</p>
-          
-          <div className="bg-gray-100 p-4 rounded">
-            <p className="font-semibold">{salonInfo.nom}</p>
-            <p>{salonInfo.adresse}</p>
-          </div>
-          
-          <div>
-            <p className="font-semibold">Vous vous engagez à :</p>
-            <ul className="list-disc ml-6 mt-2 space-y-2">
-              <li>Ne pas divulguer les informations confidentielles</li>
-              <li>Respecter la confidentialité des données</li>
-              <li>Ne pas photographier sans autorisation</li>
-            </ul>
-          </div>
-          
-          <div className="bg-red-50 border border-red-200 p-4 rounded">
-            <p className="font-semibold text-red-800">⚠️ CLAUSE PÉNALE</p>
-            <p className="text-sm">Articles 226-13 et suivants du Code pénal</p>
-          </div>
-          
-          <p className="text-xs text-gray-500">
-            IP: {ipAddress} | Date: {new Date().toLocaleString('fr-FR')}
+        {/* Icône + Titre */}
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <div style={{ fontSize: 48, marginBottom: 8 }}>🔐</div>
+          <h2 style={{ margin: 0, fontSize: 22, fontWeight: 700, color: '#1a1f2e' }}>
+            Engagement de Confidentialité
+          </h2>
+          <p style={{ margin: '8px 0 0', fontSize: 13, color: '#6b7280' }}>
+            Signature du client
           </p>
         </div>
-        
-        <div className="flex gap-3 justify-end">
+
+        {/* Infos salon */}
+        <div style={{
+          background: '#f3f4f6',
+          borderRadius: 10,
+          padding: '12px 16px',
+          marginBottom: 20,
+          borderLeft: '4px solid #6366f1',
+        }}>
+          <p style={{ margin: 0, fontWeight: 700, color: '#1a1f2e' }}>{salonInfo.nom}</p>
+          <p style={{ margin: '4px 0 0', fontSize: 13, color: '#6b7280' }}>{salonInfo.adresse}</p>
+        </div>
+
+        {/* Engagements */}
+        <div style={{ marginBottom: 20 }}>
+          <p style={{ fontWeight: 600, color: '#1a1f2e', marginBottom: 10 }}>Vous vous engagez à :</p>
+          {[
+            '🔒 Ne pas divulguer les informations confidentielles',
+            '📋 Respecter la confidentialité des données',
+            '📷 Ne pas photographier sans autorisation',
+          ].map((item, i) => (
+            <div key={i} style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '10px 12px',
+              marginBottom: 8,
+              background: '#f9fafb',
+              borderRadius: 8,
+              fontSize: 14,
+              color: '#374151',
+            }}>
+              {item}
+            </div>
+          ))}
+        </div>
+
+        {/* Clause pénale */}
+        <div style={{
+          background: '#fef2f2',
+          border: '1px solid #fecaca',
+          borderRadius: 10,
+          padding: '12px 16px',
+          marginBottom: 20,
+        }}>
+          <p style={{ margin: 0, fontWeight: 700, color: '#dc2626', fontSize: 14 }}>⚠️ CLAUSE PÉNALE</p>
+          <p style={{ margin: '4px 0 0', fontSize: 12, color: '#7f1d1d' }}>
+            Articles 226-13 et suivants du Code pénal
+          </p>
+        </div>
+
+        {/* IP + Date */}
+        <p style={{ fontSize: 11, color: '#9ca3af', textAlign: 'center', marginBottom: 24 }}>
+          IP: {ipAddress} | Date: {new Date().toLocaleString('fr-FR')}
+        </p>
+
+        {/* Boutons */}
+        <div style={{ display: 'flex', gap: 12 }}>
           <button
             onClick={onClose}
-            className="px-4 py-2 border rounded hover:bg-gray-100"
+            style={{
+              flex: 1,
+              padding: '14px',
+              borderRadius: 10,
+              border: '1px solid #e5e7eb',
+              background: 'white',
+              color: '#6b7280',
+              fontSize: 15,
+              fontWeight: 600,
+              cursor: 'pointer',
+            }}
           >
             Refuser
           </button>
           <button
             onClick={handleAccept}
-            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+            style={{
+              flex: 2,
+              padding: '14px',
+              borderRadius: 10,
+              border: 'none',
+              background: 'linear-gradient(135deg, #22c55e, #16a34a)',
+              color: 'white',
+              fontSize: 15,
+              fontWeight: 700,
+              cursor: 'pointer',
+              boxShadow: '0 4px 15px rgba(34,197,94,0.4)',
+            }}
           >
-            Accepter
+            ✓ Accepter
           </button>
         </div>
       </div>
-    </div>
-  );
+    </div>);
+  return createPortal(modal, document.body);
 }

@@ -107,9 +107,12 @@ export async function getUserById(id: number) {
 
 // ============ CLIENTS ============
 
-export async function getClientsByUserId(userId: number) {
+export async function getClientsByUserId(userId: number, employeeId?: number) {
   const db = await getDb();
   if (!db) return [];
+  if (employeeId) {
+    return db.select().from(clients).where(and(eq(clients.userId, userId), eq(clients.employeeId, employeeId))).orderBy(desc(clients.createdAt));
+  }
   return db.select().from(clients).where(eq(clients.userId, userId)).orderBy(desc(clients.createdAt));
 }
 

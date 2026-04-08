@@ -141,9 +141,11 @@ export const appRouter = router({
   }),
 
   clients: router({
-    list: protectedProcedure.query(async ({ ctx }) => {
-      return getClientsByUserId(ctx.user.id);
-    }),
+    list: protectedProcedure
+      .input(z.object({ employeeId: z.number().optional() }).optional())
+      .query(async ({ ctx, input }) => {
+        return getClientsByUserId(ctx.user.id, input?.employeeId);
+      }),
     get: protectedProcedure
       .input(z.object({ id: z.string() }))
       .query(async ({ ctx, input }) => {
@@ -164,6 +166,7 @@ export const appRouter = router({
         pieceIdentiteNumero: z.string().optional(),
         estMineur: z.boolean().default(false),
         estArchive: z.boolean().default(false),
+        estSalarie: z.boolean().default(false),
         dateArchivage: z.string().optional(),
         dateConsentement: z.string().optional(),
         dateSuppressionPrevue: z.string(),
@@ -189,6 +192,7 @@ export const appRouter = router({
         pieceIdentiteNumero: z.string().optional(),
         estMineur: z.boolean().optional(),
         estArchive: z.boolean().optional(),
+        estSalarie: z.boolean().optional(),
         dateArchivage: z.string().optional(),
         dateConsentement: z.string().optional(),
         dateSuppressionPrevue: z.string().optional(),

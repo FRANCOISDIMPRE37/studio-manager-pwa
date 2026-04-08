@@ -47,7 +47,7 @@ function FormField({
   };
   return (
     <div className="mb-3">
-      <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>
+      <label className="block text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>
         {label}{required && <span style={{ color: 'var(--brand-rose)' }}> *</span>}
       </label>
       {multiline ? (
@@ -58,9 +58,9 @@ function FormField({
           rows={3}
           className="w-full px-3 py-2 rounded-lg text-sm resize-none outline-none"
           style={{
-            background: 'rgba(255,255,255,0.04)',
+            background: 'rgba(255,255,255,0.08)',
             border: '1px solid var(--brand-border)',
-            color: '#111827',
+            color: '#ffffff',
             fontFamily: 'Outfit',
           }}
         />
@@ -75,9 +75,9 @@ function FormField({
           enterKeyHint={onNext ? 'next' : 'done'}
           className="w-full px-3 py-2 rounded-lg text-sm outline-none"
           style={{
-            background: 'rgba(255,255,255,0.04)',
+            background: 'rgba(255,255,255,0.08)',
             border: '1px solid var(--brand-border)',
-            color: '#111827',
+            color: '#ffffff',
             fontFamily: 'Outfit',
           }}
         />
@@ -115,6 +115,45 @@ function RadioField({ label, options, value, onChange }: {
   );
 }
 
+
+function DateSlashField({ label, value, onChange, required }: { label: string; value: string; onChange: (v: string) => void; required?: boolean }) {
+  const parts = (value || '').split('/');
+  const dd = (parts[0] || '').trim();
+  const mm = (parts[1] || '').trim();
+  const yyyy = (parts[2] || '').trim();
+  const refMM = React.useRef<HTMLInputElement>(null);
+  const refYYYY = React.useRef<HTMLInputElement>(null);
+  const update = (newDd: string, newMm: string, newYyyy: string) => {
+    const joined = [newDd, newMm, newYyyy].filter(Boolean).join(' / ');
+    onChange(joined);
+  };
+  return (
+    <div>
+      <label className="block text-xs mb-1" style={{ color: '#9ca3af' }}>{label}{required && <span style={{ color: '#ef4444' }}> *</span>}</label>
+      <div className="flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--brand-border)', borderRadius: 8, padding: '6px 10px' }}>
+        <input
+          type="text" maxLength={2} placeholder="JJ" value={dd}
+          onChange={e => { const v = e.target.value.replace(/\D/g,''); update(v, mm, yyyy); if(v.length===2) refMM.current?.focus(); }}
+          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+        />
+        <span style={{ color: '#9ca3af' }}>/</span>
+        <input
+          ref={refMM} type="text" maxLength={2} placeholder="MM" value={mm}
+          onChange={e => { const v = e.target.value.replace(/\D/g,''); update(dd, v, yyyy); if(v.length===2) refYYYY.current?.focus(); }}
+          onKeyDown={e => { if(e.key==='Backspace' && mm==='' && dd!=='') update('', '', yyyy); }}
+          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+        />
+        <span style={{ color: '#9ca3af' }}>/</span>
+        <input
+          ref={refYYYY} type="text" maxLength={4} placeholder="AAAA" value={yyyy}
+          onChange={e => { const v = e.target.value.replace(/\D/g,''); update(dd, mm, v); }}
+          onKeyDown={e => { if(e.key==='Backspace' && yyyy==='' && mm!=='') refMM.current?.focus(); }}
+          style={{ width: 44, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+        />
+      </div>
+    </div>
+  );
+}
 function CheckboxField({ label, value, onToggle, warning }: {
   label: string; value: boolean; onToggle: () => void; warning?: boolean;
 }) {
@@ -1103,7 +1142,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
           type="date"
         />
         <div className="mb-3">
-          <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>Âge (calculé automatiquement)</label>
+          <label className="block text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>Âge (calculé automatiquement)</label>
           <div className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--brand-border)', color: '#111827', opacity: 0.8 }}>
             {data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '') || '—'} {(data.ageClient || calculateAge(data.dateNaissanceClient || client.dateNaissance || '')) ? 'ans' : ''}
           </div>
@@ -2576,8 +2615,9 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <FormField label="Poste / Fonction" value={data.posteSignataire || ''} onChange={v => update('posteSignataire', v)} required />
           <div className="grid grid-cols-2 gap-3">
             <FormField label="Type de contrat" value={data.typeContrat || ''} onChange={v => update('typeContrat', v)} />
-            <FormField label="Date de début de mission" value={data.dateDebutMission || ''} onChange={v => update('dateDebutMission', v)} />
+            <DateSlashField label="Date de début de mission" value={data.dateDebutMission || ''} onChange={v => update('dateDebutMission', v)} required />
           </div>
+          <DateSlashField label="Date de fin de mission (si connue)" value={data.dateFinMission || ''} onChange={v => update('dateFinMission', v)} />
           <FormField label="Nom du salon / Établissement" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
         </div>
       </div>
@@ -2587,8 +2627,8 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         <div className="px-3 py-2 mb-3" style={{ background: '#1a1a1a', borderRadius: 6 }}>
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>PRÉAMBULE</p>
         </div>
-        <div className="p-4 rounded-xl text-xs leading-relaxed space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: '#374151', lineHeight: 1.7 }}>
-          <p>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: '#111827' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
+        <div className="p-4 rounded-xl text-xs leading-relaxed space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: '#cbd5e1', lineHeight: 1.7 }}>
+          <p>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: '#ffffff' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
           <p>Conformément à l'article 29 du RGPD, les personnes agissant sous l'autorité du responsable de traitement ne peuvent traiter ces données que sur instruction de ce dernier, sauf obligation légale contraire.</p>
         </div>
       </div>
@@ -2608,10 +2648,10 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
             { num: '6', titre: 'DROITS DES PERSONNES CONCERNÉES', texte: "En cas de demande d'un client visant à exercer ses droits RGPD (accès, rectification, effacement, opposition), le signataire s'engage à transmettre immédiatement cette demande au responsable du salon sans y répondre directement." },
           ].map((item) => (
             <div key={item.num} className="p-3 rounded-xl" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-              <p className="text-xs font-700 mb-1" style={{ color: '#111827', fontWeight: 700 }}>
+              <p className="text-xs font-700 mb-1" style={{ color: '#ffffff', fontWeight: 700 }}>
                 {item.num} — {item.titre}
               </p>
-              <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>{item.texte}</p>
+              <p className="text-xs leading-relaxed" style={{ color: '#cbd5e1', lineHeight: 1.7 }}>{item.texte}</p>
             </div>
           ))}
         </div>
@@ -2619,7 +2659,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
 
       {/* Avertissement pénal */}
       <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(229,57,53,0.08)', border: '1px solid rgba(229,57,53,0.3)' }}>
-        <p className="text-xs leading-relaxed" style={{ color: '#374151', lineHeight: 1.7 }}>
+        <p className="text-xs leading-relaxed" style={{ color: '#cbd5e1', lineHeight: 1.7 }}>
           ■ Tout manquement expose le signataire à des sanctions disciplinaires pouvant aller jusqu'au licenciement pour faute grave, sans préjudice des poursuites pénales au titre de l'article 226-13 du Code pénal (violation du secret professionnel : <strong style={{ color: '#E53935' }}>1 an d'emprisonnement et 15 000 € d'amende</strong>).
         </p>
       </div>
@@ -2630,7 +2670,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>DURÉE DE L'ENGAGEMENT</p>
         </div>
         <div className="p-4 rounded-xl text-xs leading-relaxed" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)', color: '#374151', lineHeight: 1.7 }}>
-          <p>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: '#111827' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
+          <p>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: '#ffffff' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
         </div>
       </div>
 
@@ -2643,38 +2683,24 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
             <p className="text-xs font-700" style={{ color: '#111827', fontWeight: 700 }}>LE SIGNATAIRE — Lu et approuvé</p>
             <FormField label="Nom, Prénom" value={data.signataireNomSignature || ''} onChange={v => update('signataireNomSignature', v)} />
-            <FormField label="Date" value={data.signataireDate || ''} onChange={v => update('signataireDate', v)} />
+            <DateSlashField label="Date" value={data.signataireDate || ''} onChange={v => update('signataireDate', v)} required />
             <SignaturePad
               label="Signature du signataire"
               value={data.signatureImageSignataire || ''}
               onChange={v => update('signatureImageSignataire', v ?? '')}
             />
           </div>
-          <div className="p-4 rounded-xl space-y-3" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-            <p className="text-xs font-700" style={{ color: '#111827', fontWeight: 700 }}>LE RESPONSABLE DU SALON</p>
-            <FormField label="Nom, Prénom" value={data.responsableNomSignature || ''} onChange={v => update('responsableNomSignature', v)} />
-            <FormField label="Date" value={data.responsableDate || ''} onChange={v => update('responsableDate', v)} />
-            <SignaturePad
-              label="Signature du responsable"
-              value={data.signatureImageResponsable || ''}
-              onChange={v => update('signatureImageResponsable', v ?? '')}
-            />
-          </div>
         </div>
       </div>
-
       <div className="text-center mt-4">
-        <p className="text-xs italic" style={{ color: '#374151' }}>Document à établir en deux exemplaires originaux — Un exemplaire conservé par le salon, un exemplaire remis au signataire.</p>
+        <p className="text-xs italic" style={{ color: '#cbd5e1' }}>Document à établir en deux exemplaires originaux — Un exemplaire conservé par le salon, un exemplaire remis au signataire.</p>
       </div>
     </>
   );
 }
-
-// ─── Formulaire Affichage Salon — Information Client RGPD ───────────────────────────────────
-
+// ─── Formulaire Affichage Salon ───
 function FormAffichageSalon({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
-  const blocs = [
-    {
+  const blocs = [    {
       titre: 'Pourquoi ces informations vous sont demandées ?',
       texte: "Nous collectons certaines informations afin d'assurer votre sécurité lors de la réalisation du tatouage ou du piercing. (Article 5 RGPD – principe de finalité)",
       borderColor: '#E53935',
@@ -2908,12 +2934,20 @@ export default function DocumentForm() {
   const signatureRequise = FICHES_SIGNATURE_OBLIGATOIRE.includes(docType);
   const signatureManquante = signatureRequise && !formData.signatureImageClient;
 
+  const createDocMutation = trpc.documents.create.useMutation();
+
   async function handleSave() {
-    if (isStandaloneMode) {
-      // En mode standalone, on imprime directement
-      handlePrint();
+    if (isStandaloneMode && docType === 'engagement_confidentialite') {
+      if (signatureManquante) { toast.error('Signature obligatoire'); return; }
+      setIsSaving(true);
+      try {
+        const stored = JSON.parse(localStorage.getItem("sm_engagements_rgpd") || "[]");
+        stored.push({ nom: formData.nomSignataire || "", poste: formData.posteSignataire || "", date: formData.signataireDate || new Date().toLocaleDateString("fr-FR"), savedAt: new Date().toISOString(), data: formData });
+        localStorage.setItem("sm_engagements_rgpd", JSON.stringify(stored));
+      } catch (e) { console.error(e); } finally { setIsSaving(false); }
       return;
     }
+    if (isStandaloneMode) { handlePrint(); return; }
     if (!client) return;
     if (signatureManquante) {
       toast.error('La signature du client est obligatoire pour valider ce document.');
@@ -2926,10 +2960,10 @@ export default function DocumentForm() {
       const doc = {
         id: existingDocIdx >= 0 ? client.documents[existingDocIdx].id : `doc-${Date.now()}`,
         type: docType,
-        status: 'filled' as const,
+        status: (formData.signatureImageClient || docType === 'engagement_confidentialite') ? 'signed' as const : 'filled' as const,
         data: formData,
         dateCreation: existingDocIdx >= 0 ? client.documents[existingDocIdx].dateCreation : now,
-        dateSigned: existingDocIdx >= 0 ? client.documents[existingDocIdx].dateSigned : undefined,
+        dateSigned: (formData.signatureImageClient || docType === 'engagement_confidentialite') ? now : (existingDocIdx >= 0 ? client.documents[existingDocIdx].dateSigned : undefined),
       };
       const newDocs = [...(client.documents || [])];
       if (existingDocIdx >= 0) newDocs[existingDocIdx] = doc;
@@ -3246,7 +3280,7 @@ export default function DocumentForm() {
             }}
           >
             <Save size={16} />
-            {isStandaloneMode ? 'Imprimer' : isSaving ? 'Sauvegarde...' : signatureManquante ? 'Signature requise' : 'Sauvegarder'}
+            {isSaving ? 'Sauvegarde...' : signatureManquante ? 'Signature requise' : 'Sauvegarder'}
           </button>
         </div>
       </div>
@@ -3291,7 +3325,7 @@ export default function DocumentForm() {
               cursor: signatureManquante ? 'not-allowed' : 'pointer',
             }}
           >
-            {isStandaloneMode ? '🖨️ Imprimer le document' : isSaving ? 'Sauvegarde en cours...' : signatureManquante ? '✍️ Signature requise pour sauvegarder' : '✓ Sauvegarder le document'}
+            {isSaving ? 'Sauvegarde en cours...' : signatureManquante ? '✍️ Signature requise pour sauvegarder' : '✓ Sauvegarder le document'}
           </button>
         </div>
       </div>
@@ -3449,7 +3483,7 @@ export default function DocumentForm() {
 
             <form onSubmit={handleSendEmail} className="space-y-3">
               <div>
-                <label className="block text-xs mb-1" style={{ color: '#374151', fontWeight: 500 }}>Adresse email du destinataire</label>
+                <label className="block text-xs mb-1" style={{ color: 'rgba(255,255,255,0.7)', fontWeight: 500 }}>Adresse email du destinataire</label>
                 <input
                   type="email"
                   required
