@@ -1,9 +1,0 @@
-{
-  "query": "INSERT INTO smtp_config (userId, host, port, secure, `user`, password, fromName, replyTo)\nVALUES (1, 'smtp.ionos.fr', 587, 0, 'societe@intemporel.tech', 'M@tdepasseionos37!@!@', 'Intemporel François Dimpre', 'societe@intemporel.tech')\nON DUPLICATE KEY UPDATE\n  host = 'smtp.ionos.fr',\n  port = 587,\n  secure = 0,\n  `user` = 'societe@intemporel.tech',\n  password = 'M@tdepasseionos37!@!@',\n  fromName = 'Intemporel François Dimpre',\n  replyTo = 'societe@intemporel.tech';",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute INSERT INTO smtp_config (userId, host, port, secure, `user`, password, fromName, replyTo)\nVALUES (1, 'smtp.ionos.fr', 587, 0, 'societe@intemporel.tech', 'M@tdepasseionos37!@!@', 'Intemporel François Dimpre', 'societe@intemporel.tech')\nON DUPLICATE KEY UPDATE\n  host = 'smtp.ionos.fr',\n  port = 587,\n  secure = 0,\n  `user` = 'societe@intemporel.tech',\n  password = 'M@tdepasseionos37!@!@',\n  fromName = 'Intemporel François Dimpre',\n  replyTo = 'societe@intemporel.tech';",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 181
-}

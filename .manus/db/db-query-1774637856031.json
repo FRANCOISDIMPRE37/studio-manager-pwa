@@ -1,9 +1,0 @@
-{
-  "query": "SELECT * FROM studio_users LIMIT 10; SELECT * FROM studios LIMIT 10;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute SELECT * FROM studio_users LIMIT 10; SELECT * FROM studios LIMIT 10;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 63
-}

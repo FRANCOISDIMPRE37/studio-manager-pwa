@@ -1,9 +1,0 @@
-{
-  "query": "CREATE TABLE IF NOT EXISTS smtp_config (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  userId INT NOT NULL UNIQUE,\n  host VARCHAR(200) NOT NULL DEFAULT 'smtp.ionos.fr',\n  port INT NOT NULL DEFAULT 587,\n  secure BOOLEAN NOT NULL DEFAULT false,\n  `user` VARCHAR(320) NOT NULL DEFAULT '',\n  password TEXT NOT NULL,\n  fromName VARCHAR(200),\n  replyTo VARCHAR(320),\n  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute CREATE TABLE IF NOT EXISTS smtp_config (\n  id INT AUTO_INCREMENT PRIMARY KEY,\n  userId INT NOT NULL UNIQUE,\n  host VARCHAR(200) NOT NULL DEFAULT 'smtp.ionos.fr',\n  port INT NOT NULL DEFAULT 587,\n  secure BOOLEAN NOT NULL DEFAULT false,\n  `user` VARCHAR(320) NOT NULL DEFAULT '',\n  password TEXT NOT NULL,\n  fromName VARCHAR(200),\n  replyTo VARCHAR(320),\n  updatedAt TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n);",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 203
-}

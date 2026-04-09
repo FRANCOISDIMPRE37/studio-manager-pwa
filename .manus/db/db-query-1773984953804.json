@@ -1,9 +1,0 @@
-{
-  "query": "CREATE TABLE IF NOT EXISTS `sms_config` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL,\n  `apiKey` text NOT NULL,\n  `senderName` varchar(11) NOT NULL DEFAULT 'Studio',\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `sms_config_id` PRIMARY KEY(`id`),\n  CONSTRAINT `sms_config_userId_unique` UNIQUE(`userId`)\n);",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute CREATE TABLE IF NOT EXISTS `sms_config` (\n  `id` int AUTO_INCREMENT NOT NULL,\n  `userId` int NOT NULL,\n  `apiKey` text NOT NULL,\n  `senderName` varchar(11) NOT NULL DEFAULT 'Studio',\n  `updatedAt` timestamp NOT NULL DEFAULT (now()) ON UPDATE CURRENT_TIMESTAMP,\n  CONSTRAINT `sms_config_id` PRIMARY KEY(`id`),\n  CONSTRAINT `sms_config_userId_unique` UNIQUE(`userId`)\n);",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 128
-}

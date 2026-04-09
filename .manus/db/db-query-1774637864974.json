@@ -1,9 +1,0 @@
-{
-  "query": "INSERT INTO salon_settings (userId, nom, raisonSociale, adresse, codePostal, ville, telephone, email, siret, nomPierceur, updatedAt)\nVALUES (360001, \"Clip's Mode\", \"Clip's Mode\", \"14 Pl. Jean Jaurès\", \"37000\", \"TOURS\", \"0617074169\", \"david-lambert@intemporelle.eu\", \"123 456 789\", \"LAMBERT DAVID\", NOW())\nON DUPLICATE KEY UPDATE\n  nom = \"Clip's Mode\",\n  raisonSociale = \"Clip's Mode\",\n  adresse = \"14 Pl. Jean Jaurès\",\n  codePostal = \"37000\",\n  ville = \"TOURS\",\n  telephone = \"0617074169\",\n  email = \"david-lambert@intemporelle.eu\",\n  siret = \"123 456 789\",\n  nomPierceur = \"LAMBERT DAVID\",\n  updatedAt = NOW();",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute INSERT INTO salon_settings (userId, nom, raisonSociale, adresse, codePostal, ville, telephone, email, siret, nomPierceur, updatedAt)\nVALUES (360001, \"Clip's Mode\", \"Clip's Mode\", \"14 Pl. Jean Jaurès\", \"37000\", \"TOURS\", \"0617074169\", \"david-lambert@intemporelle.eu\", \"123 456 789\", \"LAMBERT DAVID\", NOW())\nON DUPLICATE KEY UPDATE\n  nom = \"Clip's Mode\",\n  raisonSociale = \"Clip's Mode\",\n  adresse = \"14 Pl. Jean Jaurès\",\n  codePostal = \"37000\",\n  ville = \"TOURS\",\n  telephone = \"0617074169\",\n  email = \"david-lambert@intemporelle.eu\",\n  siret = \"123 456 789\",\n  nomPierceur = \"LAMBERT DAVID\",\n  updatedAt = NOW();",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 66
-}

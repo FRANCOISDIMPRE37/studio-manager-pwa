@@ -1,9 +1,0 @@
-{
-  "query": "UPDATE salon_settings SET pinHash = '$2b$10$kdYIkfkxWbEWVx.2qn0vFe9oi0yWEdyHVWOKmv.L0Qp41lHewn4o6', updatedAt = NOW() WHERE userId = 360001;",
-  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway03.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 76m7R2Y4nhmPHZW.578c789cda17 --database kHAXDDN9mqMmBLtorFtFyT --execute UPDATE salon_settings SET pinHash = '$2b$10$kdYIkfkxWbEWVx.2qn0vFe9oi0yWEdyHVWOKmv.L0Qp41lHewn4o6', updatedAt = NOW() WHERE userId = 360001;",
-  "rows": [],
-  "messages": [],
-  "stdout": "",
-  "stderr": "",
-  "execution_time_ms": 133
-}
