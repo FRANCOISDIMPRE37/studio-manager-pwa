@@ -2,6 +2,15 @@ import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { getDb } from "../db";
+import rateLimit from "express-rate-limit";
+
+const pinLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { error: "Trop de tentatives, réessayez dans 15 minutes" },
+  standardHeaders: true,
+  legacyHeaders: false,
+});
 
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || "Intemporelle2026!"
@@ -48,7 +57,7 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
-  app.post("/api/auth/pin", async (req: Request, res: Response) => {
+  app.post("/api/auth/pin", pinLimiter, async (req: Request, res: Response) => {
     const { pin } = req.body;
     if (!pin) return res.status(400).json({ error: "PIN requis" });
     try {
