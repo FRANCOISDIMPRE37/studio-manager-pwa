@@ -10,9 +10,8 @@ export type TrpcContext = {
   user: User | null;
 };
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "Intemporelle2026!"
-);
+if (!process.env.JWT_SECRET) throw new Error("❌ JWT_SECRET manquant dans .env");
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 async function authenticateLocal(req: any): Promise<User | null> {
   try {

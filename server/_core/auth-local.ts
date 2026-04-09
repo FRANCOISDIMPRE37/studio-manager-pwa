@@ -5,7 +5,8 @@ import { users } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import mysql from 'mysql2/promise';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'Intemporelle2026SecretKey!';
+if (!process.env.JWT_SECRET) throw new Error('❌ JWT_SECRET manquant dans .env');
+const JWT_SECRET = process.env.JWT_SECRET;
 const COOKIE_NAME = 'studio_session';
 
 export async function loginWithEmail(email: string, password: string): Promise<string | null> {
@@ -26,7 +27,7 @@ export async function loginWithEmail(email: string, password: string): Promise<s
   const token = jwt.sign(
     { openId: user.openId, userId: user.id },
     JWT_SECRET,
-    { expiresIn: '365d' }
+    { expiresIn: '8h' }
   );
   
   return token;

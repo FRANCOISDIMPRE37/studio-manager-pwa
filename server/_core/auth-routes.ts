@@ -12,9 +12,8 @@ const pinLimiter = rateLimit({
   legacyHeaders: false,
 });
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || "Intemporelle2026!"
-);
+if (!process.env.JWT_SECRET) throw new Error("❌ JWT_SECRET manquant dans .env");
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET);
 
 export function registerAuthRoutes(app: Express) {
   app.post("/api/auth/login", async (req: Request, res: Response) => {
@@ -40,7 +39,7 @@ export function registerAuthRoutes(app: Express) {
 
       const token = await new SignJWT({ openId: user.openId, userId: user.id })
         .setProtectedHeader({ alg: "HS256" })
-        .setExpirationTime("365d")
+        .setExpirationTime("8h")
         .sign(JWT_SECRET);
 
       res.cookie("local_session", token, {
@@ -66,7 +65,7 @@ export function registerAuthRoutes(app: Express) {
       const [rows] = await (db as any).$client.query("SELECT * FROM studio_users WHERE actif = 1");
       for (const user of rows as any[]) {
         if (user.pinHash && await bcrypt.compare(pin, user.pinHash)) {
-          const token = await new SignJWT({ openId: user.id.toString(), userId: user.id }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("365d").sign(JWT_SECRET);
+          const token = await new SignJWT({ openId: user.id.toString(), userId: user.id }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("8h").sign(JWT_SECRET);
           res.cookie("local_session", token, { httpOnly: true, secure: true, sameSite: "none", maxAge: 365 * 24 * 60 * 60 * 1000 });
           return res.json({ success: true, name: user.prenom + " " + user.nom, role: user.role });
         }
