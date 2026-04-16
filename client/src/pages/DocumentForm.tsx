@@ -57,10 +57,12 @@ function FormField({
           placeholder={placeholder}
           rows={3}
           className="w-full px-3 py-2 rounded-lg text-sm resize-none outline-none"
+          data-required={required ? 'true' : undefined}
+          data-label={required ? label : undefined}
           style={{
-            background: 'rgba(255,255,255,0.08)',
-            border: '1px solid var(--brand-border)',
-            color: '#ffffff',
+            background: '#f8f9fa',
+            border: '1px solid #aaaaaa',
+            color: '#111111',
             fontFamily: 'Outfit',
           }}
         />
@@ -74,10 +76,12 @@ function FormField({
           placeholder={placeholder}
           enterKeyHint={onNext ? 'next' : 'done'}
           className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+          data-required={required ? 'true' : undefined}
+          data-label={required ? label : undefined}
           style={{
-            background: 'rgba(255,255,255,0.08)',
-            border: '1px solid var(--brand-border)',
-            color: '#ffffff',
+            background: '#f8f9fa',
+            border: '1px solid #aaaaaa',
+            color: '#111111',
             fontFamily: 'Outfit',
           }}
         />
@@ -91,7 +95,7 @@ function RadioField({ label, options, value, onChange }: {
 }) {
   return (
     <div className="mb-3">
-      <label className="block text-xs mb-2" style={{ color: '#111111', fontWeight: 700 }}>{label}</label>
+      <label className="block mb-2" style={{ color: '#111111', fontWeight: 700, fontSize: '16px' }}>{label}</label>
       <div className="flex flex-wrap gap-2">
         {(Array.isArray(options) ? options : []).map(opt => (
           <button
@@ -162,13 +166,13 @@ function CheckboxField({ label, value, onToggle, warning }: {
       type="button"
       onClick={onToggle}
       className="flex items-start gap-3 w-full text-left mb-2 p-2 rounded-lg transition-all"
-      style={{ background: value ? 'rgba(131,208,245,0.05)' : 'transparent' }}
+      style={{ background: value ? 'rgba(10,74,122,0.05)' : 'transparent' }}
     >
       <div
         className="w-5 h-5 rounded flex-shrink-0 flex items-center justify-center mt-0.5"
         style={{
-          background: value ? (warning ? 'rgba(255,152,0,0.2)' : 'rgba(131,208,245,0.2)') : 'rgba(255,255,255,0.05)',
-          border: `2px solid ${value ? (warning ? '#FF9800' : 'var(--brand-cyan)') : 'var(--brand-border)'}`,
+          background: value ? (warning ? 'rgba(255,152,0,0.2)' : 'rgba(10,74,122,0.2)') : '#ffffff',
+          border: `2px solid ${value ? (warning ? '#FF9800' : '#0a4a7a') : '#555555'}`,
         }}
       >
         {value && (
@@ -177,7 +181,7 @@ function CheckboxField({ label, value, onToggle, warning }: {
           </svg>
         )}
       </div>
-      <span className="text-sm" style={{ color: warning && value ? '#FF9800' : 'var(--brand-text)', fontFamily: 'Outfit' }}>
+      <span className="text-sm" style={{ color: warning && value ? '#FF9800' : '#111111', fontFamily: 'Outfit', fontWeight: 600 }}>
         {label}
       </span>
     </button>
@@ -2962,11 +2966,16 @@ export default function DocumentForm() {
       toast.error('La signature du client est obligatoire pour valider ce document.');
       return;
     }
-    // Validation champs obligatoires
-    const nom = formData.nom || client?.nom || '';
-    const prenom = formData.prenom || client?.prenom || '';
-    if (!nom.trim() || !prenom.trim()) {
-      toast.error('Le nom et le prénom du client sont obligatoires pour sauvegarder.');
+    // Validation champs obligatoires via data-required
+    const requiredInputs = document.querySelectorAll('[data-required="true"]');
+    const emptyFields: string[] = [];
+    requiredInputs.forEach((el: any) => {
+      if (!el.value || el.value.trim() === '') {
+        emptyFields.push(el.getAttribute('data-label') || 'Champ requis');
+      }
+    });
+    if (emptyFields.length > 0) {
+      toast.error('Champs obligatoires manquants : ' + emptyFields.slice(0, 3).join(', ') + (emptyFields.length > 3 ? '...' : ''));
       return;
     }
     // Validation cases consentement obligatoires

@@ -253,7 +253,7 @@ export default function SignaturePad({
   return (
     <div className="space-y-2" data-signature-pad>
       <div className="flex items-center justify-between">
-        <label className="text-sm font-medium flex items-center gap-2">
+        <label className="text-sm font-medium flex items-center gap-2" style={{ color: "#111111" }}>
           <PenLine className="w-4 h-4" />
           {label}
           {confidentialityAccepted && (
