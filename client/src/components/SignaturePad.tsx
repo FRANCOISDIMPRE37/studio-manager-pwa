@@ -43,13 +43,9 @@ export default function SignaturePad({
     timestamp: string;
   } | null>(null);
 
-  // Infos du salon
-  const salonInfo = {
-    nom: 'ALBATOR',
-    adresse: '3 PL DE LA LIBERTEE, 37000 TOURS',
-    email: 'francois@dimpre.fr',
-    telephone: '06170741696',
-  };
+  // Infos du salon depuis les parametres
+  const { state } = useApp();
+  const salonInfo = state.salonInfo || { nom: '', adresse: '', email: '', telephone: '' };
 
   const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
