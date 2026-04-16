@@ -158,14 +158,17 @@ function DateSlashField({ label, value, onChange, required }: { label: string; v
     </div>
   );
 }
-function CheckboxField({ label, value, onToggle, warning }: {
-  label: string; value: boolean; onToggle: () => void; warning?: boolean;
+function CheckboxField({ label, value, onToggle, warning, required }: {
+  label: string; value: boolean; onToggle: () => void; warning?: boolean; required?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
       className="flex items-start gap-3 w-full text-left mb-2 p-2 rounded-lg transition-all"
+      data-required-checkbox={required ? 'true' : undefined}
+      data-checkbox-label={required ? label : undefined}
+      data-checkbox-value={value ? 'true' : 'false'}
       style={{ background: value ? 'rgba(10,74,122,0.05)' : 'transparent' }}
     >
       <div
@@ -205,6 +208,8 @@ function LegalBox({ children, color = 'cyan' }: { children: React.ReactNode; col
 
 // ─── Bloc mentions RGPD (affiché dans tous les documents) ───────────────────
 function RgpdMentions() {
+  const { state } = useApp();
+  const email = state.salonInfo?.email || 'contact@votresalon.fr';
   return (
     <div className="mt-4 mb-2 rounded-xl text-xs" style={{
       background: '#e8f5e9',
@@ -224,7 +229,7 @@ function RgpdMentions() {
         Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants :{' '}
         <span style={{ fontWeight: 600, color: '#1b5e20' }}>Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition</span>{' '}
         — Conservation : données de santé 3 ans — Pour exercer vos droits :{' '}
-        <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{salonInfo?.email || "contact@votresalon.fr"}</span>
+        <span style={{ fontWeight: 600, color: '#1a1a2e' }}>{email}</span>
       </div>
       <div>
         <span style={{ fontWeight: 600, color: '#1b5e20' }}>Support :</span>{' '}
@@ -456,10 +461,10 @@ function FormQuestionnaireMineur({ data, update, client }: { data: Record<string
       <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
       <FormSection title={t('q01.section_minor_opinion')} />
-      <CheckboxField label={t('q01.minor_confirms')} value={data.avisMineur || false} onToggle={() => update('avisMineur', !data.avisMineur)} />
+      <CheckboxField label={t('q01.minor_confirms')} value={data.avisMineur || false} onToggle={() => update('avisMineur', !data.avisMineur)} required />
 
       <FormSection title={t('q01.section_declaration')} />
-      <CheckboxField label={t('q01.answered_honestly')} value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
+      <CheckboxField label={t('q01.answered_honestly')} value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} required />
 
       <RgpdMentions />
       <FormSection title={t('q01.section_signatures')} />
@@ -665,7 +670,7 @@ function FormAutorisationParentale({ data, update, client, salonInfo }: { data: 
       <CheckboxField label={t('q02.decl_care_protocol')} value={data.decl_4 || false} onToggle={() => update('decl_4', !data.decl_4)} />
 
       <FormSection title={t('q02.section_presence')} />
-      <CheckboxField label={t('q02.presence_physical')} value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} />
+      <CheckboxField label={t('q02.presence_physical')} value={data.presencePhysique || false} onToggle={() => update('presencePhysique', !data.presencePhysique)} required />
       <CheckboxField label={t('q02.presence_written')} value={data.presenceEcrite || false} onToggle={() => update('presenceEcrite', !data.presenceEcrite)} />
 
       <FormSection title={t('q02.section_rep_id')} />
@@ -1641,10 +1646,10 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
         <FormField label="Numéro de la pièce d'identité" value={data.pieceIdRepresentantNumero || ''} onChange={v => update('pieceIdRepresentantNumero', v)} />
       )}
       <FormSection title="Consentement du représentant légal" />
-      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Le représentant légal donne son consentement pour le tatouage du mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
-      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
-      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} />
+      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} required />
+      <CheckboxField label="Le représentant légal donne son consentement pour le tatouage du mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} required />
+      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} required />
+      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} required />
       <RgpdMentions />
       <FormSection title={t('q05.section_signatures')} />
       <div className="grid grid-cols-1 gap-6">
@@ -1729,10 +1734,10 @@ function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Re
         <FormField label="Numéro de la pièce d'identité" value={data.pieceIdRepresentantNumero || ''} onChange={v => update('pieceIdRepresentantNumero', v)} />
       )}
       <FormSection title="Consentement du représentant légal" />
-      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Le représentant légal autorise la prestation de dermographie sur le mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
-      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
-      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} />
+      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} required />
+      <CheckboxField label="Le représentant légal autorise la prestation de dermographie sur le mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} required />
+      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} required />
+      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} required />
 
       <RgpdMentions />
       <FormSection title="Signatures" />
@@ -1918,10 +1923,10 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
       <FormField label={t('forms.additional_medical_info')} value={data.autresInfosMedicales || ''} onChange={v => update('autresInfosMedicales', v)} multiline />
 
       <FormSection title="Consentement" />
-      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} />
-      <CheckboxField label="Le représentant légal donne son consentement éclairé pour la réalisation du tatouage sur le mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
-      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} />
-      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} />
+      <CheckboxField label="Le représentant légal a répondu honnêtement au questionnaire médical" value={data.reponduHonnetement || false} onToggle={() => update('reponduHonnetement', !data.reponduHonnetement)} required />
+      <CheckboxField label="Le représentant légal donne son consentement éclairé pour la réalisation du tatouage sur le mineur" value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} required />
+      <CheckboxField label="Le représentant légal assume la responsabilité du suivi des soins post-tatouage" value={data.assumeResponsabilite || false} onToggle={() => update('assumeResponsabilite', !data.assumeResponsabilite)} required />
+      <CheckboxField label="Confirme la présence physique du représentant légal lors de la séance" value={data.presenceRepresentant || false} onToggle={() => update('presenceRepresentant', !data.presenceRepresentant)} required />
 
       <RgpdMentions />
       <FormSection title={t('q05.section_signatures')} />
@@ -2292,7 +2297,7 @@ function FormQuestionnaireDermographe({ data, update, client }: { data: Record<s
       <CheckboxField label={t('q09.consent_fading')} value={data.informeEclaircissement || false} onToggle={() => update('informeEclaircissement', !data.informeEclaircissement)} />
       <CheckboxField label={t('q09.consent_contraindications')} value={data.certifieContraIndications || false} onToggle={() => update('certifieContraIndications', !data.certifieContraIndications)} />
       <CheckboxField label={t('q09.consent_aftercare')} value={data.engageSoinsPost || false} onToggle={() => update('engageSoinsPost', !data.engageSoinsPost)} />
-      <CheckboxField label={t('q09.consent_free')} value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} />
+      <CheckboxField label={t('q09.consent_free')} value={data.consentementLibre || false} onToggle={() => update('consentementLibre', !data.consentementLibre)} required />
       <CheckboxField label={t('q09.consent_accurate')} value={data.certifieInfosExactes || false} onToggle={() => update('certifieInfosExactes', !data.certifieInfosExactes)} />
 
       <RgpdMentions />
@@ -2976,6 +2981,61 @@ export default function DocumentForm() {
     });
     if (emptyFields.length > 0) {
       toast.error('Champs obligatoires manquants : ' + emptyFields.slice(0, 3).join(', ') + (emptyFields.length > 3 ? '...' : ''));
+      return;
+    }
+    // Validation cases a cocher obligatoires selon le type de fiche
+    const requiredCheckboxMap: Record<string, Array<{key: string, label: string}>> = {
+      'questionnaire_mineur': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'avisMineur', label: 'Avis du mineur' },
+      ],
+      'autorisation_parentale': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'presencePhysique', label: 'Présence physique confirmée' },
+      ],
+      'questionnaire_tatouage_mineur': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consentement du représentant légal' },
+        { key: 'assumeResponsabilite', label: 'Assume la responsabilité' },
+        { key: 'presenceRepresentant', label: 'Présence physique confirmée' },
+      ],
+      'autorisation_parentale_tatouage': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consentement' },
+        { key: 'presenceRepresentant', label: 'Présence physique confirmée' },
+      ],
+      'questionnaire_dermographe_mineur': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consentement du représentant légal' },
+        { key: 'assumeResponsabilite', label: 'Assume la responsabilité' },
+        { key: 'presenceRepresentant', label: 'Présence physique confirmée' },
+      ],
+      'autorisation_parentale_dermographie': [
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consentement' },
+        { key: 'presenceRepresentant', label: 'Présence physique confirmée' },
+      ],
+      'questionnaire_majeur': [
+        { key: 'estMajeur', label: 'Être majeur(e)' },
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentLibre', label: 'Consent librement' },
+        { key: 'protocole', label: "S'engage à respecter le protocole" },
+      ],
+      'questionnaire_tatouage_majeur': [
+        { key: 'estMajeur', label: 'Être majeur(e)' },
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consent librement' },
+      ],
+      'questionnaire_dermographe': [
+        { key: 'estMajeur', label: 'Être majeur(e)' },
+        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
+        { key: 'consentementLibre', label: 'Consent librement' },
+      ],
+    };
+    const requiredBoxes = requiredCheckboxMap[docType] || [];
+    const uncheckedBoxes = requiredBoxes.filter(f => !formData[f.key]);
+    if (uncheckedBoxes.length > 0) {
+      toast.error('Cases obligatoires non cochées : ' + uncheckedBoxes.slice(0, 2).map(f => f.label).join(', ') + (uncheckedBoxes.length > 2 ? '...' : ''));
       return;
     }
     // Validation cases consentement obligatoires
