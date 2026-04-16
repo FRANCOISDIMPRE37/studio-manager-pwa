@@ -387,7 +387,8 @@
     "soins_piercing": "Soins Post-Piercing (A, B, C, D, E, F, G)",
     "tatouage": "Tatouage (05-09)",
     "dermographie": "Dermographie (10-14)",
-    "rgpd": "RGPD & Confidentialité (15-16)"
+    "rgpd": "RGPD & Confidentialité (15-16)",
+    "archives": "Archives & Numérisation (17)"
   },
   "soins": {
     "fiche_title": "FICHE DE SOINS",

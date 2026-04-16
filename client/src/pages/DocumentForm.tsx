@@ -2953,6 +2953,13 @@ export default function DocumentForm() {
       toast.error('La signature du client est obligatoire pour valider ce document.');
       return;
     }
+    // Validation champs obligatoires
+    const nom = formData.nom || client?.nom || '';
+    const prenom = formData.prenom || client?.prenom || '';
+    if (!nom.trim() || !prenom.trim()) {
+      toast.error('Le nom et le prénom du client sont obligatoires pour sauvegarder.');
+      return;
+    }
     setIsSaving(true);
     try {
       const existingDocIdx = (client.documents || []).findIndex(d => d.type === docType);
@@ -3206,6 +3213,8 @@ export default function DocumentForm() {
         return <FormEngagementConfidentialite data={formData} update={updateField} client={effectiveClient} />;
       case 'affichage_salon':
         return <FormAffichageSalon data={formData} update={updateField} client={effectiveClient} />;
+      case 'archivage_dossier_papier':
+        return <FormArchivageDossier data={formData} update={updateField} client={effectiveClient} />;
       default:
         if (docType.startsWith('soins_') || docType.startsWith('cicatrisation_')) {
           return <FormSoins docType={docType} data={formData} update={updateField} client={effectiveClient} />;
@@ -3532,6 +3541,82 @@ export default function DocumentForm() {
 }
 
 // ─── Exports pour PrintAll ────────────────────────────────────────────────────
+// ─── Fiche 17 — Archivage Dossier Papier ───────────────────────────────────
+function FormArchivageDossier({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files) return;
+    const photos = [...(data.photos || [])];
+    Array.from(files).forEach(file => {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        photos.push({ id: Date.now() + Math.random(), url: ev.target?.result, nom: file.name, date: new Date().toLocaleDateString('fr-FR') });
+        update('photos', [...photos]);
+      };
+      reader.readAsDataURL(file);
+    });
+  };
+
+  const inputStyle = { width: '100%', padding: '8px 10px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 13, fontFamily: 'Outfit', boxSizing: 'border-box' as const };
+  const labelStyle = { fontSize: 11, fontWeight: 600 as const, color: '#374151', textTransform: 'uppercase' as const, display: 'block', marginBottom: 4 };
+  const sectionStyle = { marginBottom: 20, padding: '14px 16px', border: '1px solid #e5e7eb', borderRadius: 8, background: '#fafafa' };
+  const sectionTitleStyle = { fontSize: 13, fontWeight: 700 as const, color: '#374151', marginBottom: 12, paddingBottom: 6, borderBottom: '1px solid #e5e7eb' };
+
+  return (
+    <div style={{ fontFamily: 'Outfit', color: '#1a1a2e' }}>
+      <div style={{ background: '#607D8B', color: 'white', padding: '12px 16px', borderRadius: '8px 8px 0 0', marginBottom: 16 }}>
+        <h2 style={{ margin: 0, fontSize: 16, fontWeight: 700 }}>FICHE 17 — ARCHIVAGE DOSSIER PAPIER</h2>
+        <p style={{ margin: '4px 0 0', fontSize: 12, opacity: 0.85 }}>Numérisation et archivage des anciens dossiers clients</p>
+      </div>
+
+      <div style={{ padding: '0 8px' }}>
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>INFORMATIONS CLIENT</div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div><label style={labelStyle}>Nom</label><input style={inputStyle} value={data.nom || client?.nom || ''} onChange={e => update('nom', e.target.value)} /></div>
+            <div><label style={labelStyle}>Prénom</label><input style={inputStyle} value={data.prenom || client?.prenom || ''} onChange={e => update('prenom', e.target.value)} /></div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div><label style={labelStyle}>Date de numérisation</label><input style={inputStyle} value={data.dateNumerisation || new Date().toLocaleDateString('fr-FR')} onChange={e => update('dateNumerisation', e.target.value)} /></div>
+            <div><label style={labelStyle}>Type de document archivé</label><input style={inputStyle} value={data.typeDocument || ''} onChange={e => update('typeDocument', e.target.value)} placeholder="Ex: Questionnaire médical..." /></div>
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 12 }}>
+            <div><label style={labelStyle}>Praticien</label><input style={inputStyle} value={data.praticien || ''} onChange={e => update('praticien', e.target.value)} /></div>
+            <div><label style={labelStyle}>Période couverte</label><input style={inputStyle} value={data.periode || ''} onChange={e => update('periode', e.target.value)} placeholder="Ex: 2018-2023" /></div>
+          </div>
+          <div><label style={labelStyle}>Notes</label><textarea value={data.notes || ''} onChange={e => update('notes', e.target.value)} rows={3} style={{ ...inputStyle, resize: 'vertical' }} placeholder="Informations complémentaires..." /></div>
+        </div>
+
+        <div style={sectionStyle}>
+          <div style={sectionTitleStyle}>PHOTOS DES DOCUMENTS</div>
+          <div style={{ marginBottom: 12 }}>
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '8px 16px', background: '#607D8B', color: 'white', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
+              📷 Prendre / Ajouter des photos
+              <input type="file" accept="image/*" multiple onChange={handlePhoto} style={{ display: 'none' }} />
+            </label>
+            <span style={{ marginLeft: 12, fontSize: 12, color: '#6b7280' }}>{(data.photos || []).length} photo(s)</span>
+          </div>
+          {(data.photos || []).length > 0 && (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
+              {(data.photos || []).map((p: any, i: number) => (
+                <div key={p.id || i} style={{ position: 'relative', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
+                  <img src={p.url} alt={p.nom} style={{ width: '100%', height: 120, objectFit: 'cover' }} />
+                  <div style={{ padding: '4px 8px', fontSize: 11, color: '#6b7280', background: '#f9fafb' }}>{p.date}</div>
+                  <button onClick={() => update('photos', (data.photos || []).filter((_: any, j: number) => j !== i))} style={{ position: 'absolute', top: 4, right: 4, background: 'rgba(239,68,68,0.9)', color: 'white', border: 'none', borderRadius: '50%', width: 20, height: 20, cursor: 'pointer', fontSize: 14, lineHeight: '20px', textAlign: 'center' }}>×</button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <LegalBox color="cyan">
+          Ce dossier numérisé sera archivé conformément au RGPD. Les données sont conservées selon la durée légale applicable.
+        </LegalBox>
+      </div>
+    </div>
+  );
+}
+
 export {
   PrintHeader,
   PrintFooter,

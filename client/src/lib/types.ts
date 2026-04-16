@@ -37,6 +37,7 @@ export type DocumentType =
   | 'soins_dermographe'
   | 'engagement_confidentialite'
   | 'affichage_salon'
+  | 'archivage_dossier_papier'
   | 'fiche_seance_tatouage'
   | 'fiche_seance_dermographe'
 ;
@@ -113,6 +114,7 @@ export interface SalonInfo {
   logo?: string; // base64 data URL
   mentionsLegales?: string; // ligne libre affichée dans le pied de page imprimable
   siteWeb?: string; // URL du site web du salon
+  specialites?: { piercing: boolean; tatouage: boolean; dermographie: boolean; };
 }
 
 // Statistiques du tableau de bord
@@ -198,6 +200,7 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   // RGPD
   engagement_confidentialite: '15 — Engagement de Confidentialité (RGPD Art. 29)',
   affichage_salon: '16 — Information Client — Protection des Données (RGPD)',
+  archivage_dossier_papier: '17 — Archivage Dossier Papier',
 };
 
 export function calculateRGPDStatus(dateSuppressionPrevue: string): RGPDStatus {

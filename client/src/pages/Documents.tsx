@@ -49,6 +49,12 @@ const DOC_CATEGORY_KEYS = [
     icon: Shield,
     color: '#E53935',
     docs: ['affichage_salon'] as DocumentType[],
+  },
+  {
+    titleKey: 'doc_categories.archives',
+    icon: FileText,
+    color: '#607D8B',
+    docs: ['archivage_dossier_papier'] as DocumentType[],
     forMineur: null,
   },
 ];
@@ -60,10 +66,17 @@ export default function Documents() {
   const [selectedDoc, setSelectedDoc] = useState<DocumentType | null>(null);
 
   // Catégories avec titres traduits dynamiquement
+  const specialites = state.salonInfo?.specialites ?? { piercing: true, tatouage: true, dermographie: true };
   const DOC_CATEGORIES = DOC_CATEGORY_KEYS.map(cat => ({
     ...cat,
     title: t(cat.titleKey),
-  }));
+  })).filter(cat => {
+    const key = cat.titleKey;
+    if (key.includes('piercing') || key.includes('soins_piercing')) return specialites.piercing;
+    if (key.includes('tatouage')) return specialites.tatouage;
+    if (key.includes('dermographie')) return specialites.dermographie;
+    return true;
+  });
   const [clientSearch, setClientSearch] = useState('');
 
   const activeClients = state.clients.filter(c => !c.estArchive);
