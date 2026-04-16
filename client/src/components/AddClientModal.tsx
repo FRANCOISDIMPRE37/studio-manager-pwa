@@ -239,7 +239,7 @@ export default function AddClientModal({ onClose, client }: Props) {
   const dateInputStyle = errDate ? inputErrorStyle : inputBase;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4" style={{ overflowY: 'auto', maxHeight: '100vh' }}>
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4" style={{ overflowY: 'auto', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className="relative w-full md:max-w-lg my-0 md:my-8 rounded-b-2xl md:rounded-xl"
@@ -266,7 +266,7 @@ export default function AddClientModal({ onClose, client }: Props) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-5" noValidate style={{ overflowY: "auto", flex: 1 }}>
+        <form onSubmit={handleSubmit} className="p-4 space-y-5" noValidate style={{ overflowY: "auto", flex: 1, maxHeight: "calc(85vh - 60px)" }}>
 
           {/* IDENTITÉ */}
           <div>

@@ -169,13 +169,13 @@ function CheckboxField({ label, value, onToggle, warning, required }: {
       data-required-checkbox={required ? 'true' : undefined}
       data-checkbox-label={required ? label : undefined}
       data-checkbox-value={value ? 'true' : 'false'}
-      style={{ background: value ? 'rgba(10,74,122,0.05)' : 'transparent' }}
+      style={{ background: value ? 'rgba(10,74,122,0.05)' : (required && !value ? 'rgba(183,28,28,0.05)' : 'transparent'), border: required && !value ? '1px solid rgba(183,28,28,0.2)' : '1px solid transparent', borderRadius: 6 }}
     >
       <div
         className="w-5 h-5 rounded flex-shrink-0 flex items-center justify-center mt-0.5"
         style={{
-          background: value ? (warning ? 'rgba(255,152,0,0.2)' : 'rgba(10,74,122,0.2)') : '#ffffff',
-          border: `2px solid ${value ? (warning ? '#FF9800' : '#0a4a7a') : '#555555'}`,
+          background: value ? (warning ? 'rgba(255,152,0,0.2)' : 'rgba(10,74,122,0.2)') : (required ? '#ffebee' : '#ffffff'),
+          border: `2px solid ${value ? (warning ? '#FF9800' : '#0a4a7a') : (required ? '#c62828' : '#555555')}`,
         }}
       >
         {value && (
@@ -184,8 +184,8 @@ function CheckboxField({ label, value, onToggle, warning, required }: {
           </svg>
         )}
       </div>
-      <span className="text-sm" style={{ color: warning && value ? '#FF9800' : '#111111', fontFamily: 'Outfit', fontWeight: 600 }}>
-        {label}
+      <span className="text-sm" style={{ color: warning && value ? '#FF9800' : (required && !value ? '#b71c1c' : '#111111'), fontFamily: 'Outfit', fontWeight: 600 }}>
+        {label}{required && !value && <span style={{ color: '#b71c1c', marginLeft: 4 }}>*</span>}
       </span>
     </button>
   );
