@@ -357,7 +357,7 @@
     "tr": "Türkçe"
   },
   "doc_labels": {
-    "questionnaire_mineur": "01 — Dossier Complet Mineur Piercing / Autorisation Parentale / Piercing",
+    "questionnaire_mineur": "01 — Questionnaire Médical Mineur / Autorisation Parentale / Piercing",
     "autorisation_parentale": "02 — Autorisation Parentale",
     "questionnaire_majeur": "03 — Questionnaire Médical Majeur (Piercing)",
     "fiche_seance_piercing": "04 — Fiche de Traçabilité Matériel Stérile",
