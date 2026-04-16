@@ -172,7 +172,7 @@ export const RDV_STATUT_COLORS: Record<RDVStatut, string> = {
 
 export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   // Piercing — Mineurs
-  questionnaire_mineur: '01 — Questionnaire Médical Mineur (Piercing)',
+  questionnaire_mineur: '01 — Dossier Complet Mineur Piercing',
   autorisation_parentale: '02 — Autorisation Parentale',
   // Piercing — Majeurs
   questionnaire_majeur: '03 — Questionnaire Médical Majeur (Piercing)',
@@ -186,13 +186,13 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   soins_arcade_sourcil: 'F — Soins Post-Piercing Arcade / Sourcil',
   soins_surface_dermal: 'G — Soins Post-Piercing Surface / Dermal',
   // Tatouage
-  questionnaire_tatouage_mineur: '05 — Questionnaire Médical Tatouage Mineur',
+  questionnaire_tatouage_mineur: '05 — Dossier Complet Mineur Tatouage',
   autorisation_parentale_tatouage: '06 — Autorisation Parentale',
   questionnaire_tatouage_majeur: '07 — Questionnaire Médical Tatouage Majeur',
   fiche_seance_tatouage: '08 — Fiche de Traçabilité Matériel Stérile (Tatouage)',
   consentement_soins_tatouage: '09 — Soins Post-Tatouage',
   // Dermographie
-  questionnaire_dermographe_mineur: '10 — Questionnaire Médical Dermographie Mineur',
+  questionnaire_dermographe_mineur: '10 — Dossier Complet Mineur Dermographie',
   autorisation_parentale_dermographie: '11 — Autorisation Parentale',
   questionnaire_dermographe: '12 — Questionnaire Médical Dermographie Majeur',
   fiche_seance_dermographe: '13 — Fiche de Traçabilité Matériel Stérile (Dermographie)',
