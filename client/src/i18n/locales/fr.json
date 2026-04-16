@@ -752,6 +752,7 @@
     "age": "Âge",
     "legal_rep_name": "Nom du représentant légal",
     "tattoo_artist_name": "Nom du tatoueur",
+    "tattoo_artist_signature": "Signature du tatoueur",
     "expiry_date": "Date de péremption"
   },
   "legal": {
