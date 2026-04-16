@@ -879,6 +879,8 @@ const SOINS_DATA: Record<string, { title: string; zones: { zone: string; desc: s
 };
 
 function FormSoins({ docType, data, update, client }: { docType: string; data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: appState } = useApp();
+  const salonInfo = appState.salonInfo;
   const { t } = useTranslation();
   const soinsKeyMap: Record<string, string> = {
     soins_oreilles: 'oreilles',
@@ -1093,6 +1095,8 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
 // ─── Fiche de Traçabilité Matériel Stérile ─────────────────────────────────────────────────
 
 function FormFicheSeance({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const photoInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
   const [lightboxPhoto, setLightboxPhoto] = useState<string | null>(null);
@@ -1301,6 +1305,8 @@ const CICATRISATION_JOURS = [
 ];
 
 function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   return (
     <>
       {/* Cadre légal */}
@@ -1605,6 +1611,8 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
 // ─── Formulaire Questionnaire Médical Tatouage Mineur ────────────────────────
 
 function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   const yesNo = [t('forms.no'), t('forms.yes')];
   return (
@@ -1684,6 +1692,8 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
 // ─── Formulaire Questionnaire Médical Dermographe Mineur ─────────────────────
 
 function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   const yesNo = [t('forms.no'), t('forms.yes')];
   return (
@@ -1773,6 +1783,8 @@ function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Re
 // ─── Formulaire Autorisation Parentale Dermographie ──────────────────────────
 
 function FormAutorisationParentaleDermographie({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   return (
     <>
@@ -1840,6 +1852,8 @@ function FormAutorisationParentaleDermographie({ data, update, client }: { data:
 // ─── Formulaire Questionnaire Médical Tatouage Majeur ────────────────────────
 
 function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   const yesNo = [t('forms.no'), t('forms.yes')];
   const yesNoMaybe = [t('forms.no'), t('forms.yes'), t('forms.dont_know')];
@@ -1953,6 +1967,8 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
 // ─── Formulaire Autorisation Parentale Soins Post-Tatouage ───────────────────
 
 function FormAutorisationParentaleTatouage({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   return (
     <>
@@ -2028,6 +2044,8 @@ function FormAutorisationParentaleTatouage({ data, update, client }: { data: Rec
 // ─── Formulaire Fiche de Séance Dermographe ───────────────────────────────────────────
 
 function FormFicheSeanceDermographe({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   const yesNo = [t('forms.yes'), t('forms.no')];
   return (
@@ -2194,6 +2212,8 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
 // ─── Formulaire Questionnaire Médical Dermographe ───────────────────────────────────────────
 
 function FormQuestionnaireDermographe({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   const { t } = useTranslation();
   const yesNo = [t('forms.no'), t('forms.yes')];
   return (
@@ -2365,6 +2385,8 @@ const CICATRISATION_DERMOGRAPHE = [
 ];
 
 function FormSoinsDermographe({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   return (
     <>
       {/* Cadre légal */}
