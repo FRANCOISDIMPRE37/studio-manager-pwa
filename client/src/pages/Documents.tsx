@@ -13,7 +13,7 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.piercing_mineurs',
     icon: Baby,
     color: '#9C27B0',
-    docs: ['questionnaire_mineur', 'autorisation_parentale'] as DocumentType[],
+    docs: ['questionnaire_mineur'] as DocumentType[],
     forMineur: true,
   },
   {

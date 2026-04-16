@@ -201,6 +201,8 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   engagement_confidentialite: '15 — Engagement de Confidentialité (RGPD Art. 29)',
   affichage_salon: '16 — Information Client — Protection des Données (RGPD)',
   archivage_dossier_papier: '17 — Archivage Dossier Papier',
+  dossier_mineur_piercing: '18 — Dossier Complet Mineur Piercing',
+  dossier_mineur_piercing: '18 — Dossier Complet Mineur Piercing',
 };
 
 export function calculateRGPDStatus(dateSuppressionPrevue: string): RGPDStatus {
