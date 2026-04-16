@@ -239,11 +239,11 @@ export default function AddClientModal({ onClose, client }: Props) {
   const dateInputStyle = errDate ? inputErrorStyle : inputBase;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center p-4" style={{ overflowY: 'auto', paddingTop: 'env(safe-area-inset-top, 0px)' }}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-2" style={{ overflowY: 'auto' }}>
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
-        className="relative w-full md:max-w-lg my-0 md:my-8 rounded-b-2xl md:rounded-xl"
-        style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)', minHeight: 'auto', display: 'flex', flexDirection: 'column', maxHeight: '95vh' }}
+        className="relative w-full md:max-w-lg rounded-xl"
+        style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)', display: 'flex', flexDirection: 'column', maxHeight: '90vh', overflow: 'hidden' }}
       >
         {/* Header */}
         <div
@@ -266,7 +266,7 @@ export default function AddClientModal({ onClose, client }: Props) {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-5" noValidate style={{ overflowY: "auto", flex: 1, maxHeight: "calc(85vh - 60px)" }}>
+        <form onSubmit={handleSubmit} className="p-4 space-y-4" noValidate style={{ overflowY: "auto", flex: 1 }}>
 
           {/* IDENTITÉ */}
           <div>
