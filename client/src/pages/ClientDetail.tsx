@@ -12,7 +12,6 @@ import AddClientModal from '../components/AddClientModal';
 const DOC_ORDER: DocumentType[] = [
   // Mineurs (01, 02)
   'questionnaire_mineur',
-  'autorisation_parentale',
   // Majeurs piercing (03, 04, puis soins)
   'questionnaire_majeur',
   'fiche_seance_piercing',
@@ -26,6 +25,9 @@ const DOC_ORDER: DocumentType[] = [
   // Tatouage
   'questionnaire_tatouage_majeur',
   'consentement_soins_tatouage',
+  'soins_detatouage_laser',
+  'questionnaire_patch_test',
+  'fiche_retouche_dermographie',
   'fiche_seance_tatouage',
   // Dermographie
   'questionnaire_dermographe',

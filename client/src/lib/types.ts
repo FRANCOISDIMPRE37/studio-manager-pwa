@@ -35,6 +35,9 @@ export type DocumentType =
   | 'questionnaire_dermographe'
   | 'consentement_soins_tatouage'
   | 'soins_dermographe'
+  | 'soins_detatouage_laser'
+  | 'questionnaire_patch_test'
+  | 'fiche_retouche_dermographie'
   | 'engagement_confidentialite'
   | 'affichage_salon'
   | 'archivage_dossier_papier'
@@ -173,10 +176,9 @@ export const RDV_STATUT_COLORS: Record<RDVStatut, string> = {
 export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   // Piercing — Mineurs
   questionnaire_mineur: '01 — Questionnaire Médical Mineur / Autorisation Parentale / Piercing',
-  autorisation_parentale: '02 — Autorisation Parentale',
   // Piercing — Majeurs
-  questionnaire_majeur: '03 — Questionnaire Médical Majeur (Piercing)',
-  fiche_seance_piercing: '04 — Fiche de Traçabilité Matériel Stérile',
+  questionnaire_majeur: '02 — Questionnaire Médical Majeur (Piercing)',
+  fiche_seance_piercing: '03 — Fiche de Traçabilité Matériel Stérile',
   // Soins Piercing
   soins_oreilles: 'A — Soins Post-Piercing Oreilles',
   soins_nez: 'B — Soins Post-Piercing Nez',
@@ -186,17 +188,18 @@ export const DOCUMENT_LABELS: Record<DocumentType, string> = {
   soins_arcade_sourcil: 'F — Soins Post-Piercing Arcade / Sourcil',
   soins_surface_dermal: 'G — Soins Post-Piercing Surface / Dermal',
   // Tatouage
-  questionnaire_tatouage_mineur: '05 — Questionnaire Médical Mineur / Autorisation Parentale / Tatouage',
-  autorisation_parentale_tatouage: '06 — Autorisation Parentale',
-  questionnaire_tatouage_majeur: '07 — Questionnaire Médical Tatouage Majeur',
-  fiche_seance_tatouage: '08 — Fiche de Traçabilité Matériel Stérile (Tatouage)',
-  consentement_soins_tatouage: '09 — Soins Post-Tatouage',
+  questionnaire_tatouage_mineur: '04 — Questionnaire Médical Mineur / Autorisation Parentale / Tatouage',
+  questionnaire_tatouage_majeur: '05 — Questionnaire Médical Tatouage Majeur',
+  fiche_seance_tatouage: '06 — Fiche de Traçabilité Matériel Stérile (Tatouage)',
+  consentement_soins_tatouage: '07 — Soins Post-Tatouage',
   // Dermographie
+  soins_detatouage_laser: '08 — Soins Post-Détatouage Laser',
+  questionnaire_patch_test: '09 — Questionnaire Patch Test / Allergie (Dermographie)',
+  fiche_retouche_dermographie: '14 — Fiche Retouche / Correction Dermographie',
   questionnaire_dermographe_mineur: '10 — Questionnaire Médical Mineur / Autorisation Parentale / Dermographie',
-  autorisation_parentale_dermographie: '11 — Autorisation Parentale',
-  questionnaire_dermographe: '12 — Questionnaire Médical Dermographie Majeur',
-  fiche_seance_dermographe: '13 — Fiche de Traçabilité Matériel Stérile (Dermographie)',
-  soins_dermographe: '14 — Soins Post-Dermographie',
+  questionnaire_dermographe: '11 — Questionnaire Médical Dermographie Majeur',
+  fiche_seance_dermographe: '12 — Fiche de Traçabilité Matériel Stérile (Dermographie)',
+  soins_dermographe: '13 — Soins Post-Dermographie',
   // RGPD
   engagement_confidentialite: '15 — Engagement de Confidentialité (RGPD Art. 29)',
   affichage_salon: '16 — Information Client — Protection des Données (RGPD)',

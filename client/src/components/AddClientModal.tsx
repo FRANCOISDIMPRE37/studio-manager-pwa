@@ -9,7 +9,7 @@ import { X, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { DocumentType } from '@/lib/types';
 import { toast } from 'sonner';
 
-const DOCS_MINEURS: DocumentType[] = ['questionnaire_mineur', 'autorisation_parentale'];
+const DOCS_MINEURS: DocumentType[] = ['questionnaire_mineur'];
 
 // Correspondance prestation souhaitée → documents associés
 const PRESTATION_DOCS_MAJEUR: Record<string, DocumentType[]> = {
@@ -32,8 +32,8 @@ const PRESTATION_DOCS_MINEUR: Record<string, DocumentType[]> = {
   'Arcade / Sourcil':  ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_arcade_sourcil'],
   'Surface / Dermal':  ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_surface_dermal'],
   'Labret':   ['questionnaire_mineur', 'fiche_seance_piercing', 'soins_bouche_levres'],
-  'Tatouage':          ['autorisation_parentale', 'questionnaire_tatouage_mineur', 'fiche_seance_tatouage'],
-  'Dermographie':      ['autorisation_parentale_dermographie', 'questionnaire_dermographe', 'soins_dermographe', 'fiche_seance_dermographe'],
+  'Tatouage':   ['questionnaire_tatouage_mineur', 'fiche_seance_tatouage'],
+  'Dermographie': ['questionnaire_dermographe_mineur', 'fiche_seance_dermographe', 'soins_dermographe'],
 };
 
 function buildDocumentsAssocies(prestations: string[], isMineur: boolean): DocumentType[] {
@@ -44,17 +44,7 @@ function buildDocumentsAssocies(prestations: string[], isMineur: boolean): Docum
     const docs = map[p] || [];
     docs.forEach(d => set.add(d));
   }
-  // Ajouter l'autorisation parentale après le questionnaire mineur (ordre 01 puis 02)
-  if (isMineur) set.add('autorisation_parentale');
-
-  // Garantir que questionnaire_mineur est toujours en premier
   const result = Array.from(set);
-  const qmIdx = result.indexOf('questionnaire_mineur');
-  const apIdx = result.indexOf('autorisation_parentale');
-  if (qmIdx !== -1 && apIdx !== -1 && apIdx < qmIdx) {
-    result.splice(apIdx, 1);
-    result.splice(result.indexOf('questionnaire_mineur') + 1, 0, 'autorisation_parentale');
-  }
   return result;
 }
 
@@ -129,6 +119,10 @@ export default function AddClientModal({ onClose, client }: Props) {
   // Calcul de l'âge
   const age = calcAge(dateJour, dateMois, dateAnnee);
   const isMineur = age >= 0 && age < 18;
+  const [nomRepresentant, setNomRepresentant] = useState('');
+  const [prenomRepresentant, setPrenomRepresentant] = useState('');
+  const [lienRepresentant, setLienRepresentant] = useState('');
+  const [telephoneRepresentant, setTelephoneRepresentant] = useState('');
   const isDateValid = age >= 0 && age <= 120;
 
   // Validation des champs requis
@@ -189,6 +183,10 @@ export default function AddClientModal({ onClose, client }: Props) {
       pieceIdentiteNumero: pieceIdentiteNumero.trim() || undefined,
       prestationsSouhaitees: prestationsSouhaitees.length > 0 ? prestationsSouhaitees : undefined,
       estMineur: isMineur,
+      nomRepresentantLegal: isMineur ? nomRepresentant : undefined,
+      prenomRepresentantLegal: isMineur ? prenomRepresentant : undefined,
+      lienRepresentantLegal: isMineur ? lienRepresentant : undefined,
+      telephoneRepresentantLegal: isMineur ? telephoneRepresentant : undefined,
       prestations: [],
       documentsAssocies: docsAssocies,
       documents: [],
@@ -446,6 +444,32 @@ export default function AddClientModal({ onClose, client }: Props) {
 
 
 
+          {/* REPRÉSENTANT LÉGAL */}
+          {isMineur && (
+            <div>
+              <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: '#CE93D8', fontWeight: 600 }}>
+                👨‍👩‍👧 Représentant légal
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label style={labelStyle}>Nom du représentant légal</label>
+                  <input type="text" style={getStyle('')} value={nomRepresentant} onChange={e => setNomRepresentant(e.target.value)} placeholder="Nom" autoComplete="off" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Prénom du représentant légal</label>
+                  <input type="text" style={getStyle('')} value={prenomRepresentant} onChange={e => setPrenomRepresentant(e.target.value)} placeholder="Prénom" autoComplete="off" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Lien avec le mineur</label>
+                  <input type="text" style={getStyle('')} value={lienRepresentant} onChange={e => setLienRepresentant(e.target.value)} placeholder="Père, Mère, Tuteur..." autoComplete="off" />
+                </div>
+                <div>
+                  <label style={labelStyle}>Téléphone du représentant</label>
+                  <input type="tel" style={getStyle('')} value={telephoneRepresentant} onChange={e => setTelephoneRepresentant(e.target.value)} placeholder="06 XX XX XX XX" autoComplete="off" />
+                </div>
+              </div>
+            </div>
+          )}
           {/* PRESTATIONS SOUHAITÉES */}
           <div>
             <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>

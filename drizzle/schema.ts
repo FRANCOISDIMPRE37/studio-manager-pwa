@@ -172,6 +172,11 @@ export const studioUsers = mysqlTable("studio_users", {
   specialite: varchar("specialite", { length: 100 }), // piercing, tatouage, dermographie
   role: mysqlEnum("role", ["admin", "employe", "stagiaire"]).default("employe").notNull(),
   actif: boolean("actif").default(true).notNull(),
+  isTemporary: boolean("isTemporary").default(true).notNull(),
+  firstLogin: boolean("firstLogin").default(true).notNull(),
+  specialites: json("specialites").$type<{piercing: boolean, tatouage: boolean, dermographie: boolean}>().default({piercing: true, tatouage: true, dermographie: true}),
+  tempPin: varchar("tempPin", { length: 6 }),
+  ownerEmail: varchar("ownerEmail", { length: 320 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -213,6 +218,11 @@ export const studios = mysqlTable("studios", {
   planType: mysqlEnum("planType", ["trial", "solo", "studio", "multi"]).default("trial").notNull(),
   trialEndsAt: timestamp("trialEndsAt"),
   actif: boolean("actif").default(true).notNull(),
+  isTemporary: boolean("isTemporary").default(true).notNull(),
+  firstLogin: boolean("firstLogin").default(true).notNull(),
+  specialites: json("specialites").$type<{piercing: boolean, tatouage: boolean, dermographie: boolean}>().default({piercing: true, tatouage: true, dermographie: true}),
+  tempPin: varchar("tempPin", { length: 6 }),
+  ownerEmail: varchar("ownerEmail", { length: 320 }),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });
@@ -398,3 +408,5 @@ export const auditLogs = mysqlTable("audit_logs", {
   createdAt: timestamp("createdAt").defaultNow().notNull(),
 });
 export type AuditLog = typeof auditLogs.$inferSelect;
+
+// Patch: champs multi-studio ajoutés

@@ -2,7 +2,6 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Route, Switch } from "wouter";
 import Archives from '@/pages/Archives';
-import ArchivesNumerisees from '@/pages/ArchivesNumerisees';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppProvider, useApp } from "./lib/app-context";
@@ -14,7 +13,6 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientDetail from "./pages/ClientDetail";
 import SuperAdmin from "./pages/SuperAdmin";
-import SetupStudio from "./pages/SetupStudio";
 import Documents from "./pages/Documents";
 import Parametres from "./pages/Parametres";
 import Salaries from "./pages/Salaries";
@@ -55,16 +53,15 @@ function AppRoutes() {
   if (path === '/inscription') return <Inscription />;
   if (path === '/connexion') return <ConnexionEmail />;
   if (path === '/super-admin') return <SuperAdmin />;
-  if (path === '/setup-studio' || path.startsWith('/setup-studio')) return <Onboarding />;
 
-  if (!state.isAuthenticated) {
+  // Premier lancement : aucun PIN configuré → onboarding guidé
+  const hasPin = !!localStorage.getItem('sm_pin');
+  const hasSetup = !!localStorage.getItem('sm_setup_done');
+  if (!hasPin && !hasSetup) {
     return <Login />;
   }
-
-  // Première connexion : studio pas encore configuré → Onboarding
-  const salonNom = state.salonInfo?.nom?.trim();
-  if (!salonNom) {
-    return <Onboarding />;
+  if (!state.isAuthenticated) {
+    return <Login />;
   }
 
   // make sure to consider if you need authentication for certain routes
@@ -82,7 +79,6 @@ function AppRoutes() {
         <Route path="/salaries" component={Salaries} />
         <Route path="/engagements" component={Engagements} />
         <Route path="/archives" component={Archives} />
-        <Route path="/archives-numerisees" component={ArchivesNumerisees} />
         <Route path="/rgpd-salarie" component={RgpdSalarie} />
           <Route path="/info-client-rgpd" component={AffichageSalon} />
         <Route path="/confidentialite" component={PolitiqueConfidentialite} />

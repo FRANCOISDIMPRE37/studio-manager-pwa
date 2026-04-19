@@ -1,104 +1,476 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+
+interface Studio {
+  id: number;
+  nom: string;
+  slug: string;
+  email: string;
+  ownerEmail: string;
+  planType: string;
+  actif: boolean;
+  isTemporary: boolean;
+  firstLogin: boolean;
+  tempPin: string | null;
+  trialEndsAt: string | null;
+  createdAt: string;
+  specialites?: string;
+}
 
 export default function SuperAdmin() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [studios, setStudios] = useState([]);
-  const [error, setError] = useState('');
+  const [authed, setAuthed] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState("");
+  const [studios, setStudios] = useState<Studio[]>([]);
+  const [showCreate, setShowCreate] = useState(false);
+  const [newStudio, setNewStudio] = useState({ nomSalon: "", ownerEmail: "", planType: "trial", trialDays: 30, specialites: ["piercing", "tatouage", "dermographie"] });
+  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string } | null>(null);
+  const [actionMsg, setActionMsg] = useState("");
+  const [editingSpecialites, setEditingSpecialites] = useState<number | null>(null);
+  const [showNotif, setShowNotif] = useState(false);
+  const [notifForm, setNotifForm] = useState({ titre: "", message: "", type: "info" });
+  const [sendingNotif, setSendingNotif] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch("/api/super-admin/me", { credentials: "include" })
+      .then(r => r.ok ? setAuthed(true) : null)
+      .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    if (authed) loadStudios();
+  }, [authed]);
+
+  async function sendNotification(e: React.FormEvent) {
     e.preventDefault();
-    setError('');
-    
-    const res = await fetch('/api/super-admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
+    setSendingNotif(true);
+    const r = await fetch("/api/super-admin/notifications", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify(notifForm),
     });
-    
-    if (res.ok) {
-      setIsLoggedIn(true);
-      loadStudios();
+    setSendingNotif(false);
+    if (r.ok) {
+      setActionMsg("Notification envoyée à tous les studios ✅");
+      setTimeout(() => setActionMsg(""), 4000);
+      setShowNotif(false);
+      setNotifForm({ titre: "", message: "", type: "info" });
     } else {
-      setError('Identifiants incorrects');
+      alert("Erreur envoi notification");
     }
-  };
-
-  const loadStudios = async () => {
-    const res = await fetch('/api/super-admin/studios');
-    if (res.ok) {
-      const data = await res.json();
-      setStudios(data);
-    }
-  };
-
-  if (!isLoggedIn) {
-    return (
-      <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--brand-bg)' }}>
-        <div className="studio-card p-8 w-96">
-          <h1 className="text-2xl font-bold mb-6" style={{ color: 'var(--brand-cyan)' }}>🚀 Super Admin</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label className="block text-sm mb-2" style={{ color: 'var(--brand-text)' }}>Username</label>
-              <input type="text" value={username} onChange={e => setUsername(e.target.value)} className="w-full px-4 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
-            </div>
-            <div>
-              <label className="block text-sm mb-2" style={{ color: 'var(--brand-text)' }}>Password</label>
-              <input type="password" value={password} onChange={e => setPassword(e.target.value)} className="w-full px-4 py-2 rounded-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
-            </div>
-            {error && <p className="text-red-500 text-sm">{error}</p>}
-            <button type="submit" className="w-full py-3 rounded-lg font-semibold" style={{ background: 'var(--brand-cyan)', color: '#000' }}>Login</button>
-          </form>
-        </div>
-      </div>
-    );
   }
 
+  async function updateSpecialites(studio: Studio, spec: string, checked: boolean) {
+    const current = (studio.specialites || '').split(',').filter(Boolean);
+    const updated = checked ? [...new Set([...current, spec])] : current.filter(s => s !== spec);
+    await fetch(`/api/super-admin/studios/${studio.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ specialites: updated.join(',') }),
+    });
+    setActionMsg(`Spécialités de ${studio.nom} mises à jour`);
+    setTimeout(() => setActionMsg(""), 3000);
+    loadStudios();
+  }
+
+  async function loadStudios() {
+    const r = await fetch("/api/super-admin/studios", { credentials: "include" });
+    if (r.ok) setStudios(await r.json());
+  }
+
+  async function handleLogin(e: React.FormEvent) {
+    e.preventDefault();
+    setLoginError("");
+    const r = await fetch("/api/super-admin/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ username, password }),
+    });
+    if (r.ok) { setAuthed(true); }
+    else { setLoginError("Identifiants incorrects"); }
+  }
+
+  async function handleLogout() {
+    await fetch("/api/super-admin/logout", { method: "POST", credentials: "include" });
+    setAuthed(false);
+    setStudios([]);
+  }
+
+  async function handleCreate(e: React.FormEvent) {
+    e.preventDefault();
+    const r = await fetch("/api/super-admin/studios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ ...newStudio, specialites: newStudio.specialites.join(',') }),
+    });
+    const data = await r.json();
+    if (r.ok) {
+      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail });
+      setShowCreate(false);
+      setNewStudio({ nomSalon: "", ownerEmail: "", planType: "trial", trialDays: 30 });
+      loadStudios();
+    } else {
+      alert("Erreur : " + data.error);
+    }
+  }
+
+  async function toggleActif(studio: Studio) {
+    await fetch(`/api/super-admin/studios/${studio.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ actif: !studio.actif }),
+    });
+    setActionMsg(`Studio ${studio.nom} ${!studio.actif ? "activé" : "suspendu"}`);
+    setTimeout(() => setActionMsg(""), 3000);
+    loadStudios();
+  }
+
+  async function deleteStudio(studio: Studio) {
+    if (!confirm(`Supprimer définitivement "${studio.nom}" ? Cette action est irréversible.`)) return;
+    await fetch(`/api/super-admin/studios/${studio.id}`, {
+      method: "DELETE",
+      credentials: "include",
+    });
+    setActionMsg(`Studio ${studio.nom} supprimé`);
+    setTimeout(() => setActionMsg(""), 3000);
+    loadStudios();
+  }
+
+  async function changePlan(studio: Studio, planType: string) {
+    await fetch(`/api/super-admin/studios/${studio.id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      body: JSON.stringify({ planType }),
+    });
+    setActionMsg(`Plan de ${studio.nom} mis à jour → ${planType}`);
+    setTimeout(() => setActionMsg(""), 3000);
+    loadStudios();
+  }
+
+  const planColors: Record<string, string> = {
+    trial: "#f59e0b",
+    solo: "#3b82f6",
+    studio: "#8b5cf6",
+    multi: "#10b981",
+  };
+
+  if (loading) return (
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div style={{ color: "#888", fontFamily: "monospace" }}>Chargement...</div>
+    </div>
+  );
+
+  if (!authed) return (
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "system-ui" }}>
+      <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 16, padding: 40, width: 360 }}>
+        <div style={{ textAlign: "center", marginBottom: 32 }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>🔐</div>
+          <div style={{ color: "#fff", fontSize: 20, fontWeight: 700 }}>Console Admin</div>
+          <div style={{ color: "#555", fontSize: 13, marginTop: 4 }}>Intemporelle — Accès restreint</div>
+        </div>
+        <form onSubmit={handleLogin}>
+          <input
+            value={username} onChange={e => setUsername(e.target.value)}
+            placeholder="Identifiant"
+            style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", marginBottom: 12, boxSizing: "border-box", outline: "none" }}
+          />
+          <input
+            type="password" value={password} onChange={e => setPassword(e.target.value)}
+            placeholder="Mot de passe"
+            style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", marginBottom: 16, boxSizing: "border-box", outline: "none" }}
+          />
+          {loginError && <div style={{ color: "#ef4444", fontSize: 13, marginBottom: 12, textAlign: "center" }}>{loginError}</div>}
+          <button type="submit" style={{ width: "100%", padding: "11px", background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: "pointer", fontSize: 15 }}>
+            Connexion
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+
+  const actifs = studios.filter(s => s.actif).length;
+  const temporaires = studios.filter(s => s.isTemporary).length;
+
   return (
-    <div className="min-h-screen p-8" style={{ background: 'var(--brand-bg)' }}>
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-3xl font-bold mb-8" style={{ color: 'var(--brand-cyan)' }}>🚀 Console Super Admin</h1>
-        <div className="flex gap-4 mb-6">
-          <button onClick={() => window.location.href = '/clients'} className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'var(--brand-cyan)', color: '#000' }}>
-            🏠 Accéder à l'application
-          </button>
-          <button onClick={() => { document.cookie = 'super_admin_session=; Max-Age=0'; window.location.reload(); }} className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>
-            🚪 Déconnexion
-          </button>
-        </div>
-
-        <div className="flex gap-4 mb-6">
-          <button onClick={() => window.location.href = '/clients'} className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'var(--brand-cyan)', color: '#000' }}>
-            🏠 Accéder à l'application
-          </button>
-          <button onClick={() => { document.cookie = 'super_admin_session=; Max-Age=0'; window.location.reload(); }} className="px-6 py-3 rounded-lg font-semibold" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}>
-            🚪 Déconnexion
-          </button>
-        </div>
-
-        <div className="studio-card p-6 mb-6">
-          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--brand-text)' }}>📊 Statistiques</h2>
-          <p style={{ color: 'var(--brand-text-muted)' }}>Total salons : {studios.length}</p>
-        </div>
-        <div className="studio-card p-6">
-          <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--brand-text)' }}>📝 Liste des salons</h2>
-          <div className="space-y-3">
-            {studios.map((studio: any) => (
-              <div key={studio.id} className="p-4 rounded-lg" style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}>
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="font-semibold" style={{ color: 'var(--brand-text)' }}>{studio.nom}</h3>
-                    <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>{studio.email}</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Slug : {studio.slug} • Créé le : {new Date(studio.createdAt).toLocaleDateString('fr-FR')}</p>
-                  </div>
-                  <button onClick={() => window.location.href = `mailto:${studio.email}`} className="px-4 py-2 rounded text-sm" style={{ background: 'var(--brand-cyan)', color: '#000' }}>📧 Envoyer email</button>
-                </div>
-              </div>
-            ))}
+    <div style={{ minHeight: "100vh", background: "#0a0a0f", fontFamily: "system-ui", color: "#fff" }}>
+      {/* Header */}
+      <div style={{ background: "#13131a", borderBottom: "1px solid #2a2a3a", padding: "16px 32px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div style={{ fontSize: 24 }}>💎</div>
+          <div>
+            <div style={{ fontWeight: 700, fontSize: 16 }}>Console Super-Admin</div>
+            <div style={{ color: "#555", fontSize: 12 }}>studio.intemporelle.eu</div>
           </div>
         </div>
+        <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+          <button onClick={() => setShowNotif(true)} style={{ padding: "8px 18px", background: "transparent", border: "1px solid #7c3aed", borderRadius: 8, color: "#a855f7", fontWeight: 600, cursor: "pointer", fontSize: 14, marginRight: 8 }}>
+            🔔 Envoyer une notification
+          </button>
+          <button onClick={() => setShowCreate(true)} style={{ padding: "8px 18px", background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 600, cursor: "pointer", fontSize: 14 }}>
+            + Nouveau studio
+          </button>
+          <button onClick={handleLogout} style={{ padding: "8px 16px", background: "transparent", border: "1px solid #2a2a3a", borderRadius: 8, color: "#888", cursor: "pointer", fontSize: 13 }}>
+            Déconnexion
+          </button>
+        </div>
       </div>
+
+      <div style={{ maxWidth: 1100, margin: "0 auto", padding: "32px 24px" }}>
+        {/* Stats */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 16, marginBottom: 32 }}>
+          {[
+            { label: "Studios total", value: studios.length, icon: "🏢", color: "#7c3aed" },
+            { label: "Actifs", value: actifs, icon: "✅", color: "#10b981" },
+            { label: "En attente d'onboarding", value: temporaires, icon: "⏳", color: "#f59e0b" },
+          ].map(stat => (
+            <div key={stat.label} style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 12, padding: "20px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+              <div style={{ fontSize: 28 }}>{stat.icon}</div>
+              <div>
+                <div style={{ fontSize: 28, fontWeight: 700, color: stat.color }}>{stat.value}</div>
+                <div style={{ color: "#555", fontSize: 13 }}>{stat.label}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Message action */}
+        {actionMsg && (
+          <div style={{ background: "#10b98120", border: "1px solid #10b981", borderRadius: 8, padding: "10px 16px", marginBottom: 20, color: "#10b981", fontSize: 14 }}>
+            ✅ {actionMsg}
+          </div>
+        )}
+
+        {/* Résultat création */}
+        {created && (
+          <div style={{ background: "#7c3aed20", border: "1px solid #7c3aed", borderRadius: 12, padding: 24, marginBottom: 24 }}>
+            <div style={{ fontWeight: 700, fontSize: 16, marginBottom: 12 }}>🎉 Studio créé avec succès !</div>
+            <div style={{ display: "grid", gap: 8, fontSize: 14 }}>
+              <div>📌 <b>Salon :</b> {created.nomSalon}</div>
+              <div>📧 <b>Email client :</b> {created.ownerEmail}</div>
+              <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 6, textAlign: "center", color: "#a855f7", marginTop: 8 }}>
+                PIN temporaire : <b>{created.tempPin}</b>
+              </div>
+              <div style={{ color: "#888", fontSize: 12, textAlign: "center" }}>Communiquez ce PIN au client — il devra le changer à la première connexion</div>
+            </div>
+            <button onClick={() => setCreated(null)} style={{ marginTop: 16, padding: "6px 14px", background: "transparent", border: "1px solid #444", borderRadius: 6, color: "#888", cursor: "pointer", fontSize: 12 }}>
+              Fermer
+            </button>
+          </div>
+        )}
+
+        {/* Liste studios */}
+        <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 12, overflow: "hidden" }}>
+          <div style={{ padding: "16px 24px", borderBottom: "1px solid #2a2a3a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+            <div style={{ fontWeight: 600 }}>Tous les studios ({studios.length})</div>
+            <button onClick={() => loadStudios()} style={{ padding: "4px 12px", background: "transparent", border: "1px solid #2a2a3a", borderRadius: 6, color: "#666", cursor: "pointer", fontSize: 12 }}>
+              🔄 Rafraîchir
+            </button>
+          </div>
+
+          {studios.length === 0 ? (
+            <div style={{ padding: 40, textAlign: "center", color: "#444" }}>Aucun studio créé</div>
+          ) : (
+            studios.map((studio, i) => (
+              <div key={studio.id} style={{ padding: "16px 24px", borderBottom: i < studios.length - 1 ? "1px solid #1e1e2e" : "none", display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap" }}>
+                {/* Infos */}
+                <div style={{ flex: 1, minWidth: 200 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 4 }}>
+                    <span style={{ fontWeight: 600, fontSize: 15 }}>{studio.nom}</span>
+                    {studio.isTemporary && <span style={{ background: "#f59e0b20", color: "#f59e0b", fontSize: 10, padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>ONBOARDING</span>}
+                    {!studio.actif && <span style={{ background: "#ef444420", color: "#ef4444", fontSize: 10, padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>SUSPENDU</span>}
+                    {studio.email === 'contact@intemporelle.eu' && <span style={{ background: "#10b98120", color: "#10b981", fontSize: 10, padding: "2px 8px", borderRadius: 20, fontWeight: 600 }}>🔒 PROTÉGÉ</span>}
+                  </div>
+                  <div style={{ color: "#555", fontSize: 12 }}>{studio.ownerEmail || studio.email}</div>
+                  <div style={{ color: "#333", fontSize: 11, marginTop: 2 }}>
+                    Créé le {new Date(studio.createdAt).toLocaleDateString("fr-FR")}
+                    {studio.trialEndsAt && ` · Essai jusqu'au ${new Date(studio.trialEndsAt).toLocaleDateString("fr-FR")}`}
+                  </div>
+                </div>
+
+                {/* Spécialités */}
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap" }}>
+                  {["piercing", "tatouage", "dermographie"].map(spec => {
+                    const specs = (studio.specialites || '').split(',').filter(Boolean);
+                    const active = specs.includes(spec);
+                    return (
+                      <button key={spec} onClick={() => updateSpecialites(studio, spec, !active)}
+                        style={{ padding: "3px 10px", borderRadius: 20, fontSize: 11, fontWeight: 600, cursor: "pointer", border: `1px solid ${active ? "#10b981" : "#333"}`, background: active ? "#10b98120" : "transparent", color: active ? "#10b981" : "#555" }}>
+                        {spec === "piercing" ? "💉" : spec === "tatouage" ? "🎨" : "✏️"} {spec}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* PIN temporaire */}
+                {studio.isTemporary && studio.tempPin && (
+                  <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "6px 14px", fontFamily: "monospace", color: "#a855f7", fontSize: 14, letterSpacing: 3 }}>
+                    PIN: {studio.tempPin}
+                  </div>
+                )}
+
+                {/* Plan */}
+                <select
+                  value={studio.planType}
+                  onChange={e => changePlan(studio, e.target.value)}
+                  style={{ padding: "6px 10px", background: "#1e1e2e", border: `1px solid ${planColors[studio.planType] || "#2a2a3a"}`, borderRadius: 6, color: planColors[studio.planType] || "#fff", fontSize: 12, cursor: "pointer" }}
+                >
+                  <option value="trial">Trial</option>
+                  <option value="solo">Solo</option>
+                  <option value="studio">Studio</option>
+                  <option value="multi">Multi-sites</option>
+                </select>
+
+                {/* Toggle actif */}
+                {studio.slug !== 'studio-intemporelle' && studio.email !== 'contact@intemporelle.eu' && <button
+                  onClick={() => toggleActif(studio)}
+                  style={{ padding: "6px 14px", background: studio.actif ? "#ef444420" : "#10b98120", border: `1px solid ${studio.actif ? "#ef4444" : "#10b981"}`, borderRadius: 6, color: studio.actif ? "#ef4444" : "#10b981", cursor: "pointer", fontSize: 12, fontWeight: 600 }}
+                >
+                  {studio.actif ? "Suspendre" : "Réactiver"}
+                </button>}
+                {studio.email !== 'contact@intemporelle.eu' && <button
+                  onClick={() => deleteStudio(studio)}
+                  style={{ padding: "6px 14px", background: "#ef444410", border: "1px solid #ef4444", borderRadius: 6, color: "#ef4444", cursor: "pointer", fontSize: 12, fontWeight: 600 }}
+                >
+                  🗑 Supprimer
+                </button>}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+
+      {/* Modal notification */}
+      {showNotif && (
+        <div style={{ position: "fixed", inset: 0, background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
+          <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 16, padding: 32, width: 420, maxWidth: "90vw" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 24 }}>🔔 Envoyer une notification</div>
+            <form onSubmit={sendNotification}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>TYPE</label>
+                <select value={notifForm.type} onChange={e => setNotifForm({ ...notifForm, type: e.target.value })}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box" }}>
+                  <option value="info">ℹ️ Info</option>
+                  <option value="warning">⚠️ Avertissement</option>
+                  <option value="success">✅ Succès</option>
+                  <option value="error">❌ Urgent</option>
+                </select>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>TITRE</label>
+                <input value={notifForm.titre} onChange={e => setNotifForm({ ...notifForm, titre: e.target.value })}
+                  placeholder="Ex: Mise à jour disponible" required
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }} />
+              </div>
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>MESSAGE</label>
+                <textarea value={notifForm.message} onChange={e => setNotifForm({ ...notifForm, message: e.target.value })}
+                  placeholder="Votre message aux studios..." required rows={4}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none", resize: "vertical" }} />
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <button type="button" onClick={() => setShowNotif(false)} style={{ flex: 1, padding: "10px", background: "transparent", border: "1px solid #2a2a3a", borderRadius: 8, color: "#888", cursor: "pointer" }}>
+                  Annuler
+                </button>
+                <button type="submit" disabled={sendingNotif} style={{ flex: 1, padding: "10px", background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                  {sendingNotif ? "Envoi..." : "Envoyer à tous 🔔"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+      {/* Modal création */}
+      {showCreate && (
+        <div style={{ position: "fixed", inset: 0, background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
+          <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 16, padding: 32, width: 420, maxWidth: "90vw" }}>
+            <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 24 }}>Créer un nouveau studio</div>
+            <form onSubmit={handleCreate}>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>NOM DU SALON</label>
+                <input
+                  value={newStudio.nomSalon}
+                  onChange={e => setNewStudio({ ...newStudio, nomSalon: e.target.value })}
+                  placeholder="Ex: Studio Lumière"
+                  required
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
+                />
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>EMAIL DU PROPRIÉTAIRE</label>
+                <input
+                  type="email"
+                  value={newStudio.ownerEmail}
+                  onChange={e => setNewStudio({ ...newStudio, ownerEmail: e.target.value })}
+                  placeholder="patron@salon.fr"
+                  required
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
+                />
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>PLAN</label>
+                <select
+                  value={newStudio.planType}
+                  onChange={e => setNewStudio({ ...newStudio, planType: e.target.value })}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box" }}
+                >
+                  <option value="trial">Trial (essai gratuit)</option>
+                  <option value="solo">Solo</option>
+                  <option value="studio">Studio</option>
+                  <option value="multi">Multi-sites</option>
+                </select>
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 8 }}>SPÉCIALITÉS</label>
+                <div style={{ display: "flex", gap: 12 }}>
+                  {["piercing", "tatouage", "dermographie"].map(s => (
+                    <label key={s} style={{ display: "flex", alignItems: "center", gap: 6, cursor: "pointer" }}>
+                      <div
+                        onClick={() => setNewStudio(n => ({
+                          ...n,
+                          specialites: n.specialites.includes(s)
+                            ? n.specialites.filter(x => x !== s)
+                            : [...n.specialites, s]
+                        }))}
+                        style={{
+                          width: 18, height: 18, borderRadius: 4, border: `2px solid ${newStudio.specialites.includes(s) ? "#a855f7" : "#444"}`,
+                          background: newStudio.specialites.includes(s) ? "#a855f7" : "transparent",
+                          display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer"
+                        }}
+                      >
+                        {newStudio.specialites.includes(s) && <span style={{ color: "#fff", fontSize: 10 }}>✓</span>}
+                      </div>
+                      <span style={{ color: "#ccc", fontSize: 13, textTransform: "capitalize" }}>{s}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>JOURS D'ESSAI</label>
+                <input
+                  type="number" min={1} max={365}
+                  value={newStudio.trialDays}
+                  onChange={e => setNewStudio({ ...newStudio, trialDays: parseInt(e.target.value) })}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
+                />
+              </div>
+              <div style={{ display: "flex", gap: 12 }}>
+                <button type="button" onClick={() => setShowCreate(false)} style={{ flex: 1, padding: "10px", background: "transparent", border: "1px solid #2a2a3a", borderRadius: 8, color: "#888", cursor: "pointer" }}>
+                  Annuler
+                </button>
+                <button type="submit" style={{ flex: 1, padding: "10px", background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: "pointer" }}>
+                  Créer le studio
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

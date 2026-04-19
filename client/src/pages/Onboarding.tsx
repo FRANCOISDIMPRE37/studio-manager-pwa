@@ -3,13 +3,13 @@
  * S'affiche uniquement au premier lancement (aucun salonInfo en localStorage)
  * Le client saisit les infos de son salon, crée son PIN, puis démarre l'app
  */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/app-context';
 import { SalonInfo } from '@/lib/types';
 import { toast } from 'sonner';
 import { Building2, MapPin, Phone, Mail, Hash, User, Lock, ChevronRight, ChevronLeft, Check, ImageIcon } from 'lucide-react';
 
-type Step = 'bienvenue' | 'salon' | 'praticiens' | 'pin' | 'termine';
+type Step = 'bienvenue' | 'sterilisation' | 'salon' | 'praticiens' | 'pin' | 'termine';
 
 export default function Onboarding() {
   const { updateSalonInfo, setPin, setAuthenticated } = useApp();
@@ -23,6 +23,21 @@ export default function Onboarding() {
   const [pin2, setPin2] = useState('');
   const [pinStep, setPinStep] = useState<'enter' | 'confirm'>('enter');
   const [pinError, setPinError] = useState('');
+
+  // Pré-remplir depuis les cookies
+  useEffect(() => {
+    const getCookie = (name: string) => {
+      const match = document.cookie.match(new RegExp('(^| )' + name + '=([^;]+)'));
+      return match ? decodeURIComponent(match[2]) : '';
+    };
+    const nom = getCookie('ts_nom');
+    const email = getCookie('ts_email');
+    if (nom) setForm(f => ({ ...f, nom }));
+    if (email) setForm(f => ({ ...f, email }));
+  }, []);
+  const [sterChecks, setSterChecks] = useState({
+    engagement: false,
+  });
   const logoRef = useRef<HTMLInputElement>(null);
 
   const field = (label: string, key: keyof SalonInfo, type = 'text', placeholder = '', required = false) => (
@@ -137,7 +152,7 @@ export default function Onboarding() {
     gap: '6px',
   };
 
-  const steps: Step[] = ['bienvenue', 'salon', 'praticiens', 'pin', 'termine'];
+  const steps: Step[] = ['bienvenue', 'sterilisation', 'salon', 'praticiens', 'pin', 'termine'];
   const stepIndex = steps.indexOf(step);
 
   return (
@@ -174,7 +189,7 @@ export default function Onboarding() {
         {/* Indicateur d'étapes */}
         {step !== 'termine' && (
           <div className="flex items-center gap-2">
-            {['Bienvenue', 'Salon', 'Praticiens', 'PIN'].map((label, i) => (
+            {['Bienvenue', 'Stérilisation', 'Salon', 'Praticiens', 'PIN'].map((label, i) => (
               <div key={i} className="flex items-center gap-2">
                 <div
                   className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-700"
@@ -190,7 +205,7 @@ export default function Onboarding() {
                 <span className="text-xs hidden sm:block" style={{ color: i === stepIndex ? 'var(--brand-cyan)' : 'var(--brand-text-muted)' }}>
                   {label}
                 </span>
-                {i < 3 && <div className="w-6 h-px" style={{ background: i < stepIndex ? 'var(--brand-cyan)' : 'var(--brand-border)' }} />}
+                {i < 4 && <div className="w-6 h-px" style={{ background: i < stepIndex ? 'var(--brand-cyan)' : 'var(--brand-border)' }} />}
               </div>
             ))}
           </div>
@@ -223,8 +238,73 @@ export default function Onboarding() {
               </p>
             </div>
             <div className="flex justify-end">
-              <button style={btnPrimary} onClick={() => setStep('salon')}>
-                Commencer <ChevronRight size={16} />
+              <button style={btnPrimary} onClick={() => setStep('sterilisation')}>
+                Continuer <ChevronRight size={16} />
+              </button>
+            </div>
+          </div>
+        )}
+
+
+        {/* ===== ÉTAPE STÉRILISATION ===== */}
+        {step === 'sterilisation' && (
+          <div style={cardStyle}>
+            <div className="flex items-center gap-2 mb-2">
+              <span style={{ fontSize: 20 }}>🧴</span>
+              <h2 className="text-base font-700" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>Traçabilité — Stérilisation</h2>
+            </div>
+            <div className="p-3 rounded-lg mb-5" style={{ background: 'rgba(244,67,54,0.08)', border: '1px solid rgba(244,67,54,0.25)' }}>
+              <p className="text-xs" style={{ color: 'rgba(255,180,170,0.95)', lineHeight: 1.7 }}>
+                ⚠️ <strong>Obligation ARS</strong> — Afin de garantir la traçabilité, il est impératif de bien renseigner le numéro de lot, la date de stérilisation et la date de présentation pour chaque prestation.
+              </p>
+            </div>
+            <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)', lineHeight: 1.6 }}>
+              Confirmez que vous avez bien pris connaissance des obligations de traçabilité :
+            </p>
+            <div className="space-y-3 mb-6">
+              {[
+                { key: 'engagement', label: 'Je m\'engage à respecter la traçabilité obligatoire demandée par l\'ARS (Art. R1311-1 à R1311-4 du Code de la Santé Publique) et décharge la société Intemporelle de toute responsabilité en cas de manquement de ma part.' },
+              ].map(({ key, label }) => (
+                <label
+                  key={key}
+                  className="flex items-start gap-3 p-3 rounded-lg cursor-pointer"
+                  style={{
+                    background: sterChecks[key as keyof typeof sterChecks] ? 'rgba(131,208,245,0.08)' : 'rgba(255,255,255,0.02)',
+                    border: `1px solid ${sterChecks[key as keyof typeof sterChecks] ? 'var(--brand-cyan)' : 'var(--brand-border)'}`,
+                    transition: 'all 0.2s',
+                  }}
+                >
+                  <div
+                    className="w-5 h-5 rounded flex items-center justify-center flex-shrink-0 mt-0.5"
+                    style={{
+                      background: sterChecks[key as keyof typeof sterChecks] ? 'var(--brand-cyan)' : 'transparent',
+                      border: `2px solid ${sterChecks[key as keyof typeof sterChecks] ? 'var(--brand-cyan)' : 'var(--brand-border)'}`,
+                    }}
+                    onClick={() => setSterChecks(s => ({ ...s, [key]: !s[key as keyof typeof sterChecks] }))}
+                  >
+                    {sterChecks[key as keyof typeof sterChecks] && <Check size={12} style={{ color: 'var(--brand-navy)' }} />}
+                  </div>
+                  <span className="text-sm" style={{ color: 'var(--brand-text)', lineHeight: 1.5 }}>{label}</span>
+                </label>
+              ))}
+            </div>
+            <div className="flex justify-between">
+              <button style={btnSecondary} onClick={() => setStep('bienvenue')}><ChevronLeft size={16} /> Retour</button>
+              <button
+                style={{
+                  ...btnPrimary,
+                  opacity: Object.values(sterChecks).every(Boolean) ? 1 : 0.4,
+                  cursor: Object.values(sterChecks).every(Boolean) ? 'pointer' : 'not-allowed',
+                }}
+                onClick={() => {
+                  if (!Object.values(sterChecks).every(Boolean)) {
+                    toast.error('Veuillez cocher toutes les cases avant de continuer');
+                    return;
+                  }
+                  setStep('salon');
+                }}
+              >
+                Suivant <ChevronRight size={16} />
               </button>
             </div>
           </div>
@@ -306,7 +386,7 @@ export default function Onboarding() {
               {field('Nom du dermographe', 'nomDermographe', 'text', 'Ex : Sophie Laurent')}
             </div>
             <div className="flex justify-between">
-              <button style={btnSecondary} onClick={() => setStep('salon')}><ChevronLeft size={16} /> Retour</button>
+              <button style={btnSecondary} onClick={() => setStep('sterilisation')}><ChevronLeft size={16} /> Retour</button>
               <button style={btnPrimary} onClick={() => setStep('pin')}>
                 Suivant <ChevronRight size={16} />
               </button>

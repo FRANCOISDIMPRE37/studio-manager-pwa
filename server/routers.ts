@@ -28,6 +28,7 @@ import {
 } from "./db";
 
 export const appRouter = router({
+  notifications: notificationsRouter,
   system: systemRouter,
   auth: router({
     me: publicProcedure.query(opts => opts.ctx.user),
@@ -61,7 +62,26 @@ export const appRouter = router({
           return { success: true, firstLogin: true };
         }
         const pinValid = await bcrypt.compare(input.pin, salonSettings.pinHash);
-        if (!pinValid) throw new Error("PIN incorrect");
+        if (!pinValid) {
+          // Vérifier si c'est un tempPin d'un studio client
+          const db = await getDb();
+          if (db) {
+            const [rows] = await (db as any).$client.query(
+              'SELECT * FROM studios WHERE tempPin = ? AND isTemporary = 1 AND firstLogin = 1',
+              [input.pin]
+            );
+            if ((rows as any[]).length > 0) {
+              const studio = (rows as any[])[0];
+              // Créer session temporaire pour ce studio
+              const studioUser = await getUserByOpenId('temp-' + studio.userId) ?? user;
+              const token = await sdk.createSessionToken(ownerOpenId, { name: studio.nom || "Studio" });
+              const cookieOptions = getSessionCookieOptions(ctx.req);
+              ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
+              return { success: true, firstLogin: true, studioId: studio.id };
+            }
+          }
+          throw new Error("PIN incorrect");
+        }
         const token = await sdk.createSessionToken(ownerOpenId, { name: user.name || "Admin" });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
@@ -1379,3 +1399,35 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+
+// ===== NOTIFICATIONS =====
+import { adminNotifications } from '../drizzle/schema';
+
+export const notificationsRouter = router({
+  // Récupérer les notifications du studio connecté
+  getMy: protectedProcedure.query(async ({ ctx }) => {
+    const db = await getDb();
+    if (!db) return [];
+    return db.select().from(adminNotifications)
+      .where(
+        or(
+          isNull(adminNotifications.targetUserId),
+          eq(adminNotifications.targetUserId, ctx.user.id)
+        )
+      )
+      .orderBy(desc(adminNotifications.createdAt))
+      .limit(20);
+  }),
+
+  // Marquer comme lu
+  markRead: protectedProcedure
+    .input(z.object({ id: z.number() }))
+    .mutation(async ({ ctx, input }) => {
+      const db = await getDb();
+      if (!db) throw new Error('DB');
+      await db.update(adminNotifications)
+        .set({ lu: true, luAt: new Date() })
+        .where(eq(adminNotifications.id, input.id));
+      return { success: true };
+    }),
+});

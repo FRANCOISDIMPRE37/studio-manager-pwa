@@ -359,6 +359,19 @@ function AppProviderInner({ children, dispatch, state }: {
           nomTatoueur: (dbSalon as Record<string, unknown>).nomTatoueur as string | undefined,
           nomDermographe: (dbSalon as Record<string, unknown>).nomDermographe as string | undefined,
         };
+        // Charger les spécialités depuis le serveur
+        try {
+          const studioInfoRes = await fetch('/api/studio-info', { credentials: 'include' });
+          if (studioInfoRes.ok) {
+            const studioInfo = await studioInfoRes.json();
+            const specs = (studioInfo.specialites || '').split(',');
+              salonInfo.specialites = {
+                piercing: specs.includes('piercing'),
+                tatouage: specs.includes('tatouage'),
+                dermographie: specs.includes('dermographie'),
+              };
+          }
+        } catch {}
         dispatch({ type: 'SET_SALON_INFO', payload: salonInfo });
       }
 
@@ -382,6 +395,8 @@ function AppProviderInner({ children, dispatch, state }: {
     dispatch({ type: 'SET_DEMO', payload: false });
     const clients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
     const salonInfo = loadFromStorage<SalonInfo>(STORAGE_KEYS.salonInfo);
+
+
     const rdv = loadFromStorage<RendezVous[]>(STORAGE_KEYS.rdv) || [];
     dispatch({ type: 'SET_CLIENTS', payload: clients });
     dispatch({ type: 'SET_RDV', payload: rdv });
@@ -666,6 +681,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const clients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
     const salonInfo = loadFromStorage<SalonInfo>(STORAGE_KEYS.salonInfo);
+
+
     const rdv = loadFromStorage<RendezVous[]>(STORAGE_KEYS.rdv) || [];
     const isAuthenticated = loadFromStorage<boolean>(STORAGE_KEYS.auth) || false;
 
@@ -674,7 +691,23 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       rgpdStatus: calculateRGPDStatus(c.dateSuppressionPrevue) as RGPDStatus,
     }));
 
-    dispatch({ type: 'LOAD_STATE', payload: { clients: updatedClients, salonInfo, rendezVous: rdv, isAuthenticated, isLoading: false } });
+    // Charger les spécialités depuis le serveur
+    fetch('/api/studio-info', { credentials: 'include' })
+      .then(r => r.ok ? r.json() : null)
+      .then(data => {
+        if (data?.specialites && salonInfo) {
+          const specs = (data.specialites as string).split(',');
+          salonInfo.specialites = {
+            piercing: specs.includes('piercing'),
+            tatouage: specs.includes('tatouage'),
+            dermographie: specs.includes('dermographie'),
+          };
+        }
+        dispatch({ type: 'LOAD_STATE', payload: { clients: updatedClients, salonInfo, rendezVous: rdv, isAuthenticated, isLoading: false } });
+      })
+      .catch(() => {
+        dispatch({ type: 'LOAD_STATE', payload: { clients: updatedClients, salonInfo, rendezVous: rdv, isAuthenticated, isLoading: false } });
+      });
   }, []);
 
   // Persist clients to localStorage (cache local uniquement)

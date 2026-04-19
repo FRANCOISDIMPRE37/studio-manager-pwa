@@ -8,10 +8,12 @@ import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
 import {
   LayoutDashboard, Users, FileText, Settings, Archive, Shield, Info,
-  LogOut, AlertTriangle, ExternalLink, RotateCcw, BookOpen
+  LogOut, AlertTriangle, ExternalLink, RotateCcw, BookOpen, Bell
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { trpc } from '@/lib/trpc';
+import { useState } from 'react';
 import LanguageSelector from '@/components/LanguageSelector';
 
 const MODE_EMPLOI_URL = 'https://d2xsxph8kpxj0f.cloudfront.net/310519663159292899/kHAXDDN9mqMmBLtorFtFyT/mode_emploi_studio_manager_v4_a4dac9ab.html';
@@ -21,6 +23,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   const { state, getDashboardStats, setAuthenticated, syncFromCloud } = useApp();
   const stats = getDashboardStats();
   const { t } = useTranslation();
+  const [showNotifs, setShowNotifs] = useState(false);
+  const notifsQuery = trpc.notifications.getMy.useQuery(undefined, { refetchInterval: 30000 });
+  const markRead = trpc.notifications.markRead.useMutation({ onSuccess: () => notifsQuery.refetch() });
+  const notifs = notifsQuery.data ?? [];
+  const unread = notifs.filter(n => !n.lu).length;
 
   // Nav items using translation keys
   // Navigation organisée par sections
@@ -39,6 +46,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       items: [
         { path: '/info-client-rgpd', icon: Info, labelKey: 'nav.client_info' },
         { path: '/archives', icon: Archive, labelKey: 'nav.archives' },
+        { path: '/archives-numerisees', icon: Archive, labelKey: 'nav.archives_numerisees' },
       ],
     },
     {
@@ -58,6 +66,29 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex overflow-hidden print:block print:h-auto print:overflow-visible" style={{ background: 'var(--brand-navy)', height: '100dvh' }}>
+      {/* Panneau notifications */}
+      {showNotifs && (
+        <div style={{ position: 'fixed', top: 0, right: 0, width: 320, height: '100vh', background: '#13131a', borderLeft: '1px solid #2a2a3a', zIndex: 1000, overflowY: 'auto', padding: 20 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+            <span style={{ color: '#fff', fontWeight: 700, fontSize: 16 }}>🔔 Notifications</span>
+            <button onClick={() => setShowNotifs(false)} style={{ background: 'transparent', border: 'none', color: '#888', cursor: 'pointer', fontSize: 20 }}>✕</button>
+          </div>
+          {notifs.length === 0 ? (
+            <p style={{ color: '#555', fontSize: 13, textAlign: 'center', marginTop: 40 }}>Aucune notification</p>
+          ) : notifs.map(n => (
+            <div key={n.id} onClick={() => !n.lu && markRead.mutate({ id: n.id })}
+              style={{ background: n.lu ? '#1a1a2e' : '#1e1e3a', border: `1px solid ${n.lu ? '#2a2a3a' : '#7c3aed'}`, borderRadius: 10, padding: 14, marginBottom: 10, cursor: n.lu ? 'default' : 'pointer' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 6 }}>
+                <span style={{ color: n.lu ? '#666' : '#a855f7', fontSize: 11, fontWeight: 600, textTransform: 'uppercase' }}>{n.type}</span>
+                {!n.lu && <span style={{ background: '#7c3aed', color: '#fff', fontSize: 9, padding: '2px 6px', borderRadius: 10 }}>NOUVEAU</span>}
+              </div>
+              <p style={{ color: '#fff', fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{n.titre}</p>
+              <p style={{ color: '#888', fontSize: 12, lineHeight: 1.5 }}>{n.message}</p>
+              <p style={{ color: '#444', fontSize: 10, marginTop: 6 }}>{new Date(n.createdAt).toLocaleDateString('fr-FR')}</p>
+            </div>
+          ))}
+        </div>
+      )}
       {/* Sidebar */}
       <aside
         className="flex flex-col w-44 md:w-56 flex-shrink-0 border-r"
@@ -130,7 +161,22 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           ))}
 
-          {/* Mode d'emploi — séparé en bas de nav */}
+          {/* Cloche notifications */}
+        <div style={{ padding: '8px 12px', marginBottom: 4 }}>
+          <button onClick={() => setShowNotifs(s => !s)}
+            style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 10, padding: '8px 10px', background: showNotifs ? 'rgba(124,58,237,0.15)' : 'transparent', border: 'none', borderRadius: 8, cursor: 'pointer', position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
+              <Bell size={18} style={{ color: unread > 0 ? '#a855f7' : 'var(--brand-text-muted)' }} />
+              {unread > 0 && (
+                <span style={{ position: 'absolute', top: -6, right: -6, background: '#ef4444', color: '#fff', fontSize: 9, fontWeight: 700, borderRadius: '50%', width: 14, height: 14, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{unread}</span>
+              )}
+            </div>
+            <span style={{ color: unread > 0 ? '#a855f7' : 'var(--brand-text-muted)', fontSize: 12, fontWeight: unread > 0 ? 600 : 400 }}>
+              Notifications{unread > 0 ? ` (${unread})` : ''}
+            </span>
+          </button>
+        </div>
+        {/* Mode d'emploi — séparé en bas de nav */}
           <div className="mt-3 pt-3 border-t" style={{ borderColor: 'var(--brand-border)' }}>
             <a
               href={MODE_EMPLOI_URL}

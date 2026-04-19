@@ -34,21 +34,21 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.tatouage',
     icon: FileText,
     color: '#FF5722',
-    docs: ['questionnaire_tatouage_mineur', 'questionnaire_tatouage_majeur', 'fiche_seance_tatouage', 'consentement_soins_tatouage'] as DocumentType[],
+    docs: ['questionnaire_tatouage_mineur', 'questionnaire_tatouage_majeur', 'fiche_seance_tatouage', 'consentement_soins_tatouage', 'soins_detatouage_laser'] as DocumentType[],
     forMineur: null,
   },
   {
     titleKey: 'doc_categories.dermographie',
     icon: FileText,
     color: '#FF9800',
-    docs: ['questionnaire_dermographe_mineur', 'questionnaire_dermographe', 'fiche_seance_dermographe', 'soins_dermographe'] as DocumentType[],
+    docs: ['questionnaire_patch_test', 'questionnaire_dermographe_mineur', 'questionnaire_dermographe', 'fiche_seance_dermographe', 'soins_dermographe', 'fiche_retouche_dermographie'] as DocumentType[],
     forMineur: null,
   },
   {
     titleKey: 'doc_categories.rgpd',
     icon: Shield,
     color: '#E53935',
-    docs: ['affichage_salon'] as DocumentType[],
+    docs: ['engagement_confidentialite', 'affichage_salon'] as DocumentType[],
   },
   {
     titleKey: 'doc_categories.archives',
@@ -225,6 +225,22 @@ export default function Documents() {
               <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
             </button>
 
+            {selectedDoc === 'archivage_dossier_papier' && (
+              <button
+                onClick={() => navigate('/archives-numerisees')}
+                className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:opacity-80"
+                style={{ background: 'rgba(96,125,139,0.15)', border: '1px solid rgba(96,125,139,0.4)' }}
+              >
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(96,125,139,0.2)' }}>
+                  <Search size={16} style={{ color: '#607D8B' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-600" style={{ color: '#607D8B', fontWeight: 600 }}>📁 Voir les archives numérisées</p>
+                  <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Rechercher un ancien dossier papier</p>
+                </div>
+                <ChevronRight size={16} style={{ color: '#607D8B', flexShrink: 0 }} />
+              </button>
+            )}
             {selectedDoc === 'engagement_confidentialite' && (
               <button
                 onClick={handleOpenWithoutSalarie}
