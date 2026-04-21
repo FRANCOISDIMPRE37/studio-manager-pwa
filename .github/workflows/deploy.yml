@@ -17,14 +17,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H -t ed25519 2001:41d0:304:300::241 >> ~/.ssh/known_hosts 2>/dev/null || true
+          ssh-keyscan -H -t ed25519 ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
 
       - name: 🚀 Deploy
         run: |
           ssh -i ~/.ssh/id_ed25519 \
             -o StrictHostKeyChecking=no \
             -o ConnectTimeout=30 \
-            -6 ubuntu@2001:41d0:304:300::241 << 'ENDSSH'
+            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             set -e
             cd ~/app
             git pull origin main
@@ -34,4 +34,4 @@ jobs:
             bash ~/sync.sh
             echo "✅ Déploiement terminé !"
             pm2 status
-          ENDSSH
+ENDSSH
