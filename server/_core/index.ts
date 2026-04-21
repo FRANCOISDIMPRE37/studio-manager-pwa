@@ -1,6 +1,7 @@
 import "dotenv/config";
 import express from "express";
 import helmet from "helmet";
+import cors from "cors";
 import cookieParser from "cookie-parser";
 import { createServer } from "http";
 import net from "net";
@@ -35,6 +36,18 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 
 async function startServer() {
   const app = express();
+app.use(cors({
+  origin: [
+    'https://studio.intemporelle.eu',
+    'https://app.intemporelle.eu',
+    'http://localhost:3000',
+    'http://localhost:8080',
+    'http://localhost:8081',
+  ],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+}));
 app.use(helmet({
   contentSecurityPolicy: false,
   crossOriginEmbedderPolicy: false,
