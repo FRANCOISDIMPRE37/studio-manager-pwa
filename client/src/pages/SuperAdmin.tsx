@@ -148,6 +148,21 @@ export default function SuperAdmin() {
   }
 
   async function changePlan(studio: Studio, planType: string) {
+    // Plans payants → redirection Stripe Checkout
+    if (['solo', 'studio', 'multi'].includes(planType)) {
+      const r = await fetch('/api/stripe/checkout', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ plan: planType, studioId: studio.id, email: studio.email }),
+      });
+      const data = await r.json();
+      if (data.url) {
+        window.open(data.url, '_blank');
+        return;
+      }
+    }
+    // Trial → changement direct sans paiement
     await fetch(`/api/super-admin/studios/${studio.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
