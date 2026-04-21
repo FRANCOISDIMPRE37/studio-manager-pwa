@@ -1,37 +1,19 @@
-name: 🚀 Deploy to OVH VPS
-
+name: Deploy to OVH VPS
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   deploy:
     name: Deploy Studio Manager
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🔑 Setup SSH
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H -t ed25519 ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts 2>/dev/null || true
-
-      - name: 🚀 Deploy
+      - name: Deploy
         run: |
-          ssh -i ~/.ssh/id_ed25519 \
-            -o StrictHostKeyChecking=no \
-            -o ConnectTimeout=30 \
-            ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
-            set -e
-            cd ~/app
-            git pull origin main
-            npm install
-            npm run build
-            pm2 restart studio-manager
-            bash ~/sync.sh
-            echo "✅ Déploiement terminé !"
-            pm2 status
-ENDSSH
+          ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no -o ConnectTimeout=30 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "cd ~/app && git pull origin main && npm install && npm run build && pm2 restart studio-manager && bash ~/sync.sh"
