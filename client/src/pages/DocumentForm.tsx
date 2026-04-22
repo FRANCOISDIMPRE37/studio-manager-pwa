@@ -252,20 +252,21 @@ export default function DocumentForm() {
         { key: 'presenceRepresentant', label: 'Présence physique confirmée' },
       ],
       'questionnaire_majeur': [
-        { key: 'estMajeur', label: 'Être majeur(e)' },
-        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
-        { key: 'consent_librement', label: 'Consent librement' },
+        { key: 'consent_majeur', label: 'Être majeur(e)' },
+        { key: 'consent_honnete', label: 'A répondu honnêtement' },
+        { key: 'consent_libre', label: 'Consent librement' },
         { key: 'consent_protocole', label: "S'engage à respecter le protocole" },
+        { key: 'consentDonneesSante', label: 'Consentement données de santé' },
       ],
       'questionnaire_tatouage_majeur': [
-        { key: 'estMajeur', label: 'Être majeur(e)' },
-        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
-        { key: 'consentementLibre', label: 'Consent librement' },
+        { key: 'consent_honnete', label: 'A répondu honnêtement' },
+        { key: 'consent_libre', label: 'Consent librement' },
+        { key: 'consentDonneesSante', label: 'Consentement données de santé' },
       ],
       'questionnaire_dermographe': [
-        { key: 'estMajeur', label: 'Être majeur(e)' },
-        { key: 'reponduHonnetement', label: 'A répondu honnêtement' },
         { key: 'consentementLibre', label: 'Consent librement' },
+        { key: 'certifieInfosExactes', label: 'Certifie les informations exactes' },
+        { key: 'consentDonneesSante', label: 'Consentement données de santé' },
       ],
     };
     const requiredBoxes = requiredCheckboxMap[docType] || [];
@@ -306,6 +307,7 @@ export default function DocumentForm() {
       else newDocs.push(doc);
       await updateClient({ ...client, documents: newDocs });
       toast.success('Document sauvegardé avec succès');
+      setTimeout(() => navigate(-1), 1000);
     } catch {
       toast.error('Erreur lors de la sauvegarde');
     } finally {

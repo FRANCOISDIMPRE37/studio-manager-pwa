@@ -171,7 +171,7 @@ function CheckboxField({ label, value, onToggle, warning, required }: {
       >
         {value && (
           <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke={warning ? '#FF9800' : 'var(--brand-cyan)'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M1 4L3.5 6.5L9 1" stroke={warning ? '#FF9800' : '#000000'} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         )}
       </div>
