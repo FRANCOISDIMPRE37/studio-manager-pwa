@@ -112,6 +112,9 @@ export default function Onboarding() {
     setPin(pin1);
     setAuthenticated(true);
     toast.success('Studio Manager configuré ! Bienvenue 🎉');
+    setTimeout(() => {
+      window.location.href = '/';
+    }, 1000);
   };
 
   const cardStyle: React.CSSProperties = {
