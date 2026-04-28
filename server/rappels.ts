@@ -1,7 +1,8 @@
 
 /**
- * Système de rappels automatiques par email (RDV et RGPD).
+ * Système de rappels automatiques par email (RGPD UNIQUEMENT).
  * Ce module est démarré une fois au lancement du serveur.
+ * TOUT AUTRE ENVOI (RDV, DOCUMENTS) EST STRICTEMENT INTERDIT.
  */
 import nodemailer from "nodemailer";
 import mysql from "mysql2/promise";
@@ -35,12 +36,11 @@ async function query<T = any>(sql: string, params: any[] = []): Promise<T[]> {
   }
 }
 
-// --- LOGIQUE RGPD (1 MOIS AVANT) ---
+// --- LOGIQUE RGPD (1 MOIS AVANT) - SEULE FONCTION AUTORISÉE ---
 
 async function checkAndSendRgpdRappels() {
   console.log("[RGPD] Vérification des rappels de suppression (30 jours avant)...");
   
-  // 1. Trouver les clients dont la suppression est dans exactement 30 jours
   const targetDate = new Date();
   targetDate.setDate(targetDate.getDate() + 30);
   const dateStr = targetDate.toISOString().split('T')[0];
@@ -58,14 +58,12 @@ async function checkAndSendRgpdRappels() {
 
   for (const client of clients) {
     try {
-      // Vérifier si déjà envoyé
       const alreadySent = await query(
         "SELECT id FROM rgpd_rappels WHERE clientId = ? AND type = '30_jours' LIMIT 1",
         [client.id]
       );
       if (alreadySent.length > 0) continue;
 
-      // Envoyer l'email
       const transporter = nodemailer.createTransport({
         host: client.host,
         port: client.port,
@@ -97,7 +95,6 @@ async function checkAndSendRgpdRappels() {
         `
       });
 
-      // Enregistrer l'envoi
       await query(
         "INSERT INTO rgpd_rappels (id, clientId, userId, type, sentAt) VALUES (?, ?, ?, ?, ?)",
         [randomUUID(), client.id, client.userId, '30_jours', Math.floor(Date.now() / 1000)]
@@ -110,18 +107,15 @@ async function checkAndSendRgpdRappels() {
   }
 }
 
-// --- LOGIQUE RDV (24H AVANT) ---
-
+// --- LES RAPPELS DE RDV SONT DÉSACTIVÉS ---
 async function checkAndSendRdvRappels() {
-  // Logique existante des rappels de RDV...
-  // (Je garde la structure pour ne pas casser l'existant)
+  // FONCTION DÉSACTIVÉE PAR L'ADMINISTRATEUR
+  return;
 }
 
 export async function runRappelsJob() {
-  // Exécution immédiate au démarrage
   await checkAndSendRgpdRappels();
   
-  // Puis toutes les heures
   setInterval(async () => {
     try {
       await checkAndSendRgpdRappels();
