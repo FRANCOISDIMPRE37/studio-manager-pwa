@@ -11,19 +11,11 @@ import { toast } from "sonner";
 type Tab = "dashboard" | "studios" | "licences" | "articles" | "notifications" | "services" | "invitations" | "nouveau-salon" | "acces";
 
 const PLAN_LABELS: Record<string, string> = {
-  starter: "Starter",
-  solo: "Solo",
   studio: "Studio",
-  multi: "Multi",
-  premium: "Premium",
 };
 
 const PLAN_COLORS: Record<string, string> = {
-  starter: "#6b7280",
-  solo: "#3b82f6",
   studio: "#8b5cf6",
-  multi: "#f59e0b",
-  premium: "#ec4899",
 };
 
 const STATUS_COLORS: Record<string, string> = {
@@ -138,7 +130,7 @@ export default function Admin() {
     email: "",
     telephone: "",
     ville: "",
-    planType: "studio" as "starter" | "studio" | "premium",
+    planType: "studio" as "studio",
     maxClients: 500,
     maxUsers: 3,
     featureClients: true,
@@ -388,11 +380,7 @@ export default function Admin() {
                         <Select value={licenseForm.planType} onValueChange={v => setLicenseForm((f: any) => ({ ...f, planType: v }))}>
                           <SelectTrigger style={inputStyle}><SelectValue /></SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="starter">Starter</SelectItem>
-                            <SelectItem value="solo">Solo</SelectItem>
                             <SelectItem value="studio">Studio</SelectItem>
-                            <SelectItem value="multi">Multi</SelectItem>
-                            <SelectItem value="premium">Premium</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -717,11 +705,7 @@ export default function Admin() {
                       <Select value={newInvit.planType} onValueChange={v => setNewInvit(i => ({ ...i, planType: v as any }))}>
                         <SelectTrigger style={inputStyle}><SelectValue /></SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="starter">Starter</SelectItem>
-                          <SelectItem value="solo">Solo</SelectItem>
                           <SelectItem value="studio">Studio</SelectItem>
-                          <SelectItem value="multi">Multi</SelectItem>
-                          <SelectItem value="premium">Premium</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
@@ -898,9 +882,7 @@ export default function Admin() {
                           <Select value={newSalon.planType} onValueChange={v => setNewSalon(s => ({ ...s, planType: v as any }))}>
                             <SelectTrigger style={{ ...inputStyle, marginTop: 4 }}><SelectValue /></SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="starter">Starter</SelectItem>
                               <SelectItem value="studio">Studio</SelectItem>
-                              <SelectItem value="premium">Premium</SelectItem>
                             </SelectContent>
                           </Select>
                         </div>

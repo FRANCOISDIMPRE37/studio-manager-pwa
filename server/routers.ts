@@ -965,7 +965,7 @@ export const appRouter = router({
     upsertLicense: publicProcedure
       .input(z.object({
         userId: z.number(),
-        planType: z.enum(['starter', 'solo', 'studio', 'multi', 'premium']).optional(),
+        planType: z.enum(['studio']).optional(),
         status: z.enum(['active', 'suspended', 'expired', 'cancelled']).optional(),
         expiresAt: z.date().nullable().optional(),
         featureClients: z.boolean().optional(),
@@ -1148,7 +1148,7 @@ export const appRouter = router({
     createInvitation: publicProcedure
       .input(z.object({
         email: z.string().email().optional(),
-        planType: z.enum(['starter', 'solo', 'studio', 'multi', 'premium']),
+        planType: z.enum(['studio']),
         expiresInDays: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
@@ -1197,7 +1197,7 @@ export const appRouter = router({
         telephone: z.string().optional(),
         ville: z.string().optional(),
         // Licence
-        planType: z.enum(["starter", "studio", "premium"]).default("studio"),
+        planType: z.enum(["studio"]).default("studio"),
         maxClients: z.number().default(500),
         maxUsers: z.number().default(3),
         featureClients: z.boolean().default(true),
