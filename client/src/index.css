@@ -1,7 +1,7 @@
 /*
  * DESIGN PHILOSOPHY: "Studio Nocturne" — Interface sombre professionnelle
  * Inspirée de Lightroom / DaVinci Resolve / Final Cut Pro
- * Palette Intemporelle: bleu nuit #0A1628, rose magenta #e91e8c (accents PIN)
+ * Palette Intemporelle: bleu nuit #0A1628, rose magenta #ffffff (accents PIN)
  * Typographie: Outfit (géométrique, moderne)
  * Optimisé tablette Android (base 14px)
  */
@@ -55,8 +55,8 @@
   --brand-navy: #0A1628;
   --brand-navy-light: #0F2040;
   --brand-navy-mid: #1A3560;
-  --brand-cyan: #e91e8c;
-  --brand-cyan-dim: rgba(233, 30, 140, 0.15);
+  --brand-cyan: #ffffff;
+  --brand-cyan-dim: rgba(255, 255, 255, 0.15);
   --brand-rose: #C0396A;
   --brand-rose-dim: rgba(192, 57, 106, 0.15);
   --brand-text: #E8F4FF;
