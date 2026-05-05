@@ -110,7 +110,7 @@ export default function EcranPIN(){
 
         {/* Subtitle */}
         <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>app.intemporelle.eu</div>
+          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>studio.intemporelle.eu</div>
           <div style={{fontSize:11,fontWeight:600,color:GOLD,letterSpacing:'0.18em',marginTop:4}}>{step==='pin'&&selNom?selNom.toUpperCase():'MON STUDIO'}</div>
         </div>
 

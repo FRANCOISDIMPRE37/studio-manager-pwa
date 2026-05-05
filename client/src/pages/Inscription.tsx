@@ -55,7 +55,7 @@ export default function Inscription() {
             className="rounded-lg mb-4"
             style={{ width: "120px", objectFit: "contain" }}
           />
-          <h1 className="text-2xl font-bold text-white">app.intemporelle.eu</h1>
+          <h1 className="text-2xl font-bold text-white">studio.intemporelle.eu</h1>
           <p className="text-sm mt-1" style={{ color: "var(--brand-text-muted)" }}>
             Gestion RGPD pour salons de tatouage & piercing
           </p>

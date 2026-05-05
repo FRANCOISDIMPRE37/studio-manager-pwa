@@ -226,7 +226,7 @@ export default function SuperAdmin() {
           <div style={{ fontSize: 24 }}>💎</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>Console Super-Admin</div>
-            <div style={{ color: "#555", fontSize: 12 }}>app.intemporelle.eu</div>
+            <div style={{ color: "#555", fontSize: 12 }}>studio.intemporelle.eu</div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
