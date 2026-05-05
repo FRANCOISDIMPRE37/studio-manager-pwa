@@ -336,17 +336,7 @@ export default function SuperAdmin() {
                   </div>
                 )}
 
-                {/* Plan */}
-                <select
-                  value={studio.planType}
-                  onChange={e => changePlan(studio, e.target.value)}
-                  style={{ padding: "6px 10px", background: "#1e1e2e", border: `1px solid ${planColors[studio.planType] || "#2a2a3a"}`, borderRadius: 6, color: planColors[studio.planType] || "#fff", fontSize: 12, cursor: "pointer" }}
-                >
-                  <option value="trial">Trial</option>
-                  <option value="solo">Solo</option>
-                  <option value="studio">Studio</option>
-                  <option value="multi">Multi-sites</option>
-                </select>
+
 
                 {/* Lien direct */}
                 <button
@@ -484,19 +474,7 @@ export default function SuperAdmin() {
                   </button>
                 </div>
               </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>PLAN</label>
-                <select
-                  value={newStudio.planType}
-                  onChange={e => setNewStudio({ ...newStudio, planType: e.target.value })}
-                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box" }}
-                >
-                  <option value="trial">Trial (essai gratuit)</option>
-                  <option value="solo">Solo</option>
-                  <option value="studio">Studio</option>
-                  <option value="multi">Multi-sites</option>
-                </select>
-              </div>
+
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 8 }}>SPÉCIALITÉS</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
