@@ -61,9 +61,9 @@ function AppRoutes() {
     return <Login />;
   }
 
-  // Première connexion : studio pas encore configuré → Onboarding
-  const salonNom = state.salonInfo?.nom?.trim();
-  if (!salonNom) {
+  // Première connexion : onboarding non encore effectué → Engagements
+  const onboardingDone = localStorage.getItem('sm_onboarding_done');
+  if (!onboardingDone) {
     return <Onboarding />;
   }
 
