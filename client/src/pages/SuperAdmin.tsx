@@ -350,7 +350,7 @@ export default function SuperAdmin() {
 
                 {/* Lien direct */}
                 <button
-                  onClick={() => window.open('https://app.intemporelle.eu', '_blank')}
+                  onClick={() => window.open('https://studio.intemporelle.eu', '_blank')}
                   style={{ padding: "6px 14px", background: "#10b98120", border: "1px solid #10b981", borderRadius: 6, color: "#10b981", cursor: "pointer", fontSize: 12, fontWeight: 600 }}
                 >
                   🔗 Ouvrir
