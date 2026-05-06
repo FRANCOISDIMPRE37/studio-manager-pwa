@@ -753,7 +753,13 @@
     "legal_rep_name": "Nom du représentant légal",
     "tattoo_artist_name": "Nom du tatoueur",
     "tattoo_artist_signature": "Signature du tatoueur",
-    "expiry_date": "Date de péremption"
+    "expiry_date": "Date de péremption",
+    "legal_rep_signature": "Signature du représentant légal",
+    "medication_name": "Nom du médicament",
+    "other": "Autre",
+    "specify_pathology": "Préciser la pathologie",
+    "specify_technique": "Préciser la technique",
+    "specify_zone": "Préciser la zone"
   },
   "legal": {
     "rgpd_minor": "Conservation : 3 ans minimum à compter de la majorité du mineur (Art. L1110-4 CSP). Copie conservée par le salon — Pièces jointes : copie de la/des pièce(s) d'identité du/des représentant(s) légal/aux. VOS DROITS RGPD Dans le cadre de votre prestation, nous collectons et traitons vos données personnelles. Conformément au RGPD, vous disposez des droits suivants : Art. 15 — Droit d'accès · Art. 16 — Droit de rectification · Art. 17 — Droit à l'effacement · Art. 21 — Droit d'opposition Conservation : données de santé 3 ans — Pour exercer vos droits : francois-dimpre@intemporelle.eu Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).",
@@ -762,7 +768,8 @@
     "ink_regulation": "▪ Règlement UE 2020/2081 — Encres de tatouage ▪ Les encres utilisées sont conformes au Règlement UE 2020/2081 en vigueur depuis le 4 janvier 2022. ▪ La traçabilité des encres est conservée 5 ans (Art. R 1311-7 CSP + Arrêté 13/03/2009).",
     "support_line": "Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).",
     "rgpd_tattoo": "Conformément au RGPD et à l'Arrêté du 3 décembre 2008, vos données sont conservées 5 ans minimum.",
-    "eu_ink_regulation": "Règlement UE 2020/2081 — Les encres utilisées sont conformes et traçables. Conservation 5 ans minimum."
+    "eu_ink_regulation": "Règlement UE 2020/2081 — Les encres utilisées sont conformes et traçables. Conservation 5 ans minimum.",
+    "rgpd_dermography": "Conservation : 5 ans minimum à compter de la dernière prestation (Art. L1110-4 CSP). Copie conservée par le salon. VOS DROITS RGPD — Art. 15 Droit d'accès · Art. 16 Rectification · Art. 17 Effacement · Art. 21 Opposition. Pour exercer vos droits : contact@votresalon.fr"
   },
   "q01": {
     "section_minor_identity": "1 — IDENTITÉ DU MINEUR",
@@ -958,7 +965,8 @@
     "client_name_signed": "Nom du client — Lu et approuvé",
     "ink_warning": "Conformément au Règlement UE 2020/2081, les encres utilisées doivent être conformes et traçables.",
     "ink_colors": "Couleurs utilisées",
-    "ink_cert": "Encres conformes UE 2020/2081 vérifiées"
+    "ink_cert": "Encres conformes UE 2020/2081 vérifiées",
+    "previous_tattoo_reaction": "Réaction lors d'un tatouage antérieur"
   },
   "q08": {
     "section_client_identity": "1 — IDENTITÉ DU CLIENT",
@@ -1031,6 +1039,8 @@
     "anesthetic_lot": "N° lot anesthésiant",
     "anesthetic_expiry": "Péremption anesthésiant",
     "section_session_progress": "6 — DÉROULEMENT DE LA SÉANCE",
+    "zone_preparation_default": "Rasage + désinfection",
+    "incident_details": "Détails de l'incident",
     "zone_preparation": "Préparation de la zone",
     "color_test": "Test couleur réalisé",
     "template_used": "Gabarit utilisé",
@@ -1090,9 +1100,15 @@
     "section_service": "2 — PRESTATION SOUHAITÉE",
     "zones_treated": "Zone(s) à traiter",
     "technique_type": "Technique souhaitée",
+    "session_type_first": "Première séance",
     "session_type": "Type de séance",
     "project_description": "Description du projet / attentes",
     "section_history": "3 — HISTORIQUE MAQUILLAGE PERMANENT",
+    "previous_salon": "Salon précédent",
+    "previous_session_date": "Date de la dernière séance précédente",
+    "laser_removal": "Retrait laser effectué sur la zone ?",
+    "partially": "Partiellement",
+    "herpes_warning": "Attention : en cas d'herpès labial, un traitement préventif est recommandé avant toute prestation sur les lèvres.",
     "previous_pmu": "Avez-vous déjà eu du maquillage permanent ?",
     "laser_other": "Traitement laser autre sur la zone ?",
     "not_applicable": "Sans objet",
