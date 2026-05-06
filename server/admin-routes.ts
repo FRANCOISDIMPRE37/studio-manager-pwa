@@ -303,4 +303,38 @@ SUPER_ADMIN_PASSWORD=${newPassword}`;
   return res.json({ success: true });
 });
 
+// Route pour configurer le SMTP d'un studio depuis le Super-Admin
+router.post('/set-smtp/:studioId', async (req: Request, res: Response) => {
+  const token = req.cookies?.super_admin_session;
+  if (!token) return res.status(401).json({ error: 'Non authentifié' });
+  const studioId = parseInt(req.params.studioId);
+  if (isNaN(studioId)) return res.status(400).json({ error: 'studioId invalide' });
+  const { host, port, secure, user, password, fromName, replyTo } = req.body;
+  if (!host || !port || !user || !password) {
+    return res.status(400).json({ error: 'Champs obligatoires : host, port, user, password' });
+  }
+  try {
+    // Trouver le userId associé à ce studio
+    const [rows] = await (db as any).$client.query(
+      'SELECT userId FROM studios WHERE id = ?',
+      [studioId]
+    );
+    if ((rows as any[]).length === 0) return res.status(404).json({ error: 'Studio non trouvé' });
+    const userId = (rows as any[])[0].userId;
+    // Upsert la config SMTP
+    await (db as any).$client.query(
+      `INSERT INTO smtp_config (userId, host, port, secure, user, password, fromName, replyTo, updatedAt)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW())
+       ON DUPLICATE KEY UPDATE
+         host=VALUES(host), port=VALUES(port), secure=VALUES(secure),
+         user=VALUES(user), password=VALUES(password),
+         fromName=VALUES(fromName), replyTo=VALUES(replyTo), updatedAt=NOW()`,
+      [userId, host, port, secure ? 1 : 0, user, password, fromName || null, replyTo || null]
+    );
+    return res.json({ success: true, message: `SMTP configuré pour le studio ${studioId} (userId=${userId})` });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 export default router;
