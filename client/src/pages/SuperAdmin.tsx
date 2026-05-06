@@ -29,8 +29,8 @@ export default function SuperAdmin() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const [newStudio, setNewStudio] = useState({ nomSalon: "", ownerEmail: "", password: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
-  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string; password: string } | null>(null);
+  const [newStudio, setNewStudio] = useState({ nomSalon: "", ownerEmail: "", password: "", pin: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
+  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string; password: string; pin: string } | null>(null);
   const [actionMsg, setActionMsg] = useState("");
   const [editingSpecialites, setEditingSpecialites] = useState<number | null>(null);
   const [showNotif, setShowNotif] = useState(false);
@@ -115,9 +115,9 @@ export default function SuperAdmin() {
     });
     const data = await r.json();
     if (r.ok) {
-      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail, password: newStudio.password });
+      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail, password: newStudio.password, pin: newStudio.pin });
       setShowCreate(false);
-      setNewStudio({ nomSalon: "", ownerEmail: "", password: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
+      setNewStudio({ nomSalon: "", ownerEmail: "", password: "", pin: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
       loadStudios();
     } else {
       alert("Erreur : " + data.error);
@@ -278,11 +278,13 @@ export default function SuperAdmin() {
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 6, textAlign: "center", color: "#a855f7", marginTop: 8 }}>
                 PIN temporaire : <b>{created.tempPin}</b>
               </div>
+              <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 8, textAlign: "center", color: "#f59e0b", marginTop: 8 }}>
+                🔢 Code PIN : <b>{created.pin}</b>
+              </div>
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 15, textAlign: "center", color: "#10b981", marginTop: 8 }}>
                 🔐 Mot de passe : <b>{created.password}</b>
               </div>
               <div style={{ color: "#888", fontSize: 12, textAlign: "center", marginTop: 4 }}>Communiquez le PIN et le mot de passe au client — ils serviront à la double sécurité</div>
-            </div>
             <button onClick={() => setCreated(null)} style={{ marginTop: 16, padding: "6px 14px", background: "transparent", border: "1px solid #444", borderRadius: 6, color: "#888", cursor: "pointer", fontSize: 12 }}>
               Fermer
             </button>
@@ -458,6 +460,20 @@ export default function SuperAdmin() {
                   placeholder="patron@salon.fr"
                   required
                   style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
+                />
+              </div>
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>CODE PIN (4 chiffres)</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={4}
+                  pattern="[0-9]{4}"
+                  value={newStudio.pin}
+                  onChange={e => setNewStudio({ ...newStudio, pin: e.target.value.replace(/\D/g, '').slice(0, 4) })}
+                  placeholder="Ex: 1234"
+                  required
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none", letterSpacing: 8, fontSize: 18 }}
                 />
               </div>
               <div style={{ marginBottom: 16 }}>

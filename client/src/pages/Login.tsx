@@ -52,16 +52,36 @@ export default function Login() {
     setLocalPin(newPin);
 
     if (newPin.length === 4) {
-      setTimeout(() => {
+      setTimeout(async () => {
         // Si salarié → connexion directe via API
         if (selEmp) {
           setIsLoading(true);
           empLogin.mutate({ employeId: selEmp.id, pin: newPin });
           return;
         }
-        // Sinon → passer directement à la double sécurité (le PIN est validé côté serveur)
-        setPinStep('double');
-        setLocalPin('');
+        // Vérifier le PIN côté serveur (salon_settings.pinHash en BDD OVH)
+        setIsLoading(true);
+        try {
+          const res = await fetch('/api/auth/verify-pin', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pin: newPin }),
+          });
+          const data = await res.json();
+          if (data.valid) {
+            setPinStep('double');
+            setLocalPin('');
+          } else {
+            setShake(true);
+            setTimeout(() => { setShake(false); setLocalPin(''); }, 600);
+            toast.error('Code PIN incorrect');
+          }
+        } catch {
+          toast.error('Erreur de connexion au serveur');
+          setLocalPin('');
+        } finally {
+          setIsLoading(false);
+        }
       }, 200);
     }
   };

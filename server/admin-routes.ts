@@ -89,9 +89,10 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: 'Database error' });
 
-    const { nomSalon, ownerEmail, password, planType = 'trial', trialDays = 30, specialites = 'piercing,tatouage,dermographie' } = req.body;
+    const { nomSalon, ownerEmail, password, pin, planType = 'trial', trialDays = 30, specialites = 'piercing,tatouage,dermographie' } = req.body;
     if (!nomSalon || !ownerEmail) return res.status(400).json({ error: 'nomSalon et ownerEmail requis' });
     if (!password) return res.status(400).json({ error: 'Le mot de passe est obligatoire pour la double sécurité' });
+    if (!pin || pin.length !== 4) return res.status(400).json({ error: 'Le code PIN à 4 chiffres est obligatoire' });
 
     // Générer un PIN temporaire à 6 chiffres
     const tempPin = Math.floor(1000 + Math.random() * 9000).toString();
@@ -126,6 +127,14 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
       'UPDATE users SET passwordHash = ? WHERE id = ?',
       [passwordHash, userId]
     );
+
+    // Sauvegarder le PIN hashé dans salon_settings.pinHash
+    const pinHash = await bcrypt.hash(pin, 10);
+    await (db as any).$client.query(
+      'INSERT INTO salon_settings (userId, nom, pinHash) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE pinHash = ?',
+      [userId, nomSalon, pinHash, pinHash]
+    );
+
     return res.json({ success: true, tempPin, slug, ownerEmail, nomSalon });
   } catch (e: any) {
     return res.status(500).json({ error: e.message });

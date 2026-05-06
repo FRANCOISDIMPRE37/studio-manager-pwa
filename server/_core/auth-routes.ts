@@ -90,6 +90,40 @@ export function registerAuthRoutes(app: Express) {
     }
   });
 
+  // Vérification du PIN studio (stocké dans salon_settings.pinHash)
+  app.post("/api/auth/verify-pin", pinLimiter, async (req: Request, res: Response) => {
+    const { email, pin } = req.body;
+    if (!pin || pin.length !== 4) return res.status(400).json({ error: "PIN à 4 chiffres requis" });
+    try {
+      const db = await getDb();
+      if (!db) return res.status(500).json({ error: "DB non disponible" });
+
+      // Si email fourni : vérifier le PIN du studio lié à cet email
+      // Sinon : vérifier dans tous les studios actifs
+      let query = "SELECT ss.pinHash, u.email FROM salon_settings ss JOIN users u ON ss.userId = u.id WHERE ss.pinHash IS NOT NULL";
+      const params: any[] = [];
+      if (email) {
+        query += " AND u.email = ? LIMIT 1";
+        params.push(email);
+      } else {
+        query += " LIMIT 50";
+      }
+
+      const [rows] = await (db as any).$client.query(query, params);
+      for (const row of rows as any[]) {
+        if (row.pinHash && await bcrypt.compare(pin, row.pinHash)) {
+          await logAudit(db, "verify_pin_ok", req, true, row.email);
+          return res.json({ valid: true });
+        }
+      }
+      await logAudit(db, "verify_pin_failed", req, false);
+      return res.status(401).json({ valid: false, error: "Code PIN incorrect" });
+    } catch (err: any) {
+      console.error("[Auth] verify-pin error:", err);
+      return res.status(500).json({ error: err.message });
+    }
+  });
+
   app.post("/api/auth/logout", (req: Request, res: Response) => {
     res.clearCookie("local_session");
     res.json({ success: true });
