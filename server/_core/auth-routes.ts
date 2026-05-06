@@ -34,8 +34,9 @@ export function registerAuthRoutes(app: Express) {
       const db = await getDb();
       if (!db) return res.status(500).json({ error: "DB non disponible" });
 
+      // Prioriser l'utilisateur avec passwordHash (évite les doublons OAuth sans mot de passe)
       const [rows] = await (db as any).$client.query(
-        "SELECT * FROM users WHERE email = ? LIMIT 1", [email]
+        "SELECT * FROM users WHERE email = ? ORDER BY (passwordHash IS NOT NULL) DESC LIMIT 1", [email]
       );
       const user = (rows as any[])[0];
 

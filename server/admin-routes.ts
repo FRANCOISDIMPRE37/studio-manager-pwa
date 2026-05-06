@@ -303,18 +303,6 @@ SUPER_ADMIN_PASSWORD=${newPassword}`;
   return res.json({ success: true });
 });
 
-// Route DEBUG temporaire — voir l'email et passwordHash d'un userId
-router.get('/api/super-admin/debug-user/:userId', async (req: Request, res: Response) => {
-  try {
-    const db = await getDb();
-    if (!db) return res.status(500).json({ error: 'DB error' });
-    const [rows] = await (db as any).$client.query(
-      'SELECT id, openId, email, name, passwordHash IS NOT NULL as hasPassword, loginMethod FROM users WHERE id = ?',
-      [parseInt(req.params.userId)]
-    );
-    return res.json((rows as any[])[0] || { error: 'not found' });
-  } catch (e: any) { return res.status(500).json({ error: e.message }); }
-});
 
 // Route pour réinitialiser le mot de passe d'un studio depuis le Super-Admin
 router.post('/api/super-admin/reset-password/:studioId', async (req: Request, res: Response) => {

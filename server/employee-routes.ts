@@ -72,7 +72,7 @@ router.post('/api/employees', authMiddleware, async (req, res) => {
 });
 
 // Modifier un employé
-router.put('/api/employees', authMiddleware/:id', async (req, res) => {
+router.put('/api/employees/:id', authMiddleware, async (req, res) => {
   const db = await import('./db').then(m => m.getDb());
   if (!db) return res.status(500).json({ error: 'Database error' });
   
@@ -83,7 +83,7 @@ router.put('/api/employees', authMiddleware/:id', async (req, res) => {
   const { prenom, nom, adresse, codePostal, ville, email, pin, password, typeContrat } = req.body;
   
   let query = 'UPDATE employees SET prenom = ?, nom = ?, adresse = ?, codePostal = ?, ville = ?, email = ?, pin = ?, typeContrat = ?';
-  let params = [prenom, nom, adresse, codePostal, ville, email, pin, typeContrat];
+  let params: any[] = [prenom, nom, adresse, codePostal, ville, email, pin, typeContrat];
   
   if (password) {
     const passwordHash = await bcrypt.hash(password, 10);
@@ -99,7 +99,7 @@ router.put('/api/employees', authMiddleware/:id', async (req, res) => {
 });
 
 // Supprimer un employé
-router.delete('/api/employees', authMiddleware/:id', async (req, res) => {
+router.delete('/api/employees/:id', authMiddleware, async (req, res) => {
   const db = await import('./db').then(m => m.getDb());
   if (!db) return res.status(500).json({ error: 'Database error' });
   
@@ -112,7 +112,7 @@ router.delete('/api/employees', authMiddleware/:id', async (req, res) => {
 });
 
 // Signer le document de confidentialité
-router.post('/api/employees', authMiddleware/:id/sign-confidentiality', async (req, res) => {
+router.post('/api/employees/:id/sign-confidentiality', authMiddleware, async (req, res) => {
   const db = await import('./db').then(m => m.getDb());
   if (!db) return res.status(500).json({ error: 'Database error' });
   
@@ -127,10 +127,8 @@ router.post('/api/employees', authMiddleware/:id/sign-confidentiality', async (r
   res.json({ success: true });
 });
 
-export default router;
-
 // Connexion employé par email/mot de passe
-router.post('/api/employees', authMiddleware/login', async (req, res) => {
+router.post('/api/employees/login', async (req, res) => {
   const db = await import('./db').then(m => m.getDb());
   if (!db) return res.status(500).json({ error: 'Database error' });
   
@@ -178,3 +176,5 @@ router.post('/api/employees', authMiddleware/login', async (req, res) => {
   
   res.json({ success: true, employee: { id: employee.id, prenom: employee.prenom, nom: employee.nom } });
 });
+
+export default router;
