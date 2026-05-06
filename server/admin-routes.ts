@@ -303,6 +303,26 @@ SUPER_ADMIN_PASSWORD=${newPassword}`;
   return res.json({ success: true });
 });
 
+// Route pour réinitialiser le mot de passe d'un studio depuis le Super-Admin
+router.post('/api/super-admin/reset-password/:studioId', async (req: Request, res: Response) => {
+  const token = req.cookies?.super_admin_session;
+  if (!token) return res.status(401).json({ error: 'Non authentifié' });
+  const studioId = parseInt(req.params.studioId);
+  if (isNaN(studioId)) return res.status(400).json({ error: 'studioId invalide' });
+  const { password } = req.body;
+  if (!password || password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (min 6 caractères)' });
+  try {
+    const [rows] = await (db as any).$client.query('SELECT userId FROM studios WHERE id = ?', [studioId]);
+    if ((rows as any[]).length === 0) return res.status(404).json({ error: 'Studio non trouvé' });
+    const userId = (rows as any[])[0].userId;
+    const passwordHash = await bcrypt.hash(password, 10);
+    await (db as any).$client.query('UPDATE users SET passwordHash = ? WHERE id = ?', [passwordHash, userId]);
+    return res.json({ success: true, message: `Mot de passe mis à jour pour le studio ${studioId} (userId=${userId})` });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
 // Route pour configurer le SMTP d'un studio depuis le Super-Admin
 router.post('/api/super-admin/set-smtp/:studioId', async (req: Request, res: Response) => {
   const token = req.cookies?.super_admin_session;
