@@ -41,7 +41,7 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.dermographie',
     icon: FileText,
     color: '#FF9800',
-    docs: ['questionnaire_patch_test', 'questionnaire_dermographe_mineur', 'questionnaire_dermographe', 'fiche_seance_dermographe', 'soins_dermographe', 'fiche_retouche_dermographie'] as DocumentType[],
+    docs: ['questionnaire_dermographe_mineur', 'questionnaire_dermographe', 'fiche_seance_dermographe', 'soins_dermographe', 'fiche_retouche_dermographie'] as DocumentType[],
     forMineur: null,
   },
   {
