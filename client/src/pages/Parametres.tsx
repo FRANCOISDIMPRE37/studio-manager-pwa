@@ -254,15 +254,10 @@ export default function Parametres() {
         }
         // Confirmation avant import
         if (!window.confirm(`Importer ${backup.clients.length} client(s) depuis la sauvegarde du ${backup.exportDate ? new Date(backup.exportDate).toLocaleDateString('fr-FR') : 'date inconnue'} ?\n\nATTENTION : Cela remplacera toutes les données actuelles.`)) return;
-        if (backup.salonInfo) {
-          localStorage.setItem('sm_salon_info', JSON.stringify(backup.salonInfo));
-        }
-        localStorage.setItem('sm_clients', JSON.stringify(backup.clients));
-        if (backup.rendezVous) {
-          localStorage.setItem('sm_rdv', JSON.stringify(backup.rendezVous));
-        }
-        toast.success('Sauvegarde importée ! Rechargement en cours...');
-        setTimeout(() => window.location.reload(), 1500);
+        // La restauration se fait uniquement via le serveur OVH
+        // Aucune donnée n'est stockée localement
+        toast.error('La restauration locale est désactivée. Contactez votre administrateur pour restaurer depuis le serveur OVH.');
+        return;
       } catch {
         toast.error('Erreur lors de la lecture du fichier');
       }

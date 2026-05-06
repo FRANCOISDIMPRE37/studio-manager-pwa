@@ -27,9 +27,8 @@ i18n
     fallbackLng: "fr",
     supportedLngs: ["fr", "en", "de", "nl", "es", "it", "pt"],
     detection: {
-      order: ["localStorage", "navigator", "htmlTag"],
-      caches: ["localStorage"],
-      lookupLocalStorage: "studioManagerLang",
+      order: ["navigator", "htmlTag"],
+      caches: [], // Aucun cache localStorage
     },
     interpolation: {
       escapeValue: false,

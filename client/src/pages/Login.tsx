@@ -128,7 +128,6 @@ export default function Login() {
       });
       const data = await res.json();
       if (data.success) {
-        localStorage.setItem('sm_setup_done', '1');
         setAuthenticated(true);
         toast.success('Connexion réussie !');
       } else {
