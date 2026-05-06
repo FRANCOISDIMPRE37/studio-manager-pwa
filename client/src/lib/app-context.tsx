@@ -533,7 +533,6 @@ function AppProviderInner({ children, dispatch, state }: {
 
   const setAuthenticated = useCallback((val: boolean) => {
     dispatch({ type: 'SET_AUTHENTICATED', payload: val });
-    saveToStorage(STORAGE_KEYS.auth, val);
     // Sync from cloud when authenticated
     if (val && !state.isDemo) {
       setTimeout(() => syncFromCloud(), 100);
