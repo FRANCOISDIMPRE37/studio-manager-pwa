@@ -13,7 +13,7 @@ type Tab = 'pin' | 'email';
 type PinStep = 'pin' | 'double';   // pin = saisie PIN, double = vérif email+mdp
 
 export default function Login() {
-  const { state, setAuthenticated, verifyPin } = useApp();
+  const { state, setAuthenticated } = useApp();
 
   const [activeTab, setActiveTab] = useState<Tab>('pin');
   const [pinStep, setPinStep] = useState<PinStep>('pin');
@@ -53,21 +53,13 @@ export default function Login() {
 
     if (newPin.length === 4) {
       setTimeout(() => {
-        // Vérification locale du PIN
-        const localOk = verifyPin(newPin);
-        if (!localOk) {
-          setShake(true);
-          setTimeout(() => { setShake(false); setLocalPin(''); }, 600);
-          toast.error('Code PIN incorrect');
-          return;
-        }
-        // Si salarié → connexion directe
+        // Si salarié → connexion directe via API
         if (selEmp) {
           setIsLoading(true);
           empLogin.mutate({ employeId: selEmp.id, pin: newPin });
           return;
         }
-        // Sinon → passer à la double sécurité
+        // Sinon → passer directement à la double sécurité (le PIN est validé côté serveur)
         setPinStep('double');
         setLocalPin('');
       }, 200);
