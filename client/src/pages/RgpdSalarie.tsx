@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
+import { trpc } from '@/lib/trpc';
 import { Shield, ChevronLeft, FileText, CheckCircle } from 'lucide-react';
 import { Client, ClientDocument } from '@/lib/types';
 import { FormEngagementConfidentialite } from './FormsRGPD';
@@ -16,30 +17,54 @@ export default function RgpdSalarie() {
   const [formData, setFormData] = useState<Record<string, any>>({
     nomSignataire: '',
     posteSignataire: '',
-    typeContrat: 'CDI',
-    dateDebutMission: new Date().toLocaleDateString('fr-FR'),
+    typeContrat: '',
+    dateDebutMission: '',
     nomSalon: state.salonInfo?.nom || ''
   });
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  // On cherche le salarié dans la liste des clients (car ils y sont stockés pour les documents)
+  // Récupérer les données du salarié depuis studioUsers
+  const studioUsersList = trpc.studioUsers.list.useQuery();
+  const salarieData = studioUsersList.data?.find((u: any) => u.id === salarieId);
+
+  // On cherche aussi dans les clients pour les documents existants
   const salarie = state.clients.find(c => c.id === salarieId);
 
   useEffect(() => {
-    if (salarie) {
+    if (salarieData) {
+      // Formater la date d'entrée en JJ/MM/AAAA si elle existe
+      let dateEntreeFormatted = '';
+      if (salarieData.dateEntree) {
+        try {
+          const d = new Date(salarieData.dateEntree);
+          if (!isNaN(d.getTime())) {
+            dateEntreeFormatted = d.toLocaleDateString('fr-FR');
+          } else {
+            dateEntreeFormatted = salarieData.dateEntree;
+          }
+        } catch {
+          dateEntreeFormatted = salarieData.dateEntree;
+        }
+      }
+
       setFormData(prev => ({
         ...prev,
-        nomSignataire: `${salarie.prenom} ${salarie.nom}`,
-        posteSignataire: salarie.notes?.replace('Poste : ', '') || ''
+        nomSignataire: `${salarieData.prenom} ${salarieData.nom}`,
+        posteSignataire: salarieData.specialite || salarieData.role || '',
+        typeContrat: salarieData.typeContrat || '',
+        dateDebutMission: dateEntreeFormatted || new Date().toLocaleDateString('fr-FR'),
+        nomSalon: state.salonInfo?.nom || ''
       }));
-      
+    }
+
+    if (salarie) {
       const existingDoc = salarie.documents?.find(d => d.type === 'engagement_confidentialite');
       if (existingDoc?.signatureEmploye) {
         setSignatureData(existingDoc.signatureEmploye);
       }
     }
-  }, [salarie]);
+  }, [salarieData, salarie]);
 
   const updateForm = (key: string, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
