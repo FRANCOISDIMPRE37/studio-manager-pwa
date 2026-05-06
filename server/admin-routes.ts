@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { SignJWT, jwtVerify } from 'jose';
+import bcrypt from 'bcryptjs';
 import { getDb } from './db';
 import { studios, licenses, users } from '../drizzle/schema';
 import { eq, desc } from 'drizzle-orm';
@@ -90,6 +91,7 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
 
     const { nomSalon, ownerEmail, password, planType = 'trial', trialDays = 30, specialites = 'piercing,tatouage,dermographie' } = req.body;
     if (!nomSalon || !ownerEmail) return res.status(400).json({ error: 'nomSalon et ownerEmail requis' });
+    if (!password) return res.status(400).json({ error: 'Le mot de passe est obligatoire pour la double sécurité' });
 
     // Générer un PIN temporaire à 6 chiffres
     const tempPin = Math.floor(1000 + Math.random() * 9000).toString();
@@ -118,15 +120,12 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
       [userId, nomSalon, slug, ownerEmail, ownerEmail, planType, trialEndsAt, true, true, true, tempPin, specialites]
     );
 
-    // Sauvegarder le mot de passe si fourni
-    if (password) {
-      const bcrypt = require('bcryptjs');
-      const passwordHash = await bcrypt.hash(password, 10);
-      await (db as any).$client.query(
-        'INSERT INTO salon_settings (userId, nom, passwordHash) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE passwordHash = ?',
-        [userId, nomSalon, passwordHash, passwordHash]
-      );
-    }
+    // Sauvegarder le mot de passe (obligatoire) dans users.passwordHash
+    const passwordHash = await bcrypt.hash(password, 10);
+    await (db as any).$client.query(
+      'UPDATE users SET passwordHash = ? WHERE id = ?',
+      [passwordHash, userId]
+    );
     return res.json({ success: true, tempPin, slug, ownerEmail, nomSalon });
   } catch (e: any) {
     return res.status(500).json({ error: e.message });

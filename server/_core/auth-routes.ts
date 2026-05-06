@@ -41,10 +41,11 @@ export function registerAuthRoutes(app: Express) {
 
       if (!user) return res.status(401).json({ error: "Email ou mot de passe incorrect" });
 
-      if (user.passwordHash) {
-        const ok = await bcrypt.compare(password, user.passwordHash);
-        if (!ok) return res.status(401).json({ error: "Email ou mot de passe incorrect" });
+      if (!user.passwordHash) {
+        return res.status(401).json({ error: "Aucun mot de passe configuré pour ce compte. Contactez votre administrateur." });
       }
+      const ok = await bcrypt.compare(password, user.passwordHash);
+      if (!ok) return res.status(401).json({ error: "Email ou mot de passe incorrect" });
 
       const token = await new SignJWT({ openId: user.openId, userId: user.id })
         .setProtectedHeader({ alg: "HS256" })

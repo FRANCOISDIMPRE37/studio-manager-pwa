@@ -30,7 +30,7 @@ export default function SuperAdmin() {
   const [showCreate, setShowCreate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [newStudio, setNewStudio] = useState({ nomSalon: "", ownerEmail: "", password: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
-  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string } | null>(null);
+  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string; password: string } | null>(null);
   const [actionMsg, setActionMsg] = useState("");
   const [editingSpecialites, setEditingSpecialites] = useState<number | null>(null);
   const [showNotif, setShowNotif] = useState(false);
@@ -115,7 +115,7 @@ export default function SuperAdmin() {
     });
     const data = await r.json();
     if (r.ok) {
-      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail });
+      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail, password: newStudio.password });
       setShowCreate(false);
       setNewStudio({ nomSalon: "", ownerEmail: "", password: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] });
       loadStudios();
@@ -278,7 +278,10 @@ export default function SuperAdmin() {
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 6, textAlign: "center", color: "#a855f7", marginTop: 8 }}>
                 PIN temporaire : <b>{created.tempPin}</b>
               </div>
-              <div style={{ color: "#888", fontSize: 12, textAlign: "center" }}>Communiquez ce PIN au client — il devra le changer à la première connexion</div>
+              <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 15, textAlign: "center", color: "#10b981", marginTop: 8 }}>
+                🔐 Mot de passe : <b>{created.password}</b>
+              </div>
+              <div style={{ color: "#888", fontSize: 12, textAlign: "center", marginTop: 4 }}>Communiquez le PIN et le mot de passe au client — ils serviront à la double sécurité</div>
             </div>
             <button onClick={() => setCreated(null)} style={{ marginTop: 16, padding: "6px 14px", background: "transparent", border: "1px solid #444", borderRadius: 6, color: "#888", cursor: "pointer", fontSize: 12 }}>
               Fermer
