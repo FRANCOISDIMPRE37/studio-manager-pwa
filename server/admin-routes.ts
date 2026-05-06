@@ -312,6 +312,8 @@ router.post('/api/super-admin/reset-password/:studioId', async (req: Request, re
   const { password } = req.body;
   if (!password || password.length < 6) return res.status(400).json({ error: 'Mot de passe trop court (min 6 caractères)' });
   try {
+    const db = await getDb();
+    if (!db) return res.status(500).json({ error: 'Database error' });
     const [rows] = await (db as any).$client.query('SELECT userId FROM studios WHERE id = ?', [studioId]);
     if ((rows as any[]).length === 0) return res.status(404).json({ error: 'Studio non trouvé' });
     const userId = (rows as any[])[0].userId;
