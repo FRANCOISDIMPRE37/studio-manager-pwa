@@ -465,33 +465,6 @@ const SOINS_DATA: Record<string, { title: string; zones: { zone: string; desc: s
       'Toucher ou manipuler le bijou.',
     ],
   },
-  soins_detatouage_laser: {
-    title: 'SOINS POST-DÉTATOUAGE LASER',
-    zones: [
-      { zone: 'Immédiat (J0-J2)', desc: 'Rougeur, gonflement, sensation de brûlure légère — NORMAL', cica: 'J0 à J2' },
-      { zone: 'Court terme (J2-J7)', desc: 'Apparition de cloques (phlyctènes) — NE PAS PERCER', cica: 'J2 à J7' },
-      { zone: 'Moyen terme (J7-J14)', desc: 'Formation de croûtes — NE PAS GRATTER', cica: 'J7 à J14' },
-      { zone: 'Long terme (J14-J30)', desc: 'Desquamation, légère décoloration temporaire', cica: 'J14 à J30' },
-    ],
-    faire: [
-      'Appliquer de la crème Biafine® ou Cicaplast® 3×/jour pendant 7 à 10 jours.',
-      'Recouvrir la zone d\'un pansement stérile non adhésif les 3 premiers jours.',
-      'Nettoyer délicatement à l\'eau froide et sérum physiologique 2×/jour.',
-      'En cas de cloques : ne PAS les percer — les laisser se résorber naturellement.',
-      'Appliquer une crème solaire SPF50+ dès cicatrisation complète (minimum 6 mois).',
-      'En cas de douleur : Paracétamol uniquement (pas d\'ibuprofène).',
-      'Contacter le praticien en cas de signes d\'infection (pus, fièvre, rougeur extensive).',
-    ],
-    eviter: [
-      'Gratter ou arracher les croûtes — risque de cicatrice permanente.',
-      'Exposition solaire directe sur la zone pendant minimum 6 semaines.',
-      'Piscine, mer, sauna, bain chaud pendant 15 jours.',
-      'Vêtements frottant sur la zone traitée.',
-      'Maquillage ou cosmétiques sur la zone pendant la cicatrisation.',
-      'Sport intense les 48 premières heures (transpiration excessive).',
-      'Aspirine ou ibuprofène (augmentent le risque de saignement).',
-    ],
-  },
   soins_bouche_levres: {
     title: 'SOINS POST LABRET',
     zones: [
@@ -545,7 +518,6 @@ function FormSoins({ docType, data, update, client }: { docType: string; data: R
     soins_arcade_sourcil: 'arcade_sourcil',
     soins_surface_dermal: 'surface_dermal',
     soins_bouche_levres: 'bouche_levres',
-    soins_detatouage_laser: 'detatouage_laser',
   };
   const soinsKey = soinsKeyMap[docType];
   const fallback = SOINS_DATA[docType];

@@ -34,7 +34,7 @@ const DOC_CATEGORY_KEYS = [
     titleKey: 'doc_categories.tatouage',
     icon: FileText,
     color: '#FF5722',
-    docs: ['questionnaire_tatouage_mineur', 'questionnaire_tatouage_majeur', 'fiche_seance_tatouage', 'consentement_soins_tatouage', 'soins_detatouage_laser'] as DocumentType[],
+    docs: ['questionnaire_tatouage_mineur', 'questionnaire_tatouage_majeur', 'fiche_seance_tatouage', 'consentement_soins_tatouage'] as DocumentType[],
     forMineur: null,
   },
   {
