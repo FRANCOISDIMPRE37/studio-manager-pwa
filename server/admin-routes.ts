@@ -4,7 +4,6 @@ import bcrypt from 'bcryptjs';
 import { getDb } from './db';
 import { studios, licenses, users } from '../drizzle/schema';
 import { eq, desc } from 'drizzle-orm';
-import fs from 'fs';
 
 const router = Router();
 
@@ -104,8 +103,8 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
     if (selectedSpecialites.length === 0) return res.status(400).json({ error: 'Sélectionnez au moins une spécialité' });
     const specialitesCsv = selectedSpecialites.join(',');
 
-    // Générer un PIN temporaire à 6 chiffres
-    const tempPin = Math.floor(1000 + Math.random() * 9000).toString();
+    // Le champ historique tempPin alimente la fiche super-admin ; il doit refléter le PIN actif demandé.
+    const tempPin = pin;
 
     // Générer slug unique
     const baseSlug = nomSalon.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-').slice(0, 60);
@@ -199,8 +198,9 @@ router.patch('/api/super-admin/studios/:id', superAdminAuth, async (req, res) =>
         if (pin) {
           const bcrypt = await import('bcryptjs');
           const pinHash = await bcrypt.hash(pin, 10);
-          await (db as any).$client.query('UPDATE salon_settings SET pinHash = ? WHERE userId = ?', [pinHash, userId]);
-          await (db as any).$client.query('UPDATE studios SET pin = ? WHERE id = ?', [pin, id]);
+          await (db as any).$client.query('UPDATE salon_settings SET pinHash = ?, updatedAt = NOW() WHERE userId = ?', [pinHash, userId]);
+          await (db as any).$client.query('UPDATE studio_users SET pinHash = ?, updatedAt = NOW() WHERE ownerId = ? AND role = ? AND actif = 1', [pinHash, userId, 'admin']);
+          await (db as any).$client.query('UPDATE studios SET tempPin = ?, updatedAt = NOW() WHERE id = ?', [pin, id]);
         }
         if (password) {
           const bcrypt = await import('bcryptjs');
@@ -272,7 +272,7 @@ router.get('/api/studio-info', async (req, res) => {
     if (sessionCookie) {
       try {
         const { payload } = await jwtVerify(sessionCookie, JWT_SECRET);
-        const openId = payload.sub as string;
+        const openId = ((payload as any).openId || payload.sub) as string | undefined;
         const tokenUserId = (payload as any).userId;
 
         // Cas 1 : salarié connecté via PIN (userId dans studio_users)
@@ -373,7 +373,8 @@ router.post('/change-password', async (req: Request, res: Response) => {
   }
   
   // Sauvegarder le nouveau mot de passe dans .env
-  const envPath = process.env.ENV_FILE_PATH || '/home/ubuntu/app_v2/.env';
+  const fs = require('fs');
+  const envPath = '/home/ubuntu/app/.env';
   let envContent = fs.readFileSync(envPath, 'utf8');
   if (envContent.includes('SUPER_ADMIN_PASSWORD=')) {
     envContent = envContent.replace(/SUPER_ADMIN_PASSWORD=.*/g, `SUPER_ADMIN_PASSWORD=${newPassword}`);

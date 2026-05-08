@@ -90,7 +90,7 @@ export default function SuperAdmin() {
 
   async function openEditModal(studio: any) {
     const specs = typeof studio.specialites === 'string' ? (studio.specialites||'piercing,tatouage,dermographie').split(',').map((s:string)=>s.trim()) : Object.keys(studio.specialites||{}).filter((k:string)=>(studio.specialites as any)[k]);
-    setEditForm({ ...emptyStudioForm, nomSalon: studio.nom||'', rue: studio.adresse||'', codePostal: studio.codePostal||'', ville: studio.ville||'', telephone: studio.telephone||'', emailSalon: studio.email||'', ownerEmail: studio.ownerEmail||'', pin: studio.pin||'', password: '', planType: studio.planType||'studio', specialites: specs });
+    setEditForm({ ...emptyStudioForm, nomSalon: studio.nom||'', rue: studio.adresse||'', codePostal: studio.codePostal||'', ville: studio.ville||'', telephone: studio.telephone||'', emailSalon: studio.email||'', ownerEmail: studio.ownerEmail||'', pin: studio.tempPin||'', password: '', planType: studio.planType||'studio', specialites: specs });
     setEditingStudio(studio);
   }
   async function handleEditStudio(e: React.FormEvent) {
@@ -317,7 +317,7 @@ export default function SuperAdmin() {
               <div>📌 <b>Salon :</b> {created.nomSalon}</div>
               <div>📧 <b>Email client :</b> {created.ownerEmail}</div>
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 6, textAlign: "center", color: "#a855f7", marginTop: 8 }}>
-                PIN temporaire : <b>{created.tempPin}</b>
+                PIN actif : <b>{created.tempPin}</b>
               </div>
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 8, textAlign: "center", color: "#f59e0b", marginTop: 8 }}>
                 🔢 Code PIN : <b>{created.pin}</b>
@@ -376,10 +376,10 @@ export default function SuperAdmin() {
                     );
                   })}
                 </div>
-                {/* PIN temporaire */}
-                {studio.isTemporary && studio.tempPin && (
-                  <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "6px 14px", fontFamily: "monospace", color: "#a855f7", fontSize: 14, letterSpacing: 3 }}>
-                    PIN: {studio.tempPin}
+                {/* PIN actif affiché par la fiche super-admin */}
+                {studio.tempPin && (
+                  <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "6px 14px", fontFamily: "monospace", color: "#10b981", fontSize: 14, letterSpacing: 3 }}>
+                    PIN actif: {studio.tempPin}
                   </div>
                 )}
 
