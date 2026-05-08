@@ -268,7 +268,10 @@ function AppProviderInner({ children, dispatch, state }: {
     try {
       dispatch({ type: 'SET_SYNCING', payload: true });
       const [dbClients, dbRDV, dbSalon, dbPrestations, dbDocuments] = await Promise.all([
-        utils.clients.list.fetch(employeeSession ? { employeeId: employeeSession.id } : undefined),
+        // Cohérence PC/iPad : la liste clients est toujours chargée depuis la source serveur complète.
+        // La session employé reste utilisée pour les actions et signatures, mais ne doit pas masquer
+        // un client mineur créé sur un autre appareil ou sous une autre session locale.
+        utils.clients.list.fetch(),
         utils.rdv.list.fetch(),
         utils.salon.get.fetch(),
         utils.prestations.listAll.fetch(),
@@ -548,13 +551,32 @@ function AppProviderInner({ children, dispatch, state }: {
     }
   }, [state.isDemo, updateSalonMutation]);
 
-  // Sync automatique depuis le serveur OVH au démarrage dès que l'utilisateur est authentifié
+  // Sync automatique depuis le serveur OVH au démarrage dès que l'utilisateur est authentifié.
   useEffect(() => {
     if (state.isAuthenticated && !state.isDemo && !state.isLoading) {
       syncFromCloud();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isAuthenticated, state.isLoading]);
+
+  // Cohérence tablette : quand Safari/iPad réactive l'onglet ou revient depuis l'écran d'accueil,
+  // on recharge les données serveur pour afficher les clients créés entre-temps sur PC.
+  useEffect(() => {
+    if (!state.isAuthenticated || state.isDemo || state.isLoading) return;
+    const refreshIfVisible = () => {
+      if (document.visibilityState === 'visible') {
+        syncFromCloud();
+      }
+    };
+    window.addEventListener('focus', refreshIfVisible);
+    window.addEventListener('pageshow', refreshIfVisible);
+    document.addEventListener('visibilitychange', refreshIfVisible);
+    return () => {
+      window.removeEventListener('focus', refreshIfVisible);
+      window.removeEventListener('pageshow', refreshIfVisible);
+      document.removeEventListener('visibilitychange', refreshIfVisible);
+    };
+  }, [state.isAuthenticated, state.isDemo, state.isLoading, syncFromCloud]);
 
   const setAuthenticated = useCallback((val: boolean) => {
     dispatch({ type: 'SET_AUTHENTICATED', payload: val });

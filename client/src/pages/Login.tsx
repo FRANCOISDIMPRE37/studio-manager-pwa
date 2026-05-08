@@ -8,12 +8,14 @@ import { useApp } from '@/lib/app-context';
 import { Delete, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
+import { useEmployeSession } from '@/contexts/EmployeSessionContext';
 
 type Tab = 'pin' | 'email';
 type PinStep = 'pin' | 'double';   // pin = saisie PIN, double = vérif email+mdp
 
 export default function Login() {
   const { state, setAuthenticated } = useApp();
+  const { setEmploye } = useEmployeSession();
 
   const [activeTab, setActiveTab] = useState<Tab>('pin');
   const [pinStep, setPinStep] = useState<PinStep>('pin');
@@ -32,7 +34,8 @@ export default function Login() {
   const { data: emps } = trpc.studioUsers.listForPin.useQuery();
   const empLogin = trpc.studioUsers.loginWithPin.useMutation({
     onSuccess: (d) => {
-      try { sessionStorage.setItem('studio_employe_session', JSON.stringify({ ...d.employe, loginAt: new Date().toISOString() })); } catch {}
+      const employeSession = { ...d.employe, loginAt: new Date().toISOString() };
+      setEmploye(employeSession);
       setAuthenticated(true);
       toast.success('Bonjour ' + d.employe.prenom + ' !');
     },
