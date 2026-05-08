@@ -1,7 +1,7 @@
 /*
  * DESIGN: Studio Nocturne — Page paramètres avec infos salon, PIN, RGPD
  */
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
 import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, ChevronRight, Send, CheckCircle, XCircle, Server } from 'lucide-react';
@@ -178,17 +178,25 @@ function SalarieSection() {
   );
 }
 
+const EMPTY_SALON_INFO: SalonInfo = {
+  nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
+  telephone: '', email: '', siret: '', nomPierceur: '', nomTatoueur: '', nomDermographe: '', logo: '',
+  siteWeb: '', mentionsLegales: '',
+  specialites: { piercing: true, tatouage: true, dermographie: true },
+};
+
 export default function Parametres() {
   const { state, updateSalonInfo, setAuthenticated, setPin, exitDemoMode } = useApp();
   const { t } = useTranslation();
 
   const [editingSalon, setEditingSalon] = useState(false);
-  const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
-    nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
-    telephone: '', email: '', siret: '', nomPierceur: '', nomTatoueur: '', nomDermographe: '', logo: '',
-    siteWeb: '', mentionsLegales: '',
-  });
+  const [salonForm, setSalonForm] = useState<SalonInfo>({ ...EMPTY_SALON_INFO, ...(state.salonInfo || {}) });
   const logoInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!state.salonInfo) return;
+    setSalonForm({ ...EMPTY_SALON_INFO, ...state.salonInfo });
+  }, [state.salonInfo]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

@@ -393,7 +393,7 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomTatoueurSign', v)} />
+          <FormField label="Nom du tatoueur" value={data.nomTatoueurSign || salonInfo?.nomTatoueur || ''} onChange={v => update('nomTatoueurSign', v)} />
           <FormField label="Date" value={data.dateSignatureTatoueur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureTatoueur', v)} />
           <div className="mt-3">
             <SignaturePad
@@ -552,7 +552,7 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
       <FormSection title="8 — SIGNATURE" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du tatoueur" value={data.signatureTatoueur || salonInfo?.nomPierceur || ''} onChange={v => update('signatureTatoueur', v)} />
+          <FormField label="Nom du tatoueur" value={data.signatureTatoueur || salonInfo?.nomTatoueur || ''} onChange={v => update('signatureTatoueur', v)} />
           <div className="mt-3">
             <SignaturePad
               label="Signature du tatoueur"
@@ -645,7 +645,7 @@ function FormQuestionnaireTatouageMineur({ data, update, client }: { data: Recor
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomTatoueurSign', v)} required />
+          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomTatoueur || ''} onChange={v => update('nomTatoueurSign', v)} required />
           <FormField label={t('forms.date')} value={data.dateSignatureTatoueur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureTatoueur', v)} required />
           <div className="mt-3">
             <SignaturePad label={t('forms.tattoo_artist_signature')} value={data.signatureImageTatoueur || ''} onChange={v => update('signatureImageTatoueur', v ?? '')} />
@@ -737,7 +737,7 @@ function FormQuestionnaireDermographeMineur({ data, update, client }: { data: Re
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomDermographeSign', v)} required />
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographeSign', v)} required />
           <FormField label="Date" value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} required />
           <div className="mt-3">
             <SignaturePad label="Signature du dermographe" value={data.signatureImageDermographe || ''} onChange={v => update('signatureImageDermographe', v ?? '')} />
@@ -787,7 +787,7 @@ function FormAutorisationParentaleDermographie({ data, update, client }: { data:
         required
       />
       <FormField label="Date de la séance" value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} required />
-      <FormField label="Nom du dermographe" value={data.nomDermographe || ''} onChange={v => update('nomDermographe', v)} required />
+      <FormField label="Nom du dermographe" value={data.nomDermographe || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographe', v)} required />
 
       <FormSection title="Engagement du représentant légal" />
       <CheckboxField label="Je certifie avoir pris connaissance des risques liés à la dermographie sur un mineur" value={data.connaitRisques || false} onToggle={() => update('connaitRisques', !data.connaitRisques)} required />
@@ -807,7 +807,7 @@ function FormAutorisationParentaleDermographie({ data, update, client }: { data:
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomDermographeSign', v)} required />
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographeSign', v)} required />
           <FormField label="Date" value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} required />
           <div className="mt-3">
             <SignaturePad label="Signature du dermographe" value={data.signatureImageDermographe || ''} onChange={v => update('signatureImageDermographe', v ?? '')} />
@@ -923,7 +923,7 @@ function FormQuestionnaireTatouageMajeur({ data, update, client }: { data: Recor
         </div>
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomTatoueurSign', v)} required />
+          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomTatoueur || ''} onChange={v => update('nomTatoueurSign', v)} required />
           <FormField label={t('forms.date')} value={data.dateSignatureTatoueur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureTatoueur', v)} required />
           <div className="mt-3">
             <SignaturePad label={t('forms.tattoo_artist_signature')} value={data.signatureImageTatoueur || ''} onChange={v => update('signatureImageTatoueur', v ?? '')} />
@@ -967,7 +967,7 @@ function FormAutorisationParentaleTatouage({ data, update, client }: { data: Rec
       <FormSection title="Détails du tatouage" />
       <FormField label="Zone tatouée" value={data.zoneTatouage || ''} onChange={v => update('zoneTatouage', v)} required />
       <FormField label="Date de la séance" value={data.dateSeance || ''} onChange={v => update('dateSeance', v)} required />
-      <FormField label="Nom du tatoueur" value={data.nomTatoueur || ''} onChange={v => update('nomTatoueur', v)} required />
+      <FormField label="Nom du tatoueur" value={data.nomTatoueur || salonInfo?.nomTatoueur || ''} onChange={v => update('nomTatoueur', v)} required />
 
       <FormSection title="Instructions de soins post-tatouage" />
       <LegalBox color="cyan">
@@ -1000,7 +1000,7 @@ function FormAutorisationParentaleTatouage({ data, update, client }: { data: Rec
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomTatoueurSign', v)} required />
+          <FormField label={t('forms.tattoo_artist_name')} value={data.nomTatoueurSign || salonInfo?.nomTatoueur || ''} onChange={v => update('nomTatoueurSign', v)} required />
           <FormField label={t('forms.date')} value={data.dateSignatureTatoueur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureTatoueur', v)} required />
           <div className="mt-3">
             <SignaturePad label={t('forms.tattoo_artist_signature')} value={data.signatureImageTatoueur || ''} onChange={v => update('signatureImageTatoueur', v ?? '')} />

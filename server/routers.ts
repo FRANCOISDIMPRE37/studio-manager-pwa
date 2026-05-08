@@ -8,7 +8,6 @@ import { ENV } from "./_core/env";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import {
-  getDb,
   getClientsByUserId, getClientById, createClient, updateClientById, deleteClientById,
   getPrestationsByClientId, getPrestationsByUserId, createPrestation, deletePrestationById,
   getDocumentsByClientId, getDocumentsByUserId, getDocumentById, createDocument, updateDocumentById,
@@ -405,6 +404,9 @@ export const appRouter = router({
         nomPierceur: z.string().optional(),
         nomTatoueur: z.string().optional(),
         nomDermographe: z.string().optional(),
+        logo: z.string().optional(),
+        siteWeb: z.string().optional(),
+        mentionsLegales: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await upsertSalonSettings(ctx.user.id, input);

@@ -38,7 +38,7 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
       </div>
       <div className="grid grid-cols-2 gap-3">
         <FormField label={t('q08.session_number')} value={data.numeroSeance || ''} onChange={v => update('numeroSeance', v)} placeholder={t('q08.session_number_placeholder')} />
-        <FormField label={t('q08.artist_name')} value={data.dermographe || ''} onChange={v => update('dermographe', v)} placeholder={t('q08.artist_name_placeholder')} required />
+        <FormField label={t('q08.artist_name')} value={data.dermographe || salonInfo?.nomDermographe || ''} onChange={v => update('dermographe', v)} placeholder={t('q08.artist_name_placeholder')} required />
       </div>
 
       <FormSection title={t('q08.section_zones')} />
@@ -194,7 +194,7 @@ function FormFicheSeanceDermographe({ data, update, client }: { data: Record<str
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographeSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
             <SignaturePad
@@ -340,7 +340,7 @@ function FormQuestionnaireDermographe({ data, update, client }: { data: Record<s
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label={t('q08.dermographer_name')} value={data.nomDermographeSign || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographeSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
             <SignaturePad
@@ -659,7 +659,7 @@ function FormSoinsDermographe({ data, update, client }: { data: Record<string, a
           </div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomDermographeSign', v)} />
+          <FormField label="Nom du dermographe" value={data.nomDermographeSign || salonInfo?.nomDermographe || ''} onChange={v => update('nomDermographeSign', v)} />
           <FormField label="Date" value={data.dateSignatureDermographe || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureDermographe', v)} />
           <div className="mt-3">
             <SignaturePad

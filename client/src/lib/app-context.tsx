@@ -341,6 +341,9 @@ function AppProviderInner({ children, dispatch, state }: {
           nomPierceur: (dbSalon as Record<string, unknown>).nomPierceur as string || '',
           nomTatoueur: (dbSalon as Record<string, unknown>).nomTatoueur as string | undefined,
           nomDermographe: (dbSalon as Record<string, unknown>).nomDermographe as string | undefined,
+          logo: (dbSalon as Record<string, unknown>).logo as string | undefined,
+          siteWeb: (dbSalon as Record<string, unknown>).siteWeb as string | undefined,
+          mentionsLegales: (dbSalon as Record<string, unknown>).mentionsLegales as string | undefined,
           specialites: normalizeSpecialites((dbSalon as Record<string, unknown>).specialites),
         };
         // Endpoint historique conservé en secours uniquement : ne pas écraser une valeur authentifiée par salon.get.
@@ -535,6 +538,9 @@ function AppProviderInner({ children, dispatch, state }: {
           nomPierceur: info.nomPierceur,
           nomTatoueur: info.nomTatoueur,
           nomDermographe: info.nomDermographe,
+          logo: info.logo,
+          siteWeb: info.siteWeb,
+          mentionsLegales: info.mentionsLegales,
         });
       } catch (err) {
         console.warn('[Sync] Salon update failed:', err);
