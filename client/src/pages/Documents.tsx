@@ -59,8 +59,19 @@ export default function Documents() {
   const [, navigate] = useLocation();
   const [selectedDoc, setSelectedDoc] = useState<DocumentType | null>(null);
 
-  // Catégories avec titres traduits dynamiquement
-  const specialites = state.salonInfo?.specialites ?? { piercing: false, tatouage: false, dermographie: false };
+  // Catégories avec titres traduits dynamiquement.
+  // Sécurité métier : si aucune spécialité n’est configurée ou si la configuration
+  // reçue est vide/incohérente, on affiche toutes les fiches au lieu de masquer
+  // les documents piercing, tatouage et dermographie. Cela évite qu’un iPad ou
+  // une session fraîche ne voie uniquement les documents RGPD.
+  const configuredSpecialites = state.salonInfo?.specialites;
+  const hasConfiguredSpecialite = Boolean(
+    configuredSpecialites &&
+    (configuredSpecialites.piercing || configuredSpecialites.tatouage || configuredSpecialites.dermographie)
+  );
+  const specialites = hasConfiguredSpecialite
+    ? configuredSpecialites!
+    : { piercing: true, tatouage: true, dermographie: true };
   const DOC_CATEGORIES = DOC_CATEGORY_KEYS.map(cat => ({
     ...cat,
     title: t(cat.titleKey),
