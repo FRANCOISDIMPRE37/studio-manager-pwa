@@ -145,7 +145,9 @@ export default function DocumentForm() {
     setFormData(prev => ({ ...prev, [key]: value }));
   }
 
-  // Fiches de consentement critiques qui requièrent une signature obligatoire
+  // Fiches de consentement critiques qui requièrent une signature obligatoire.
+  // La présence est testée par contenu réel afin d'éviter qu'une chaîne vide Safari/iPad soit acceptée.
+  const isSignaturePresent = (value: any) => typeof value === 'string' ? value.trim().length > 0 : Boolean(value);
   const FICHES_SIGNATURE_OBLIGATOIRE: DocumentType[] = [
     'questionnaire_mineur',
     'questionnaire_majeur',
@@ -154,8 +156,34 @@ export default function DocumentForm() {
     'consentement_soins_tatouage',
   ];
 
+  const SIGNATURES_OBLIGATOIRES_PAR_DOCUMENT: Partial<Record<DocumentType, Array<{ key: string; label: string }>>> = {
+    // 01 — Questionnaire Médical Mineur / Autorisation Parentale / Piercing : toutes les signatures sont obligatoires sur PC et iPad.
+    questionnaire_mineur: [
+      { key: 'signatureImageClient', label: 'signature du mineur' },
+      { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
+      { key: 'signatureImagePierceur', label: 'signature du pierceur' },
+    ],
+    autorisation_parentale: [
+      { key: 'signatureImageParent', label: 'signature du représentant légal' },
+    ],
+    questionnaire_tatouage_mineur: [
+      { key: 'signatureImageClient', label: 'signature du mineur' },
+      { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
+    ],
+    autorisation_parentale_tatouage: [
+      { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
+    ],
+    questionnaire_dermographe_mineur: [
+      { key: 'signatureImageClient', label: 'signature du mineur' },
+      { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
+    ],
+    autorisation_parentale_dermographie: [
+      { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
+    ],
+  };
+
   const signatureRequise = FICHES_SIGNATURE_OBLIGATOIRE.includes(docType);
-  const signatureManquante = signatureRequise && !formData.signatureImageClient;
+  const signatureManquante = signatureRequise && !isSignaturePresent(formData.signatureImageClient);
   const fichesMineurAvecRepresentant: DocumentType[] = [
     'questionnaire_mineur',
     'autorisation_parentale',
@@ -207,14 +235,11 @@ export default function DocumentForm() {
       toast.error('La signature du client est obligatoire pour valider ce document.');
       return;
     }
-    if (fichesMineurAvecRepresentant.includes(docType)) {
-      const signatureParentaleManquante = docType === 'autorisation_parentale'
-        ? !formData.signatureImageParent
-        : !formData.signatureImageRepresentant;
-      if (signatureParentaleManquante) {
-        toast.error('La signature du représentant légal est obligatoire pour valider une fiche mineur.');
-        return;
-      }
+    const signaturesObligatoires = SIGNATURES_OBLIGATOIRES_PAR_DOCUMENT[docType] || [];
+    const signaturesManquantes = signaturesObligatoires.filter(signature => !isSignaturePresent(formData[signature.key]));
+    if (signaturesManquantes.length > 0) {
+      toast.error('Signatures obligatoires manquantes : ' + signaturesManquantes.map(signature => signature.label).join(', ') + '.');
+      return;
     }
     // Validation champs obligatoires via data-required
     const requiredInputs = document.querySelectorAll('[data-required="true"]');
@@ -1185,21 +1210,21 @@ function FormDossierMineurPiercing({ data, update, client, salonInfo }: { data: 
       <FormSection title="10 — SIGNATURES" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: '#1e293b', fontWeight: 600 }}>Signature du mineur</p>
+          <p className="text-xs mb-3" style={{ color: '#1e293b', fontWeight: 600 }}>Signature du mineur — obligatoire</p>
           <FormField label={t('forms.client_name')} value={data.nomClientSign || client.nom || ''} onChange={v => update('nomClientSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignatureClient || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureClient', v)} />
-          <div className="mt-3"><SignaturePad label={t('forms.client_signature')} value={data.signatureImageClient || ''} onChange={v => update('signatureImageClient', v ?? '')} /></div>
+          <div className="mt-3"><SignaturePad label={`${t('forms.client_signature')} *`} value={data.signatureImageClient || ''} onChange={v => update('signatureImageClient', v ?? '')} /></div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-          <p className="text-xs mb-3" style={{ color: '#1e293b', fontWeight: 600 }}>Signature du representant legal</p>
+          <p className="text-xs mb-3" style={{ color: '#1e293b', fontWeight: 600 }}>Signature du representant legal — obligatoire</p>
           <FormField label="Nom du representant legal" value={data.nomRepresentantSign || (client.nomRepresentantLegal ? client.nomRepresentantLegal + ' ' + (client.prenomRepresentantLegal || '') : '')} onChange={v => update('nomRepresentantSign', v)} required />
           <FormField label={t('forms.date')} value={data.dateSignatureRepresentant || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignatureRepresentant', v)} required />
-          <div className="mt-3"><SignaturePad label="Signature du representant legal" value={data.signatureImageRepresentant || ''} onChange={v => update('signatureImageRepresentant', v ?? '')} /></div>
+          <div className="mt-3"><SignaturePad label="Signature du representant legal *" value={data.signatureImageRepresentant || ''} onChange={v => update('signatureImageRepresentant', v ?? '')} /></div>
         </div>
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
           <FormField label={t('forms.piercer_name')} value={data.nomPierceurSign || salonInfo?.nomPierceur || ''} onChange={v => update('nomPierceurSign', v)} />
           <FormField label={t('forms.date')} value={data.dateSignaturePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('dateSignaturePierceur', v)} />
-          <div className="mt-3"><SignaturePad label={t('forms.piercer_signature')} value={data.signatureImagePierceur || ''} onChange={v => update('signatureImagePierceur', v ?? '')} /></div>
+          <div className="mt-3"><SignaturePad label={`${t('forms.piercer_signature')} *`} value={data.signatureImagePierceur || ''} onChange={v => update('signatureImagePierceur', v ?? '')} /></div>
         </div>
       </div>
     </>
