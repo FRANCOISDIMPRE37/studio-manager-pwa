@@ -15,12 +15,35 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
   const photos: string[] = data.photosTracabilite || [];
 
+  const formatBirthDateForInput = (dateNaissance: string): string => {
+    if (!dateNaissance) return '';
+    const value = String(dateNaissance).trim();
+    const isoMatch = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+    if (isoMatch) return `${isoMatch[3]}/${isoMatch[2]}/${isoMatch[1]}`;
+    return value;
+  };
+
+  const normalizeBirthDateInput = (value: string): string => {
+    const digits = value.replace(/\D/g, '').slice(0, 8);
+    const day = digits.slice(0, 2);
+    const month = digits.slice(2, 4);
+    const year = digits.slice(4, 8);
+    return [day, month, year].filter(Boolean).join('/');
+  };
+
   // Calcul automatique de l'âge
   const calculateAge = (dateNaissance: string): string => {
     if (!dateNaissance) return '';
-    const today = new Date();
-    const birth = new Date(dateNaissance);
+    const value = String(dateNaissance).trim();
+    let birth: Date;
+    const frMatch = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+    if (frMatch) {
+      birth = new Date(Number(frMatch[3]), Number(frMatch[2]) - 1, Number(frMatch[1]));
+    } else {
+      birth = new Date(value);
+    }
     if (isNaN(birth.getTime())) return '';
+    const today = new Date();
     let age = today.getFullYear() - birth.getFullYear();
     const m = today.getMonth() - birth.getMonth();
     if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
@@ -58,15 +81,30 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
         <FormField label="Prénom(s)" value={data.prenomClient || client.prenom} onChange={v => update('prenomClient', v)} required />
       </div>
       <div className="grid grid-cols-2 gap-3">
-        <FormField
-          label="Date de naissance"
-          value={data.dateNaissanceClient || client.dateNaissance || ''}
-          onChange={v => {
-            update('dateNaissanceClient', v);
-            update('ageClient', calculateAge(v));
-          }}
-          type="date"
-        />
+        <div className="mb-3">
+          <label className="block text-xs mb-1" style={{ color: '#111111', fontWeight: 700 }}>Date de naissance</label>
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="bday"
+            placeholder="JJ/MM/AAAA"
+            value={formatBirthDateForInput(data.dateNaissanceClient || client.dateNaissance || '')}
+            onChange={e => {
+              const formatted = normalizeBirthDateInput(e.target.value);
+              update('dateNaissanceClient', formatted);
+              update('ageClient', calculateAge(formatted));
+            }}
+            className="w-full px-3 py-2 rounded-lg text-sm outline-none"
+            style={{
+              background: '#f8f9fa',
+              border: '1px solid #aaaaaa',
+              color: '#111111',
+              fontFamily: 'Outfit',
+              WebkitAppearance: 'none',
+              touchAction: 'manipulation',
+            }}
+          />
+        </div>
         <div className="mb-3">
           <label className="block text-xs mb-1" style={{ color: '#111111', fontWeight: 700 }}>Âge (calculé automatiquement)</label>
           <div className="w-full px-3 py-2 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.02)', border: '1px solid var(--brand-border)', color: '#1b5e20', opacity: 0.8 }}>
