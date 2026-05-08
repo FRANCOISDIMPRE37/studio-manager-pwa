@@ -151,6 +151,11 @@ export default function AddClientModal({ onClose, client }: Props) {
       case 'nom': return !nom.trim() ? 'Le nom est requis' : '';
       case 'telephone': return !telephone.trim() ? 'Le téléphone est requis' : '';
       case 'email': return isMineur && !email.trim() ? 'L’email est requis pour une fiche mineur' : '';
+      case 'adresse': return isMineur && !adresse.trim() ? 'L’adresse est requise pour une fiche mineur' : '';
+      case 'codePostal': return isMineur && !codePostal.trim() ? 'Le code postal est requis pour une fiche mineur' : '';
+      case 'ville': return isMineur && !ville.trim() ? 'La ville est requise pour une fiche mineur' : '';
+      case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? 'Le type de pièce d’identité est requis pour une fiche mineur' : '';
+      case 'pieceIdentiteNumero': return isMineur && !pieceIdentiteNumero.trim() ? 'Le numéro de pièce d’identité est requis pour une fiche mineur' : '';
       case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? 'Le nom du représentant légal est requis' : '';
       case 'prenomRepresentant': return isMineur && !prenomRepresentant.trim() ? 'Le prénom du représentant légal est requis' : '';
       case 'lienRepresentant': return isMineur && !lienRepresentant.trim() ? 'Le lien avec le mineur est requis' : '';
@@ -173,6 +178,11 @@ export default function AddClientModal({ onClose, client }: Props) {
       isDateValid &&
       (!isMineur || (
         email.trim() !== '' &&
+        adresse.trim() !== '' &&
+        codePostal.trim() !== '' &&
+        ville.trim() !== '' &&
+        pieceIdentiteType.trim() !== '' &&
+        pieceIdentiteNumero.trim() !== '' &&
         nomRepresentant.trim() !== '' &&
         prenomRepresentant.trim() !== '' &&
         lienRepresentant.trim() !== '' &&
@@ -278,6 +288,11 @@ export default function AddClientModal({ onClose, client }: Props) {
   const errNom = getError('nom');
   const errTel = getError('telephone');
   const errEmail = getError('email');
+  const errAdresse = getError('adresse');
+  const errCodePostal = getError('codePostal');
+  const errVille = getError('ville');
+  const errPieceIdentiteType = getError('pieceIdentiteType');
+  const errPieceIdentiteNumero = getError('pieceIdentiteNumero');
   const errNomRepresentant = getError('nomRepresentant');
   const errPrenomRepresentant = getError('prenomRepresentant');
   const errLienRepresentant = getError('lienRepresentant');
@@ -329,6 +344,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                 <input
                   ref={refPrenom}
                   style={getStyle('prenom')}
+                  required
                   value={prenom}
                   onChange={e => {
                     setPrenom(e.target.value);
@@ -354,6 +370,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                 <input
                   ref={refNom}
                   style={getStyle('nom')}
+                  required
                   value={nom}
                   onChange={e => setNom(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); refJour.current?.focus(); } }}
@@ -379,6 +396,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refJour}
                   type="number"
                   style={dateInputStyle}
+                  required
                   value={dateJour}
                   onChange={e => {
                     const v = e.target.value.slice(0, 2);
@@ -393,6 +411,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refMois}
                   type="number"
                   style={dateInputStyle}
+                  required
                   value={dateMois}
                   onChange={e => {
                     const v = e.target.value.slice(0, 2);
@@ -407,6 +426,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refAnnee}
                   type="number"
                   style={dateInputStyle}
+                  required
                   value={dateAnnee}
                   onChange={e => {
                     const v = e.target.value.slice(0, 4);
@@ -464,6 +484,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refTelephone}
                   type="tel"
                   style={getStyle('telephone')}
+                  required
                   value={telephone}
                   onChange={e => setTelephone(e.target.value)}
                   onBlur={() => touch('telephone')}
@@ -499,7 +520,94 @@ export default function AddClientModal({ onClose, client }: Props) {
             </div>
           </div>
 
-
+          {/* COORDONNÉES ET IDENTITÉ — obligatoires pour les mineurs */}
+          {isMineur && (
+            <div>
+              <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
+                Coordonnées et pièce d’identité *
+              </p>
+              <div className="space-y-3">
+                <div>
+                  <label style={labelStyle}>Adresse complète *</label>
+                  <input
+                    type="text"
+                    style={getStyle('adresse')}
+                    value={adresse}
+                    onChange={e => setAdresse(e.target.value)}
+                    onBlur={() => touch('adresse')}
+                    placeholder="Numéro, rue, bâtiment..."
+                    autoComplete="street-address"
+                    required
+                  />
+                  {errAdresse && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errAdresse}</p>}
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label style={labelStyle}>Code postal *</label>
+                    <input
+                      type="text"
+                      style={getStyle('codePostal')}
+                      value={codePostal}
+                      onChange={e => setCodePostal(e.target.value)}
+                      onBlur={() => touch('codePostal')}
+                      placeholder="75000"
+                      inputMode="numeric"
+                      autoComplete="postal-code"
+                      required
+                    />
+                    {errCodePostal && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errCodePostal}</p>}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Ville *</label>
+                    <input
+                      type="text"
+                      style={getStyle('ville')}
+                      value={ville}
+                      onChange={e => setVille(e.target.value)}
+                      onBlur={() => touch('ville')}
+                      placeholder="Ville"
+                      autoComplete="address-level2"
+                      required
+                    />
+                    {errVille && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errVille}</p>}
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label style={labelStyle}>Type de pièce d’identité *</label>
+                    <select
+                      style={getStyle('pieceIdentiteType')}
+                      value={pieceIdentiteType}
+                      onChange={e => setPieceIdentiteType(e.target.value)}
+                      onBlur={() => touch('pieceIdentiteType')}
+                      required
+                    >
+                      <option value="">Sélectionner</option>
+                      <option value="carte_identite">Carte d’identité</option>
+                      <option value="passeport">Passeport</option>
+                      <option value="titre_sejour">Titre de séjour</option>
+                      <option value="autre">Autre</option>
+                    </select>
+                    {errPieceIdentiteType && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteType}</p>}
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Numéro de pièce d’identité *</label>
+                    <input
+                      type="text"
+                      style={getStyle('pieceIdentiteNumero')}
+                      value={pieceIdentiteNumero}
+                      onChange={e => setPieceIdentiteNumero(e.target.value)}
+                      onBlur={() => touch('pieceIdentiteNumero')}
+                      placeholder="Numéro du document"
+                      autoComplete="off"
+                      required
+                    />
+                    {errPieceIdentiteNumero && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteNumero}</p>}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* REPRÉSENTANT LÉGAL */}
           {isMineur && (
