@@ -4,7 +4,7 @@ export default function MentionsLegales() {
       <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--brand-cyan)' }}>
         Mentions Légales & CGU
       </h1>
-      <p className="mb-10 text-xs" style={{ color: 'var(--brand-text-muted)' }}>Version 1.0 — Mars 2026 — Studio Manager by Intemporelle</p>
+      <p className="mb-10 text-xs" style={{ color: 'var(--brand-text-muted)' }}>Version 1.0 — Mars 2026 — Studio Pierceur Tatoueur Dermographe by Intemporelle</p>
 
       {/* Mentions légales */}
       <section className="mb-10">
@@ -26,7 +26,7 @@ export default function MentionsLegales() {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--brand-text)' }}>Article 1 — Objet</h3>
             <p style={{ color: 'var(--brand-text-muted)' }}>
-              Les présentes CGU régissent l'accès et l'utilisation de l'application <strong style={{ color: 'var(--brand-text)' }}>Studio Manager</strong>, logiciel SaaS destiné exclusivement aux professionnels du tatouage et du piercing pour la gestion de leur activité.
+              Les présentes CGU régissent l'accès et l'utilisation de l'application <strong style={{ color: 'var(--brand-text)' }}>Studio Pierceur Tatoueur Dermographe</strong>, logiciel SaaS destiné exclusivement aux professionnels du tatouage et du piercing pour la gestion de leur activité.
             </p>
           </div>
 
@@ -90,7 +90,7 @@ export default function MentionsLegales() {
           <div>
             <h3 className="font-semibold mb-2" style={{ color: 'var(--brand-text)' }}>Article 1 — Objet</h3>
             <p style={{ color: 'var(--brand-text-muted)' }}>
-              Les présentes CGV régissent les relations entre <strong style={{ color: 'var(--brand-text)' }}>Intemporelle</strong> et tout professionnel souscrivant un abonnement à Studio Manager. Ces CGV sont exclusivement applicables aux professionnels (B2B).
+              Les présentes CGV régissent les relations entre <strong style={{ color: 'var(--brand-text)' }}>Intemporelle</strong> et tout professionnel souscrivant un abonnement à Studio Pierceur Tatoueur Dermographe. Ces CGV sont exclusivement applicables aux professionnels (B2B).
             </p>
           </div>
           <div>
@@ -115,7 +115,7 @@ export default function MentionsLegales() {
       </section>
 
       <div className="mt-10 pt-6 text-xs text-center" style={{ borderTop: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-        Studio Manager by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
+        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
       </div>
     </div>
   );

@@ -4,6 +4,7 @@ import bcrypt from 'bcryptjs';
 import { getDb } from './db';
 import { studios, licenses, users } from '../drizzle/schema';
 import { eq, desc } from 'drizzle-orm';
+import fs from 'fs';
 
 const router = Router();
 
@@ -65,6 +66,10 @@ router.get('/api/super-admin/studios', superAdminAuth, async (_req, res) => {
         nom: studios.nom,
         slug: studios.slug,
         email: studios.email,
+        adresse: studios.adresse,
+        codePostal: studios.codePostal,
+        ville: studios.ville,
+        telephone: studios.telephone,
         ownerEmail: studios.ownerEmail,
         planType: studios.planType,
         actif: studios.actif,
@@ -89,10 +94,15 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
     const db = await getDb();
     if (!db) return res.status(500).json({ error: 'Database error' });
 
-    const { nomSalon, ownerEmail, password, pin, planType = 'trial', trialDays = 30, specialites = 'piercing,tatouage,dermographie' } = req.body;
-    if (!nomSalon || !ownerEmail) return res.status(400).json({ error: 'nomSalon et ownerEmail requis' });
+    const { nomSalon, rue, codePostal, ville, telephone, emailSalon, ownerEmail, password, pin, planType = 'trial', trialDays = 30, specialites = '' } = req.body;
+    const requiredFields = { nomSalon, rue, codePostal, ville, telephone, emailSalon, ownerEmail };
+    const missingFields = Object.entries(requiredFields).filter(([, value]) => !String(value || '').trim()).map(([key]) => key);
+    if (missingFields.length > 0) return res.status(400).json({ error: `Champs obligatoires manquants : ${missingFields.join(', ')}` });
     if (!password) return res.status(400).json({ error: 'Le mot de passe est obligatoire pour la double sécurité' });
-    if (!pin || pin.length !== 4) return res.status(400).json({ error: 'Le code PIN à 4 chiffres est obligatoire' });
+    if (!pin || !/^\d{4}$/.test(pin)) return res.status(400).json({ error: 'Le code PIN à 4 chiffres est obligatoire' });
+    const selectedSpecialites = String(specialites || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+    if (selectedSpecialites.length === 0) return res.status(400).json({ error: 'Sélectionnez au moins une spécialité' });
+    const specialitesCsv = selectedSpecialites.join(',');
 
     // Générer un PIN temporaire à 6 chiffres
     const tempPin = Math.floor(1000 + Math.random() * 9000).toString();
@@ -117,8 +127,8 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
 
     // Créer le studio lié
     await (db as any).$client.query(
-      'INSERT INTO studios (userId, nom, slug, email, ownerEmail, planType, trialEndsAt, actif, isTemporary, firstLogin, tempPin, specialites) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
-      [userId, nomSalon, slug, ownerEmail, ownerEmail, planType, trialEndsAt, true, true, true, tempPin, specialites]
+      'INSERT INTO studios (userId, nom, slug, adresse, codePostal, ville, telephone, email, ownerEmail, planType, trialEndsAt, actif, isTemporary, firstLogin, tempPin, specialites) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, nomSalon, slug, rue, codePostal, ville, telephone, emailSalon, ownerEmail, planType, trialEndsAt, true, true, true, tempPin, specialitesCsv]
     );
 
     // Sauvegarder le mot de passe (obligatoire) dans users.passwordHash
@@ -131,8 +141,14 @@ router.post('/api/super-admin/studios', superAdminAuth, async (req, res) => {
     // Sauvegarder le PIN hashé dans salon_settings.pinHash
     const pinHash = await bcrypt.hash(pin, 10);
     await (db as any).$client.query(
-      'INSERT INTO salon_settings (userId, nom, pinHash) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE pinHash = ?',
-      [userId, nomSalon, pinHash, pinHash]
+      'INSERT INTO salon_settings (userId, nom, adresse, codePostal, ville, telephone, email, pinHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?) ON DUPLICATE KEY UPDATE nom = VALUES(nom), adresse = VALUES(adresse), codePostal = VALUES(codePostal), ville = VALUES(ville), telephone = VALUES(telephone), email = VALUES(email), pinHash = VALUES(pinHash)',
+      [userId, nomSalon, rue, codePostal, ville, telephone, emailSalon, pinHash]
+    );
+
+    // Créer l'utilisateur admin dans studio_users (nécessaire pour /open et tRPC)
+    await (db as any).$client.query(
+      'INSERT INTO studio_users (ownerId, prenom, nom, email, login, passwordHash, role, actif, pinHash) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, nomSalon, '', ownerEmail, 'admin', passwordHash, 'admin', 1, pinHash]
     );
 
     return res.json({ success: true, tempPin, slug, ownerEmail, nomSalon });
@@ -149,7 +165,9 @@ router.patch('/api/super-admin/studios/:id', superAdminAuth, async (req, res) =>
     const id = parseInt(req.params.id);
     const { actif, planType, nom, specialites } = req.body;
     if (specialites !== undefined) {
-      await (db as any).$client.query('UPDATE studios SET specialites = ?, updatedAt = NOW() WHERE id = ?', [specialites, id]);
+      const selectedSpecialites = String(specialites || '').split(',').map((s: string) => s.trim()).filter(Boolean);
+      if (selectedSpecialites.length === 0) return res.status(400).json({ error: 'Sélectionnez au moins une spécialité' });
+      await (db as any).$client.query('UPDATE studios SET specialites = ?, updatedAt = NOW() WHERE id = ?', [selectedSpecialites.join(','), id]);
     }
     if (actif !== undefined || planType || nom) {
       const update: any = { updatedAt: new Date() };
@@ -157,6 +175,43 @@ router.patch('/api/super-admin/studios/:id', superAdminAuth, async (req, res) =>
       if (planType) update.planType = planType;
       if (nom) update.nom = nom;
       await db.update(studios).set(update).where(eq(studios.id, id));
+    }
+    // Mettre à jour aussi salon_settings et les coordonnées si fournies
+    const { nomSalon, rue, codePostal, ville, telephone, emailSalon, ownerEmail, pin, password } = req.body;
+    const hasContactUpdate = [nomSalon, rue, codePostal, ville, telephone, emailSalon, ownerEmail, pin, password].some(value => value !== undefined && value !== null && String(value).trim() !== '');
+    if (hasContactUpdate) {
+      // Trouver le userId du studio
+      const studioRow = await (db as any).$client.query('SELECT userId FROM studios WHERE id = ? LIMIT 1', [id]);
+      const userId = studioRow?.[0]?.[0]?.userId;
+      if (userId) {
+        if (nomSalon) {
+          await (db as any).$client.query('UPDATE salon_settings SET nom = ?, updatedAt = NOW() WHERE userId = ?', [nomSalon, userId]);
+          await (db as any).$client.query('UPDATE studios SET nom = ?, updatedAt = NOW() WHERE id = ?', [nomSalon, id]);
+        }
+        const contactFields = { rue, codePostal, ville, telephone, emailSalon };
+        const providedContactEntries = Object.entries(contactFields).filter(([, value]) => value !== undefined);
+        if (providedContactEntries.length > 0) {
+          const missingContactFields = Object.entries(contactFields).filter(([, value]) => value === undefined || !String(value || '').trim()).map(([key]) => key);
+          if (missingContactFields.length > 0) return res.status(400).json({ error: `Champs obligatoires manquants : ${missingContactFields.join(', ')}` });
+          await (db as any).$client.query('UPDATE studios SET adresse = ?, codePostal = ?, ville = ?, telephone = ?, email = ?, updatedAt = NOW() WHERE id = ?', [rue, codePostal, ville, telephone, emailSalon, id]);
+          await (db as any).$client.query('UPDATE salon_settings SET adresse = ?, codePostal = ?, ville = ?, telephone = ?, email = ?, updatedAt = NOW() WHERE userId = ?', [rue, codePostal, ville, telephone, emailSalon, userId]);
+        }
+        if (pin) {
+          const bcrypt = await import('bcryptjs');
+          const pinHash = await bcrypt.hash(pin, 10);
+          await (db as any).$client.query('UPDATE salon_settings SET pinHash = ? WHERE userId = ?', [pinHash, userId]);
+          await (db as any).$client.query('UPDATE studios SET pin = ? WHERE id = ?', [pin, id]);
+        }
+        if (password) {
+          const bcrypt = await import('bcryptjs');
+          const passwordHash = await bcrypt.hash(password, 10);
+          await (db as any).$client.query('UPDATE users SET passwordHash = ? WHERE id = ?', [passwordHash, userId]);
+        }
+        if (ownerEmail) {
+          await (db as any).$client.query('UPDATE users SET email = ? WHERE id = ?', [ownerEmail, userId]);
+          await (db as any).$client.query('UPDATE studios SET ownerEmail = ? WHERE id = ?', [ownerEmail, id]);
+        }
+      }
     }
     return res.json({ success: true });
   } catch (e: any) {
@@ -218,17 +273,46 @@ router.get('/api/studio-info', async (req, res) => {
       try {
         const { payload } = await jwtVerify(sessionCookie, JWT_SECRET);
         const openId = payload.sub as string;
-        const [userRows] = await (db as any).$client.query(
-          'SELECT id FROM users WHERE openId = ?', [openId]
-        );
-        if ((userRows as any[]).length > 0) {
-          const userId = (userRows as any[])[0].id;
-          const [studioRows] = await (db as any).$client.query(
-            'SELECT specialites, nom FROM studios WHERE userId = ?', [userId]
+        const tokenUserId = (payload as any).userId;
+
+        // Cas 1 : salarié connecté via PIN (userId dans studio_users)
+        if (tokenUserId) {
+          const [suRows] = await (db as any).$client.query(
+            'SELECT ownerId FROM studio_users WHERE id = ? LIMIT 1', [tokenUserId]
           );
-          if ((studioRows as any[]).length > 0) {
-            const studio = (studioRows as any[])[0];
-            return res.json({ specialites: studio.specialites || 'piercing,tatouage,dermographie', nom: studio.nom });
+          if ((suRows as any[]).length > 0) {
+            const ownerId = (suRows as any[])[0].ownerId;
+            const [studioRows] = await (db as any).$client.query(
+              'SELECT specialites, nom FROM studios WHERE userId = ? LIMIT 1', [ownerId]
+            );
+            if ((studioRows as any[]).length > 0) {
+              const studio = (studioRows as any[])[0];
+              return res.json({ specialites: studio.specialites || 'piercing,tatouage,dermographie', nom: studio.nom });
+            }
+            // Fallback sur salon_settings
+            const [ssRows] = await (db as any).$client.query(
+              'SELECT nom FROM salon_settings WHERE userId = ? LIMIT 1', [ownerId]
+            );
+            if ((ssRows as any[]).length > 0) {
+              return res.json({ specialites: 'piercing,tatouage,dermographie', nom: (ssRows as any[])[0].nom });
+            }
+          }
+        }
+
+        // Cas 2 : propriétaire connecté via email/password (openId dans users)
+        if (openId) {
+          const [userRows] = await (db as any).$client.query(
+            'SELECT id FROM users WHERE openId = ?', [openId]
+          );
+          if ((userRows as any[]).length > 0) {
+            const userId = (userRows as any[])[0].id;
+            const [studioRows] = await (db as any).$client.query(
+              'SELECT specialites, nom FROM studios WHERE userId = ?', [userId]
+            );
+            if ((studioRows as any[]).length > 0) {
+              const studio = (studioRows as any[])[0];
+              return res.json({ specialites: studio.specialites || 'piercing,tatouage,dermographie', nom: studio.nom });
+            }
           }
         }
       } catch {}
@@ -289,8 +373,7 @@ router.post('/change-password', async (req: Request, res: Response) => {
   }
   
   // Sauvegarder le nouveau mot de passe dans .env
-  const fs = require('fs');
-  const envPath = '/home/ubuntu/app/.env';
+  const envPath = process.env.ENV_FILE_PATH || '/home/ubuntu/app_v2/.env';
   let envContent = fs.readFileSync(envPath, 'utf8');
   if (envContent.includes('SUPER_ADMIN_PASSWORD=')) {
     envContent = envContent.replace(/SUPER_ADMIN_PASSWORD=.*/g, `SUPER_ADMIN_PASSWORD=${newPassword}`);
@@ -399,6 +482,49 @@ router.post('/api/super-admin/open-studio/:studioId', async (req: Request, res: 
     });
 
     return res.json({ success: true, name: user.name, email: user.email });
+  } catch (e: any) {
+    return res.status(500).json({ error: e.message });
+  }
+});
+
+
+// GET /api/super-admin/studios/:id/open — connexion automatique super-admin vers un studio
+router.get('/api/super-admin/studios/:id/open', superAdminAuth, async (req, res) => {
+  try {
+    const db = await getDb();
+    if (!db) return res.status(500).json({ error: 'Database error' });
+    const id = parseInt(req.params.id);
+    // Récupérer le userId du studio
+    const [studioRows] = await (db as any).$client.query(
+      'SELECT userId, nom FROM studios WHERE id = ? LIMIT 1', [id]
+    );
+    if (!(studioRows as any[]).length) return res.status(404).json({ error: 'Studio non trouvé' });
+    const ownerId = (studioRows as any[])[0].userId;
+    // Récupérer le salarié admin du studio
+    const [suRows] = await (db as any).$client.query(
+      'SELECT id, prenom, nom, role FROM studio_users WHERE ownerId = ? AND role = ? AND actif = 1 LIMIT 1',
+      [ownerId, 'admin']
+    );
+    if (!(suRows as any[]).length) return res.status(404).json({ error: 'Aucun admin trouvé pour ce studio' });
+    // Récupérer le openId du studio depuis la table users
+    const [userRows] = await (db as any).$client.query(
+      'SELECT openId FROM users WHERE id = ? LIMIT 1', [ownerId]
+    );
+    const studioOpenId = userRows.length ? userRows[0].openId : ownerId.toString();
+    // Générer un token de session avec le bon userId (ownerId du studio)
+    const token = await new SignJWT({ openId: studioOpenId, userId: ownerId })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setExpirationTime('8h')
+      .sign(JWT_SECRET());
+    // Poser le cookie et rediriger vers le tableau de bord
+    res.cookie('local_session', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 8 * 60 * 60 * 1000,
+      domain: '.intemporelle.eu',
+    } );
+    return res.redirect('https://app.intemporelle.eu/' );
   } catch (e: any) {
     return res.status(500).json({ error: e.message });
   }

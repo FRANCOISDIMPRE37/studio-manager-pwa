@@ -180,6 +180,27 @@ function dbClientToClient(row: Record<string, unknown>): Client {
   };
 }
 
+function normalizeSpecialites(raw: unknown): SalonInfo['specialites'] | undefined {
+  if (!raw) return undefined;
+  if (typeof raw === 'string') {
+    const specs = raw.split(',').map(s => s.trim()).filter(Boolean);
+    return {
+      piercing: specs.includes('piercing'),
+      tatouage: specs.includes('tatouage'),
+      dermographie: specs.includes('dermographie'),
+    };
+  }
+  if (typeof raw === 'object') {
+    const specs = raw as Partial<Record<'piercing' | 'tatouage' | 'dermographie', boolean>>;
+    return {
+      piercing: Boolean(specs.piercing),
+      tatouage: Boolean(specs.tatouage),
+      dermographie: Boolean(specs.dermographie),
+    };
+  }
+  return undefined;
+}
+
 // Helper: convert DB RDV row to RendezVous type
 function dbRDVToRDV(row: Record<string, unknown>): RendezVous {
   return {
@@ -320,20 +341,18 @@ function AppProviderInner({ children, dispatch, state }: {
           nomPierceur: (dbSalon as Record<string, unknown>).nomPierceur as string || '',
           nomTatoueur: (dbSalon as Record<string, unknown>).nomTatoueur as string | undefined,
           nomDermographe: (dbSalon as Record<string, unknown>).nomDermographe as string | undefined,
+          specialites: normalizeSpecialites((dbSalon as Record<string, unknown>).specialites),
         };
-        // Charger les spécialités depuis le serveur
-        try {
-          const studioInfoRes = await fetch('/api/studio-info', { credentials: 'include' });
-          if (studioInfoRes.ok) {
-            const studioInfo = await studioInfoRes.json();
-            const specs = (studioInfo.specialites || '').split(',');
-              salonInfo.specialites = {
-                piercing: specs.includes('piercing'),
-                tatouage: specs.includes('tatouage'),
-                dermographie: specs.includes('dermographie'),
-              };
-          }
-        } catch {}
+        // Endpoint historique conservé en secours uniquement : ne pas écraser une valeur authentifiée par salon.get.
+        if (!salonInfo.specialites) {
+          try {
+            const studioInfoRes = await fetch('/api/studio-info', { credentials: 'include' });
+            if (studioInfoRes.ok) {
+              const studioInfo = await studioInfoRes.json();
+              salonInfo.specialites = normalizeSpecialites(studioInfo.specialites);
+            }
+          } catch {}
+        }
         dispatch({ type: 'SET_SALON_INFO', payload: salonInfo });
       }
 

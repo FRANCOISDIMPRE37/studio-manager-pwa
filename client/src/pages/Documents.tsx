@@ -60,7 +60,7 @@ export default function Documents() {
   const [selectedDoc, setSelectedDoc] = useState<DocumentType | null>(null);
 
   // Catégories avec titres traduits dynamiquement
-  const specialites = state.salonInfo?.specialites ?? { piercing: true, tatouage: true, dermographie: true };
+  const specialites = state.salonInfo?.specialites ?? { piercing: false, tatouage: false, dermographie: false };
   const DOC_CATEGORIES = DOC_CATEGORY_KEYS.map(cat => ({
     ...cat,
     title: t(cat.titleKey),
@@ -203,21 +203,23 @@ export default function Documents() {
               </button>
             </div>
 
-            {/* Bouton accès rapide sans client */}
-            <button
-              onClick={handleOpenWithoutClient}
-              className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:opacity-80"
-              style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.3)' }}
-            >
-              <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(131,208,245,0.2)' }}>
-                <FileText size={16} style={{ color: 'var(--brand-cyan)' }} />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>{t('documents.open_without_client', 'Ouvrir sans client')}</p>
-                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{t('documents.open_without_client_desc', 'Remplir manuellement · Impression rapide')}</p>
-              </div>
-              <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
-            </button>
+            {/* Bouton accès rapide sans client — masqué pour engagement_confidentialite */}
+            {selectedDoc !== 'engagement_confidentialite' && (
+              <button
+                onClick={handleOpenWithoutClient}
+                className="w-full flex items-center gap-3 p-3 rounded-xl text-left transition-all hover:opacity-80"
+                style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.3)' }}
+              >
+                <div className="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0" style={{ background: 'rgba(131,208,245,0.2)' }}>
+                  <FileText size={16} style={{ color: 'var(--brand-cyan)' }} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-600" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>{t('documents.open_without_client', 'Ouvrir sans client')}</p>
+                  <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>{t('documents.open_without_client_desc', 'Remplir manuellement · Impression rapide')}</p>
+                </div>
+                <ChevronRight size={16} style={{ color: 'var(--brand-cyan)', flexShrink: 0 }} />
+              </button>
+            )}
 
             {selectedDoc === 'archivage_dossier_papier' && (
               <button

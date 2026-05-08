@@ -504,7 +504,7 @@ export default function DocumentForm() {
       subject: `${docTitle} — ${clientName}`,
       body: `<p>Veuillez trouver ci-dessous le résumé du document : <strong>${docTitle}</strong></p>
              <p>Client : <strong>${clientName}</strong><br>Date : ${today}</p>
-             <p>Ce document a été généré depuis Studio Manager by Intemporelle.</p>`,
+             <p>Ce document a été généré depuis Studio Pierceur Tatoueur Dermographe by Intemporelle.</p>`,
       documentTitle: docTitle,
       clientNom: clientName,
     });

@@ -1,7 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
 import { encrypt, decrypt, encryptStr, decryptStr } from "./_core/crypto";
 
-const CLIENT_SENSITIVE_FIELDS = ['telephone', 'email', 'dateNaissance', 'nomRepresentantLegal', 'prenomRepresentantLegal', 'telephoneRepresentantLegal'] as const;
+const CLIENT_SENSITIVE_FIELDS = ['telephone', 'email', 'nomRepresentantLegal', 'prenomRepresentantLegal', 'telephoneRepresentantLegal'] as const;
 
 function encryptClient<T extends Record<string, any>>(data: T): T {
   const result = { ...data };
@@ -19,7 +19,7 @@ function decryptClient<T extends Record<string, any>>(data: T): T {
   return result;
 }
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, smtpConfig, studioUsers, smsConfig, licenses, adminArticles, adminArticleReads, adminNotifications, sharedServices } from "../drizzle/schema";
+import { InsertUser, users, clients, prestations, documents, rendezVous, salonSettings, studios, smtpConfig, studioUsers, smsConfig, licenses, adminArticles, adminArticleReads, adminNotifications, sharedServices } from "../drizzle/schema";
 import type { InsertClient, InsertPrestation, InsertDocument, InsertRendezVous, InsertSalonSettings, InsertSmtpConfig, InsertStudioUser, InsertSmsConfig } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
@@ -273,8 +273,29 @@ export async function deleteRDVById(rdvId: string, userId: number) {
 export async function getSalonSettings(userId: number) {
   const db = await getDb();
   if (!db) return undefined;
-  const result = await db.select().from(salonSettings).where(eq(salonSettings.userId, userId)).limit(1);
-  return result[0];
+
+  const settingsRows = await db.select().from(salonSettings).where(eq(salonSettings.userId, userId)).limit(1);
+  const studioRows = await db.select().from(studios).where(eq(studios.userId, userId)).limit(1);
+  const settings = settingsRows[0];
+  const studio = studioRows[0];
+
+  if (!settings && !studio) return undefined;
+
+  return {
+    ...(settings || {}),
+    ...(studio && !settings ? {
+      userId,
+      nom: studio.nom,
+      raisonSociale: studio.raisonSociale,
+      adresse: studio.adresse,
+      codePostal: studio.codePostal,
+      ville: studio.ville,
+      telephone: studio.telephone,
+      email: studio.email,
+      siret: studio.siret,
+    } : {}),
+    specialites: studio?.specialites,
+  };
 }
 
 export async function upsertSalonSettings(userId: number, data: Omit<InsertSalonSettings, 'id' | 'userId' | 'updatedAt'>) {

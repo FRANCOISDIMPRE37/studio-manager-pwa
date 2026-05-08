@@ -348,19 +348,6 @@ export default function Parametres() {
               <div><label style={labelStyle}>Nom du tatoueur</label><input style={inputStyle} value={salonForm.nomTatoueur || ''} onChange={e => setSalonForm(f => ({ ...f, nomTatoueur: e.target.value }))} /></div>
               <div><label style={labelStyle}>Nom du dermographe</label><input style={inputStyle} value={salonForm.nomDermographe || ''} onChange={e => setSalonForm(f => ({ ...f, nomDermographe: e.target.value }))} /></div>
             </div>
-
-            {/* Spécialités du salon */}
-            <div>
-              <label style={labelStyle}>Spécialités du salon</label>
-              <div className="flex gap-4 mt-2">
-                {(['piercing', 'tatouage', 'dermographie'] as const).map(s => (
-                  <label key={s} className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={salonForm.specialites?.[s] ?? false} onChange={e => setSalonForm(f => ({ ...f, specialites: { piercing: true, tatouage: true, dermographie: true, ...f.specialites, [s]: e.target.checked } }))} />
-                    <span style={{ color: 'var(--brand-text)', textTransform: 'capitalize' }}>{s}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
             {/* Logo du salon */}
             <div>
               <label style={labelStyle}>Logo du salon</label>

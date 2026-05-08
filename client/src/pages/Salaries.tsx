@@ -18,7 +18,7 @@ const TYPES_CONTRAT = [
 export default function Salaries() {
   const [, navigate] = useLocation();
   const { state } = useApp();
-  const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(true);
   const [form, setForm] = useState({
     prenom: '',
     nom: '',
@@ -42,11 +42,12 @@ export default function Salaries() {
   });
 
   const create = trpc.studioUsers.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       utils.studioUsers.list.invalidate();
       setShowForm(false);
       setForm({ prenom: '', nom: '', pin: '', role: 'employe', specialite: '', typeContrat: '', dateEntree: '', dateSortie: '', adresse: '' });
       toast.success('Salarié créé !');
+
     },
     onError: (e) => toast.error(e.message)
   });

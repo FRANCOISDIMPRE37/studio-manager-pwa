@@ -42,7 +42,7 @@ export default function Onboarding() {
       await utils.salon.getFirstLogin.invalidate();
       // Synchroniser les données depuis le serveur
       await syncFromCloud();
-      toast.success('Bienvenue sur Studio Manager !');
+      toast.success('Bienvenue sur Studio Pierceur Tatoueur Dermographe !');
       setTimeout(() => {
         window.location.href = '/';
       }, 800);
@@ -229,7 +229,7 @@ export default function Onboarding() {
               </>
             ) : (
               <>
-                Démarrer Studio Manager
+                Démarrer Studio Pierceur Tatoueur Dermographe
                 <ChevronRight size={18} />
               </>
             )}

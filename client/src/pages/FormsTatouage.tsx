@@ -370,6 +370,8 @@ function FormConsentementSoinsTatouage({ data, update, client }: { data: Record<
 // ─── Formulaire Fiche de Séance Tatouage ─────────────────────────────────
 
 function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+  const { state: _s } = useApp();
+  const salonInfo = _s.salonInfo;
   return (
     <>
       <LegalBox color="green">

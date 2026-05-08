@@ -25,11 +25,11 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <FormField label="Nom et Prénom" value={data.nomSignataire || ''} onChange={v => update('nomSignataire', v)} required />
           <FormField label="Poste / Fonction" value={data.posteSignataire || ''} onChange={v => update('posteSignataire', v)} required />
           <div className="grid grid-cols-2 gap-3">
-            <FormField label="Type de contrat" value={data.typeContrat || ''} onChange={v => update('typeContrat', v)} />
+            <FormField label="Type de contrat" value={data.typeContrat || ''} onChange={v => update('typeContrat', v)} required />
             <DateSlashField label="Date de début de mission" value={data.dateDebutMission || ''} onChange={v => update('dateDebutMission', v)} required />
           </div>
           <DateSlashField label="Date de fin de mission (si connue)" value={data.dateFinMission || ''} onChange={v => update('dateFinMission', v)} />
-          <FormField label="Nom du salon / Établissement" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
+          <FormField label="Nom du salon / Établissement" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} required />
         </div>
       </div>
 

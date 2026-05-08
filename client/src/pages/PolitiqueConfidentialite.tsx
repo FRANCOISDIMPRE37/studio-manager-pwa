@@ -6,13 +6,13 @@ export default function PolitiqueConfidentialite() {
       <h1 className="text-3xl font-bold mb-2" style={{ color: 'var(--brand-cyan)' }}>
         Politique de Confidentialité
       </h1>
-      <p className="mb-8 text-xs" style={{ color: 'var(--brand-text-muted)' }}>Dernière mise à jour : Mars 2026 — Studio Manager by Intemporelle</p>
+      <p className="mb-8 text-xs" style={{ color: 'var(--brand-text-muted)' }}>Dernière mise à jour : Mars 2026 — Studio Pierceur Tatoueur Dermographe by Intemporelle</p>
 
       {/* Section 1 */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--brand-cyan)' }}>1. Responsable de traitement</h2>
         <p>
-          La présente politique de confidentialité s'applique à l'application <strong>Studio Manager</strong>, accessible à l'adresse <strong>studio.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
+          La présente politique de confidentialité s'applique à l'application <strong>Studio Pierceur Tatoueur Dermographe</strong>, accessible à l'adresse <strong>studio.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
         </p>
         <p className="mt-2">Contact RGPD : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a></p>
       </section>
@@ -20,7 +20,7 @@ export default function PolitiqueConfidentialite() {
       {/* Section 2 */}
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--brand-cyan)' }}>2. Données collectées et finalités</h2>
-        <p className="mb-3">Studio Manager collecte et traite les catégories de données suivantes :</p>
+        <p className="mb-3">Studio Pierceur Tatoueur Dermographe collecte et traite les catégories de données suivantes :</p>
         <div className="overflow-x-auto">
           <table className="w-full text-xs border-collapse mb-4" style={{ borderColor: 'var(--brand-border)' }}>
             <thead>
@@ -201,7 +201,7 @@ export default function PolitiqueConfidentialite() {
       </section>
 
       <div className="mt-10 pt-6 text-xs text-center" style={{ borderTop: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-        Studio Manager by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
+        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
       </div>
     </div>
   );

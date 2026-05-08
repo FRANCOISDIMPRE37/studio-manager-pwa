@@ -37,7 +37,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       items: [
         { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
         { path: '/clients', icon: Users, labelKey: 'nav.clients' },
-        { path: '/rgpd-salarie', icon: Users, labelKey: 'nav.salaries' },
+        { path: '/salaries', icon: Users, labelKey: 'nav.salaries' },
         { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
       ],
     },
@@ -110,7 +110,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             style={{ maxHeight: '52px', objectFit: 'contain' }}
           />
           <p className="text-xs mt-2 text-center leading-tight" style={{ color: 'var(--brand-cyan)', fontSize: '10px', fontFamily: 'Outfit' }}>
-            {state.salonInfo?.nom || 'Studio Manager'}
+            {state.salonInfo?.nom || 'Studio Pierceur Tatoueur Dermographe'}
           </p>
         </div>
 
