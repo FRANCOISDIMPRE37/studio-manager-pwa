@@ -53,6 +53,19 @@ interface Props {
   client?: any;
 }
 
+function splitDateParts(value?: string): { jour: string; mois: string; annee: string } {
+  if (!value) return { jour: '', mois: '', annee: '' };
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (match) return { jour: match[3], mois: match[2], annee: match[1] };
+  const date = new Date(value);
+  if (isNaN(date.getTime())) return { jour: '', mois: '', annee: '' };
+  return {
+    jour: String(date.getDate()).padStart(2, '0'),
+    mois: String(date.getMonth() + 1).padStart(2, '0'),
+    annee: String(date.getFullYear()),
+  };
+}
+
 function calcAge(j: string, m: string, a: string): number {
   if (!j || !m || !a || a.length < 4) return -1;
   const birth = new Date(parseInt(a), parseInt(m) - 1, parseInt(j));
@@ -65,7 +78,9 @@ function calcAge(j: string, m: string, a: string): number {
 }
 
 export default function AddClientModal({ onClose, client }: Props) {
-  const { addClient, state } = useApp();
+  const { addClient, updateClient, state } = useApp();
+  const isEditMode = Boolean(client?.id);
+  const initialDateParts = splitDateParts(client?.dateNaissance);
 
   // Champs du formulaire
   const refPrenom = useRef<HTMLInputElement>(null);
@@ -77,18 +92,18 @@ export default function AddClientModal({ onClose, client }: Props) {
   const refEmail = useRef<HTMLInputElement>(null);
 
   const [prenom, setPrenom] = useState(client?.prenom || '');
-  const [nom, setNom] = useState(client?.prenom || '');
-  const [dateJour, setDateJour] = useState('');
-  const [dateMois, setDateMois] = useState('');
-  const [dateAnnee, setDateAnnee] = useState('');
-  const [telephone, setTelephone] = useState(client?.prenom || '');
-  const [email, setEmail] = useState(client?.prenom || '');
-  const [adresse, setAdresse] = useState(client?.prenom || '');
-  const [codePostal, setCodePostal] = useState(client?.prenom || '');
-  const [ville, setVille] = useState(client?.prenom || '');
-  const [pieceIdentiteType, setPieceIdentiteType] = useState(client?.prenom || '');
-  const [pieceIdentiteNumero, setPieceIdentiteNumero] = useState(client?.prenom || '');
-  const [prestationsSouhaitees, setPrestationsSouhaitees] = useState<string[]>([]);
+  const [nom, setNom] = useState(client?.nom || '');
+  const [dateJour, setDateJour] = useState(initialDateParts.jour);
+  const [dateMois, setDateMois] = useState(initialDateParts.mois);
+  const [dateAnnee, setDateAnnee] = useState(initialDateParts.annee);
+  const [telephone, setTelephone] = useState(client?.telephone || '');
+  const [email, setEmail] = useState(client?.email || '');
+  const [adresse, setAdresse] = useState(client?.adresse || '');
+  const [codePostal, setCodePostal] = useState(client?.codePostal || '');
+  const [ville, setVille] = useState(client?.ville || '');
+  const [pieceIdentiteType, setPieceIdentiteType] = useState(client?.pieceIdentiteType || '');
+  const [pieceIdentiteNumero, setPieceIdentiteNumero] = useState(client?.pieceIdentiteNumero || '');
+  const [prestationsSouhaitees, setPrestationsSouhaitees] = useState<string[]>(client?.prestationsSouhaitees || []);
 
   const PRESTATIONS_OPTIONS = [
     'Oreilles',
@@ -119,10 +134,10 @@ export default function AddClientModal({ onClose, client }: Props) {
   // Calcul de l'âge
   const age = calcAge(dateJour, dateMois, dateAnnee);
   const isMineur = age >= 0 && age < 18;
-  const [nomRepresentant, setNomRepresentant] = useState('');
-  const [prenomRepresentant, setPrenomRepresentant] = useState('');
-  const [lienRepresentant, setLienRepresentant] = useState('');
-  const [telephoneRepresentant, setTelephoneRepresentant] = useState('');
+  const [nomRepresentant, setNomRepresentant] = useState(client?.nomRepresentantLegal || '');
+  const [prenomRepresentant, setPrenomRepresentant] = useState(client?.prenomRepresentantLegal || '');
+  const [lienRepresentant, setLienRepresentant] = useState(client?.lienRepresentantLegal || '');
+  const [telephoneRepresentant, setTelephoneRepresentant] = useState(client?.telephoneRepresentantLegal || '');
   const isDateValid = age >= 0 && age <= 120;
 
   // Validation des champs requis
@@ -170,7 +185,7 @@ export default function AddClientModal({ onClose, client }: Props) {
     d.setFullYear(d.getFullYear() + 5);
     const dateSuppressionPrevue = d.toISOString().split('T')[0];
 
-    addClient({
+    const commonClientFields = {
       prenom: prenom.trim(),
       nom: nom.trim().toUpperCase(),
       dateNaissance: dateNaissanceISO,
@@ -187,6 +202,21 @@ export default function AddClientModal({ onClose, client }: Props) {
       prenomRepresentantLegal: isMineur ? prenomRepresentant : undefined,
       lienRepresentantLegal: isMineur ? lienRepresentant : undefined,
       telephoneRepresentantLegal: isMineur ? telephoneRepresentant : undefined,
+    };
+
+    if (isEditMode && client?.id) {
+      updateClient({
+        ...client,
+        ...commonClientFields,
+        dateModification: new Date().toISOString().split('T')[0],
+      });
+      toast.success(`✓ ${prenom.trim()} ${nom.trim().toUpperCase()} modifié(e)`);
+      onClose();
+      return;
+    }
+
+    addClient({
+      ...commonClientFields,
       prestations: [],
       documentsAssocies: docsAssocies,
       documents: [],
@@ -249,7 +279,7 @@ export default function AddClientModal({ onClose, client }: Props) {
           style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy-light)' }}
         >
           <h2 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>
-            Nouveau client
+            {isEditMode ? 'Modifier le client' : 'Nouveau client'}
           </h2>
           {state.isDemo && (
             <span
@@ -522,7 +552,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                 fontWeight: 700,
               }}
             >
-              Créer le client
+              {isEditMode ? 'Enregistrer les modifications' : 'Créer le client'}
             </button>
           </div>
         </form>
