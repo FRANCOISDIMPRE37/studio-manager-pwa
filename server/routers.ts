@@ -613,9 +613,13 @@ export const appRouter = router({
         nom: z.string().min(1, 'Le nom est requis'),
         login: z.string().min(3, 'Le login doit faire au moins 3 caractères').regex(/^[a-zA-Z0-9._-]+$/, 'Login invalide (lettres, chiffres, . _ - uniquement)'),
         password: z.string().min(6, 'Le mot de passe doit faire au moins 6 caractères'),
-        pin: z.string().length(4).regex(/^[0-9]{4}$/, 'Le PIN doit être composé de 4 chiffres').optional(),
+        pin: z.string().length(4).regex(/^[0-9]{4}$/, 'Le PIN doit être composé de 4 chiffres'),
         role: z.enum(['admin', 'employe', 'stagiaire']).default('employe'),
-        specialite: z.string().optional(),
+        specialite: z.string().min(1, 'La spécialité est requise'),
+        typeContrat: z.string().min(1, 'Le type de contrat est requis'),
+        dateEntree: z.string().min(1, "La date d'entrée est requise"),
+        dateSortie: z.string().min(1, 'La date de sortie est requise'),
+        adresse: z.string().min(1, "L'adresse est requise"),
         actif: z.boolean().default(true),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -631,7 +635,11 @@ export const appRouter = router({
           passwordHash,
           pinHash,
           role: input.role,
-          specialite: input.specialite || null,
+          specialite: input.specialite,
+          typeContrat: input.typeContrat,
+          dateEntree: input.dateEntree,
+          dateSortie: input.dateSortie,
+          adresse: input.adresse,
           actif: input.actif,
         } as any);
         return { success: true };
@@ -647,7 +655,11 @@ export const appRouter = router({
         password: z.string().min(6).optional(), // vide = ne pas changer
         pin: z.string().length(4).regex(/^[0-9]{4}$/).optional(), // vide = ne pas changer
         role: z.enum(['admin', 'employe', 'stagiaire']).optional(),
-        specialite: z.string().optional(),
+        specialite: z.string().min(1).optional(),
+        typeContrat: z.string().min(1).optional(),
+        dateEntree: z.string().min(1).optional(),
+        dateSortie: z.string().min(1).optional(),
+        adresse: z.string().min(1).optional(),
         actif: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {

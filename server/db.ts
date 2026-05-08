@@ -1,7 +1,7 @@
 import { eq, desc, and } from "drizzle-orm";
 import { encrypt, decrypt, encryptStr, decryptStr } from "./_core/crypto";
 
-const CLIENT_SENSITIVE_FIELDS = ['telephone', 'email', 'nomRepresentantLegal', 'prenomRepresentantLegal', 'telephoneRepresentantLegal'] as const;
+const CLIENT_SENSITIVE_FIELDS = ['telephone', 'email', 'dateNaissance', 'nomRepresentantLegal', 'prenomRepresentantLegal', 'telephoneRepresentantLegal'] as const;
 
 function encryptClient<T extends Record<string, any>>(data: T): T {
   const result = { ...data };
@@ -335,9 +335,15 @@ export async function getStudioUsersByOwner(ownerId: number) {
     login: studioUsers.login,
     role: studioUsers.role,
     actif: studioUsers.actif,
+    hasPinSet: studioUsers.pinHash,
+    specialite: studioUsers.specialite,
+    typeContrat: studioUsers.typeContrat,
+    dateEntree: studioUsers.dateEntree,
+    dateSortie: studioUsers.dateSortie,
+    adresse: studioUsers.adresse,
     createdAt: studioUsers.createdAt,
     updatedAt: studioUsers.updatedAt,
-  }).from(studioUsers).where(eq(studioUsers.ownerId, ownerId));
+  }).from(studioUsers).where(eq(studioUsers.ownerId, ownerId)).then(rows => rows.map(row => ({ ...row, hasPinSet: Boolean(row.hasPinSet) })));
 }
 
 export async function getStudioUserById(id: number, ownerId: number) {
@@ -366,7 +372,7 @@ export async function createStudioUser(data: InsertStudioUser) {
   await db.insert(studioUsers).values(data);
 }
 
-export async function updateStudioUser(id: number, ownerId: number, data: Partial<Pick<InsertStudioUser, 'prenom' | 'nom' | 'login' | 'passwordHash' | 'role' | 'actif'>>) {
+export async function updateStudioUser(id: number, ownerId: number, data: Partial<Pick<InsertStudioUser, 'prenom' | 'nom' | 'login' | 'passwordHash' | 'pinHash' | 'role' | 'actif' | 'specialite' | 'typeContrat' | 'dateEntree' | 'dateSortie' | 'adresse'>>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   await db.update(studioUsers).set(data)
