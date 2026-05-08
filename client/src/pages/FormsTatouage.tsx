@@ -114,8 +114,11 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
       {/* Photos matériel stérile */}
       <FormSection title="📷 PHOTOS MATÉRIEL STÉRILE (ARS obligatoire)" />
       <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(0,180,216,0.05)', border: '1px solid rgba(0,180,216,0.3)' }}>
-        <p className="text-xs mb-3" style={{ color: '#0369a1', fontWeight: 600 }}>
+        <p className="text-xs mb-2" style={{ color: '#0369a1', fontWeight: 600 }}>
           Photographiez les emballages des produits utilisés (lot, péremption, fabricant) — Arrêté ARS 3 déc. 2008 + Règlement UE 2020/2081
+        </p>
+        <p className="text-xs mb-3" style={{ color: '#C0396A', fontWeight: 700 }}>
+          Photo obligatoire : au moins une photo doit être ajoutée pour sauvegarder cette fiche.
         </p>
         <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#00B4D8', color: 'white', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
           📷 Photographier le matériel
@@ -133,7 +136,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
             });
           }} style={{ display: 'none' }} />
         </label>
-        <span style={{ marginLeft: 12, fontSize: 12, color: '#6b7280' }}>{(data.photosTracabilite || []).length} photo(s)</span>
+        <span style={{ marginLeft: 12, fontSize: 12, color: (data.photosTracabilite || []).length > 0 ? '#15803d' : '#C0396A', fontWeight: 700 }}>{(data.photosTracabilite || []).length} photo(s) — obligatoire</span>
         {(data.photosTracabilite || []).length > 0 && (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8, marginTop: 12 }}>
             {(data.photosTracabilite || []).map((p: any, i: number) => (

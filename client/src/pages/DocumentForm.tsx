@@ -275,6 +275,11 @@ export default function DocumentForm() {
       toast.error('Cases obligatoires non cochées : ' + uncheckedBoxes.slice(0, 2).map(f => f.label).join(', ') + (uncheckedBoxes.length > 2 ? '...' : ''));
       return;
     }
+    // Validation photo obligatoire pour la fiche de traçabilité matériel stérile piercing.
+    if (docType === 'fiche_seance_piercing' && (!Array.isArray(formData.photosTracabilite) || formData.photosTracabilite.length === 0)) {
+      toast.error('Photo obligatoire : veuillez photographier le matériel stérile avant de sauvegarder la fiche de traçabilité.');
+      return;
+    }
     // Validation cases consentement obligatoires
     const fichesMineurs = ['questionnaire_mineur', 'questionnaire_tatouage_mineur', 'questionnaire_dermographe_mineur'];
     const fichesAutorisations = ['autorisation_parentale', 'autorisation_parentale_tatouage', 'autorisation_parentale_dermographie'];
