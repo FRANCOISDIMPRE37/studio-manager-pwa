@@ -1,4 +1,5 @@
 import type { CookieOptions, Request } from "express";
+import { ONE_YEAR_MS } from "@shared/const";
 
 const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1"]);
 
@@ -14,11 +15,14 @@ function isSecureRequest(req: Request) {
 
 export function getSessionCookieOptions(
   req: Request
-): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure"> {
+): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure" | "maxAge"> {
   return {
     httpOnly: true,
     path: "/",
-    sameSite: "none",
+    // iPad/Safari est plus fiable en contexte first-party avec SameSite=Lax.
+    // Cela évite les comportements ITP/None tout en gardant la session sur app.intemporelle.eu.
+    sameSite: "lax",
     secure: isSecureRequest(req),
+    maxAge: ONE_YEAR_MS,
   };
 }

@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { getDb } from "../db";
+import { COOKIE_NAME } from "@shared/const";
 import { auditLogs } from "../../drizzle/schema";
 async function logAudit(db: any, action: string, req: any, success: boolean, details?: string, userId?: number, studioUserId?: number) {
   try {
@@ -50,11 +51,12 @@ export function registerAuthRoutes(app: Express) {
 
       const token = await new SignJWT({ openId: user.openId, userId: user.id })
         .setProtectedHeader({ alg: "HS256" })
-        .setExpirationTime("8h")
+        .setExpirationTime("365d")
         .sign(JWT_SECRET);
 
       res.cookie("local_session", token, {
         httpOnly: true,
+        path: "/",
         secure: process.env.NODE_ENV === "production",
         sameSite: "lax",
         maxAge: 365 * 24 * 60 * 60 * 1000,
@@ -77,8 +79,8 @@ export function registerAuthRoutes(app: Express) {
       const [rows] = await (db as any).$client.query("SELECT * FROM studio_users WHERE actif = 1");
       for (const user of rows as any[]) {
         if (user.pinHash && await bcrypt.compare(pin, user.pinHash)) {
-          const token = await new SignJWT({ openId: user.id.toString(), userId: user.id }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("30d").sign(JWT_SECRET);
-          res.cookie("local_session", token, { httpOnly: true, secure: true, sameSite: "none", maxAge: 365 * 24 * 60 * 60 * 1000 });
+          const token = await new SignJWT({ openId: user.id.toString(), userId: user.id, employeeId: user.id, ownerId: user.ownerId, role: user.role }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("365d").sign(JWT_SECRET);
+          res.cookie("local_session", token, { httpOnly: true, path: "/", secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 365 * 24 * 60 * 60 * 1000 });
           const dbC = await getDb(); if(dbC) await logAudit(dbC, "login_pin", req, true, undefined, undefined, user.id);
           return res.json({ success: true, name: user.prenom + " " + user.nom, role: user.role });
         }
@@ -126,7 +128,15 @@ export function registerAuthRoutes(app: Express) {
   });
 
   app.post("/api/auth/logout", (req: Request, res: Response) => {
-    res.clearCookie("local_session");
+    const expired = new Date(0);
+    const common = { httpOnly: true, path: "/", secure: process.env.NODE_ENV === "production" } as const;
+    const cookieNames = ["local_session", "employee_session", COOKIE_NAME];
+    for (const name of cookieNames) {
+      res.clearCookie(name, { ...common, sameSite: "lax" });
+      res.clearCookie(name, { ...common, sameSite: "none" });
+      res.cookie(name, "", { ...common, sameSite: "lax", expires: expired, maxAge: 0 });
+      res.cookie(name, "", { ...common, sameSite: "none", expires: expired, maxAge: 0 });
+    }
     res.json({ success: true });
   });
 }

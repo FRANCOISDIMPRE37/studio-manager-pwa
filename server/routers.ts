@@ -42,7 +42,12 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
+      const { maxAge: _maxAge, ...clearOptions } = cookieOptions;
+      const expired = new Date(0);
+      ctx.res.clearCookie(COOKIE_NAME, { ...clearOptions, sameSite: "lax" });
+      ctx.res.clearCookie(COOKIE_NAME, { ...clearOptions, sameSite: "none" });
+      ctx.res.cookie(COOKIE_NAME, "", { ...clearOptions, sameSite: "lax", expires: expired, maxAge: 0 });
+      ctx.res.cookie(COOKIE_NAME, "", { ...clearOptions, sameSite: "none", expires: expired, maxAge: 0 });
       return { success: true } as const;
     }),
     // Connexion par PIN — crée un cookie de session JWT sans passer par Manus OAuth

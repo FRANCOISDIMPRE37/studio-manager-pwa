@@ -249,7 +249,7 @@ function AppProviderInner({ children, dispatch, state }: {
   state: AppState;
 }) {
   const utils = trpc.useUtils();
-  const { employe: employeeSession } = useEmployeSession();
+  const { employe: employeeSession, logout: logoutEmployeSession } = useEmployeSession();
 
   // tRPC mutations
   const createClientMutation = trpc.clients.create.useMutation();
@@ -579,12 +579,23 @@ function AppProviderInner({ children, dispatch, state }: {
   }, [state.isAuthenticated, state.isDemo, state.isLoading, syncFromCloud]);
 
   const setAuthenticated = useCallback((val: boolean) => {
-    dispatch({ type: 'SET_AUTHENTICATED', payload: val });
+    if (!val) {
+      logoutEmployeSession();
+      void fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch((err) => {
+        console.warn('[Auth] Server logout failed:', err);
+      });
+      dispatch({ type: 'SET_CLIENTS', payload: [] });
+      dispatch({ type: 'SET_RDV', payload: [] });
+      dispatch({ type: 'SET_AUTHENTICATED', payload: false });
+      return;
+    }
+
+    dispatch({ type: 'SET_AUTHENTICATED', payload: true });
     // Sync from cloud when authenticated
-    if (val && !state.isDemo) {
+    if (!state.isDemo) {
       setTimeout(() => syncFromCloud(), 100);
     }
-  }, [state.isDemo, syncFromCloud]);
+  }, [state.isDemo, syncFromCloud, logoutEmployeSession]);
 
   // Archivage automatique RGPD à 3 ans
   useEffect(() => {

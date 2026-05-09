@@ -1,5 +1,6 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { useEffect } from "react";
 import { Route, Switch } from "wouter";
 import Archives from '@/pages/Archives';
 import ArchivesNumerisees from '@/pages/ArchivesNumerisees';
@@ -34,11 +35,23 @@ import ConnexionEmail from "@/pages/ConnexionEmail";
 import Admin from "@/pages/Admin";
 
 function AppRoutes() {
-  const { state } = useApp();
-  const { data: firstLoginData, isLoading: firstLoginLoading } = trpc.salon.getFirstLogin.useQuery(
+  const { state, setAuthenticated } = useApp();
+  const { data: firstLoginData, isLoading: firstLoginLoading, error: firstLoginError } = trpc.salon.getFirstLogin.useQuery(
     undefined,
-    { enabled: state.isAuthenticated && !state.isDemo }
+    {
+      enabled: state.isAuthenticated && !state.isDemo,
+      retry: false,
+      refetchOnWindowFocus: false,
+      staleTime: 30_000,
+    }
   );
+
+  useEffect(() => {
+    if (state.isAuthenticated && firstLoginError) {
+      console.warn('[iPad Auth] Session serveur invalide ou expirée : retour connexion sans boucle de chargement.', firstLoginError.message);
+      setAuthenticated(false);
+    }
+  }, [state.isAuthenticated, firstLoginError, setAuthenticated]);
   if (state.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--brand-navy)' }}>
@@ -62,12 +75,12 @@ function AppRoutes() {
   if (path === '/super-admin') return <SuperAdmin />;
   if (path === '/setup-studio' || path.startsWith('/setup-studio')) return <Onboarding />;
 
-  if (!state.isAuthenticated) {
+  if (!state.isAuthenticated || firstLoginError) {
     return <Login />;
   }
 
   // Première connexion : onboarding non encore effectué → Engagements (flag côté serveur)
-  if (firstLoginLoading) {
+  if (firstLoginLoading && !firstLoginError) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--brand-navy)' }}>
         <div className="flex flex-col items-center gap-4">
