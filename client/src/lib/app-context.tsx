@@ -561,20 +561,22 @@ function AppProviderInner({ children, dispatch, state }: {
 
   // Cohérence tablette : quand Safari/iPad réactive l'onglet ou revient depuis l'écran d'accueil,
   // on recharge les données serveur pour afficher les clients créés entre-temps sur PC.
+  // NOTE: on n'utilise plus focus/pageshow pour éviter les déconnexions intempestives sur iPad
+  // lors de la sauvegarde d'un formulaire (signature). Seul visibilitychange avec un délai est conservé.
   useEffect(() => {
     if (!state.isAuthenticated || state.isDemo || state.isLoading) return;
+    let syncTimeout: ReturnType<typeof setTimeout> | null = null;
     const refreshIfVisible = () => {
       if (document.visibilityState === 'visible') {
-        syncFromCloud();
+        // Délai de 3 secondes pour éviter les conflits avec les sauvegardes en cours
+        if (syncTimeout) clearTimeout(syncTimeout);
+        syncTimeout = setTimeout(() => { syncFromCloud(); }, 3000);
       }
     };
-    window.addEventListener('focus', refreshIfVisible);
-    window.addEventListener('pageshow', refreshIfVisible);
     document.addEventListener('visibilitychange', refreshIfVisible);
     return () => {
-      window.removeEventListener('focus', refreshIfVisible);
-      window.removeEventListener('pageshow', refreshIfVisible);
       document.removeEventListener('visibilitychange', refreshIfVisible);
+      if (syncTimeout) clearTimeout(syncTimeout);
     };
   }, [state.isAuthenticated, state.isDemo, state.isLoading, syncFromCloud]);
 
