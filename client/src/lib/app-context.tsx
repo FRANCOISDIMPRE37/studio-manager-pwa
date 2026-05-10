@@ -545,11 +545,14 @@ function AppProviderInner({ children, dispatch, state }: {
           siteWeb: info.siteWeb,
           mentionsLegales: info.mentionsLegales,
         });
+        // Invalider le cache React Query pour forcer un rechargement frais du salon
+        // (corrige le bug où nomPierceur/nomTatoueur disparaissaient après sauvegarde)
+        await utils.salon.get.invalidate();
       } catch (err) {
         console.warn('[Sync] Salon update failed:', err);
       }
     }
-  }, [state.isDemo, updateSalonMutation]);
+  }, [state.isDemo, updateSalonMutation, utils]);
 
   // Sync automatique depuis le serveur OVH au démarrage dès que l'utilisateur est authentifié.
   useEffect(() => {
