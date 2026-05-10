@@ -47,6 +47,7 @@ export const clients = mysqlTable("clients", {
   dateConsentement: varchar("dateConsentement", { length: 10 }),
   dateSuppressionPrevue: varchar("dateSuppressionPrevue", { length: 10 }).notNull(),
   rgpdDroitsExerces: json("rgpdDroitsExerces").$type<Array<{type: string; date: string; note?: string}>>().default([]),
+  prestationsSouhaitees: json("prestationsSouhaitees").$type<string[]>().default([]),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
 });

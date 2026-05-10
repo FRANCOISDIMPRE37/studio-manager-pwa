@@ -212,6 +212,7 @@ export const appRouter = router({
         rgpdDroitsExerces: z.array(z.object({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).default([]),
+        prestationsSouhaitees: z.array(z.string()).optional().default([]),
       }))
       .mutation(async ({ ctx, input }) => {
         return createClient({ ...input, userId: ctx.user.id });
@@ -238,6 +239,7 @@ export const appRouter = router({
         rgpdDroitsExerces: z.array(z.object({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).optional(),
+        prestationsSouhaitees: z.array(z.string()).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
