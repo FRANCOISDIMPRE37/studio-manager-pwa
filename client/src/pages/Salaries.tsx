@@ -44,12 +44,10 @@ const EMPTY_FORM: SalarieForm = {
 const REQUIRED_FIELDS: Array<{ key: keyof SalarieForm; label: string }> = [
   { key: 'prenom', label: 'Prénom' },
   { key: 'nom', label: 'Nom' },
-  { key: 'pin', label: 'PIN' },
   { key: 'role', label: 'Rôle' },
   { key: 'specialite', label: 'Spécialité' },
   { key: 'typeContrat', label: 'Type de contrat' },
   { key: 'dateEntree', label: "Date d'entrée" },
-  { key: 'dateSortie', label: 'Date de sortie' },
   { key: 'adresse', label: 'Adresse' },
 ];
 
@@ -108,8 +106,9 @@ export default function Salaries() {
       return false;
     }
 
-    if (!/^\d{4}$/.test(form.pin) && !(editingId && editingHasPinSet && !form.pin.trim())) {
-      toast.error('Le PIN salarié est obligatoire et doit contenir exactement 4 chiffres.');
+    // PIN optionnel : si renseigné, doit être 4 chiffres
+    if (form.pin.trim() && !/^\d{4}$/.test(form.pin)) {
+      toast.error('Le PIN doit contenir exactement 4 chiffres (ou laisser vide).');
       return false;
     }
 
@@ -237,8 +236,8 @@ export default function Salaries() {
           {/* PIN / Rôle */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
             <div>
-              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{editingId && editingHasPinSet ? 'PIN * (déjà enregistré, saisir pour modifier)' : requiredLabel('PIN')}</label>
-              <input required={!editingId || !editingHasPinSet} inputMode="numeric" maxLength={4} pattern="[0-9]{4}" style={inp} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value.replace(/\D/g, '').slice(0, 4) }))} placeholder={editingId && editingHasPinSet ? 'PIN déjà enregistré' : '4 chiffres obligatoires'} />
+              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{editingId && editingHasPinSet ? 'PIN (déjà enregistré, saisir pour modifier)' : 'PIN (optionnel)'}</label>
+              <input inputMode="numeric" maxLength={4} pattern="[0-9]{4}" style={inp} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value.replace(/\D/g, '').slice(0, 4) }))} placeholder={editingId && editingHasPinSet ? 'PIN déjà enregistré' : '4 chiffres (optionnel)'} />
             </div>
             <div>
               <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel('Rôle')}</label>
@@ -273,8 +272,8 @@ export default function Salaries() {
               <input required type="date" style={inp} value={form.dateEntree} onChange={e => setForm(f => ({ ...f, dateEntree: e.target.value }))} />
             </div>
             <div>
-              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel('Date de sortie')}</label>
-              <input required type="date" style={inp} value={form.dateSortie} onChange={e => setForm(f => ({ ...f, dateSortie: e.target.value }))} />
+              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>Date de sortie (optionnel)</label>
+              <input type="date" style={inp} value={form.dateSortie} onChange={e => setForm(f => ({ ...f, dateSortie: e.target.value }))} />
             </div>
           </div>
 
