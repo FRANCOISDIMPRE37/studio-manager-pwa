@@ -159,7 +159,9 @@ export const appRouter = router({
         if (!passwordHash) throw new Error("Email ou mot de passe incorrect");
         const valid = await bcrypt.compare(input.password, passwordHash);
         if (!valid) throw new Error("Email ou mot de passe incorrect");
-        const token = await sdk.createSessionToken(`email:${input.email}`, { name: user.name || input.email });
+        // Utiliser le vrai openId du user (pas email:xxx) pour que la session soit reconnue
+        const openId = (user as any).openId || `email:${input.email}`;
+        const token = await sdk.createSessionToken(openId, { name: user.name || input.email });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
         return { success: true, userId: user.id };
