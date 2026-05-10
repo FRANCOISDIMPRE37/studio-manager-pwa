@@ -155,7 +155,7 @@ CREATE TABLE `audit_logs` (
   `details` text,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=272 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -179,12 +179,12 @@ CREATE TABLE `clients` (
   `userId` int NOT NULL,
   `nom` varchar(100) NOT NULL,
   `prenom` varchar(100) NOT NULL,
-  `dateNaissance` varchar(10) NOT NULL,
+  `dateNaissance` text NOT NULL,
   `adresse` text,
   `codePostal` varchar(10) DEFAULT NULL,
   `ville` varchar(100) DEFAULT NULL,
   `telephone` text NOT NULL,
-  `email` varchar(320) DEFAULT NULL,
+  `email` text,
   `pieceIdentiteType` enum('CNI','Passeport','Permis','Autre') DEFAULT NULL,
   `pieceIdentiteNumero` text,
   `estMineur` tinyint(1) NOT NULL DEFAULT '0',
@@ -253,7 +253,7 @@ CREATE TABLE `documents` (
 
 LOCK TABLES `documents` WRITE;
 /*!40000 ALTER TABLE `documents` DISABLE KEYS */;
-INSERT INTO `documents` VALUES ('doc-1778275231608-ondsae','Hu-SFV-V_3r97NkYG9QBE',397,'questionnaire_majeur','empty','\"{\\\"iv\\\":\\\"968e02163f0552f7fb286f55\\\",\\\"tag\\\":\\\"86a198cb591b6f9bd81255d4ca571f9b\\\",\\\"data\\\":\\\"4509\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778275231667-w4ot7c','Hu-SFV-V_3r97NkYG9QBE',397,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"16198870a3af7b1f41e6bce7\\\",\\\"tag\\\":\\\"c787f01639cf96025c08ffc72f5f0171\\\",\\\"data\\\":\\\"4bf0\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778275231720-o7sj0n','Hu-SFV-V_3r97NkYG9QBE',397,'soins_oreilles','empty','\"{\\\"iv\\\":\\\"d71e60944ee65b5d155dec23\\\",\\\"tag\\\":\\\"07cb5e7933b30972dcf5b3581102aec7\\\",\\\"data\\\":\\\"6346\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778333932970-2r295g','madzFnJElLW7qqUxDqsxh',397,'questionnaire_tatouage_mineur','empty','\"{\\\"iv\\\":\\\"a627ded76fd228566bf38483\\\",\\\"tag\\\":\\\"92942e9c023dc9c5d362c2e55f6d652d\\\",\\\"data\\\":\\\"0a67\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 13:38:53','2026-05-09 13:38:53',0,NULL,NULL,0,NULL,NULL),('doc-1778333933019-pr75xg','madzFnJElLW7qqUxDqsxh',397,'fiche_seance_tatouage','empty','\"{\\\"iv\\\":\\\"08a0b2539509e422cf88d02e\\\",\\\"tag\\\":\\\"e366cb1ff9db1b40493c53161219a6f5\\\",\\\"data\\\":\\\"2f1d\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 13:38:53','2026-05-09 13:38:53',0,NULL,NULL,0,NULL,NULL),('doc-1778361185081-5jcroo','0qvkOIa3pJ0zAGfDhQBfH',445,'questionnaire_mineur','empty','\"{\\\"iv\\\":\\\"a1565d793da51ddb4727b08f\\\",\\\"tag\\\":\\\"f08354e98e0f3a0e69ebb652ff2b79bf\\\",\\\"data\\\":\\\"758d\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:13:05','2026-05-09 21:13:05',0,NULL,NULL,0,NULL,NULL),('doc-1778361185236-n4jc3r','0qvkOIa3pJ0zAGfDhQBfH',445,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"536fbed9adbae54dc8821159\\\",\\\"tag\\\":\\\"e4a10b1d27e780f291dd5cd9bd4e0fc6\\\",\\\"data\\\":\\\"cb59\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:13:05','2026-05-09 21:13:05',0,NULL,NULL,0,NULL,NULL),('doc-1778361185389-s7k15q','0qvkOIa3pJ0zAGfDhQBfH',445,'soins_oreilles','empty','\"{\\\"iv\\\":\\\"afd19216f1f066c4452cda0b\\\",\\\"tag\\\":\\\"ad322135b6d3e1977bba3fa0f0361b7a\\\",\\\"data\\\":\\\"a96a\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:13:05','2026-05-09 21:13:05',0,NULL,NULL,0,NULL,NULL),('doc-1778361298300-u2ducn','33CN0e1CFdM3eMy4YqBnO',445,'questionnaire_majeur','empty','\"{\\\"iv\\\":\\\"eaa237547bd91999a1502f7d\\\",\\\"tag\\\":\\\"60324ccfc8d9290d30d96c8f33825fe7\\\",\\\"data\\\":\\\"769f\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:14:58','2026-05-09 21:14:58',0,NULL,NULL,0,NULL,NULL),('doc-1778361298560-1gnlbu','33CN0e1CFdM3eMy4YqBnO',445,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"e9dc811979bab9b9eadd3433\\\",\\\"tag\\\":\\\"05d2df25f6469555a492f767ef978c2a\\\",\\\"data\\\":\\\"9655\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:14:58','2026-05-09 21:14:58',0,NULL,NULL,0,NULL,NULL),('doc-1778361298729-7lp0ob','33CN0e1CFdM3eMy4YqBnO',445,'soins_oreilles','empty','\"{\\\"iv\\\":\\\"90284d479bcecef72ada73c0\\\",\\\"tag\\\":\\\"651695d2e8719a8e617acfa5600d1715\\\",\\\"data\\\":\\\"e1cb\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:14:58','2026-05-09 21:14:58',0,NULL,NULL,0,NULL,NULL),('doc-1778363602349-94gg73','0PizYV8hXy6IMzn3IIzrm',445,'questionnaire_majeur','empty','\"{\\\"iv\\\":\\\"ce1fd8f3ec2430dba2bdbb9a\\\",\\\"tag\\\":\\\"5c92e0f8e925adf5f88f35698832bd77\\\",\\\"data\\\":\\\"5bec\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:53:22','2026-05-09 21:53:22',0,NULL,NULL,0,NULL,NULL),('doc-1778363602522-3k3c2a','0PizYV8hXy6IMzn3IIzrm',445,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"9e55a04ead3d5943d34e2eb2\\\",\\\"tag\\\":\\\"1569f7f5106f80c3cd1d45b68a71a950\\\",\\\"data\\\":\\\"41bd\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:53:22','2026-05-09 21:53:22',0,NULL,NULL,0,NULL,NULL),('doc-1778363602627-8d483t','0PizYV8hXy6IMzn3IIzrm',445,'soins_oreilles','empty','\"{\\\"iv\\\":\\\"65198a03ca5e418d6668228e\\\",\\\"tag\\\":\\\"f6a42abae00016fae27500d31605a4d5\\\",\\\"data\\\":\\\"82f0\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:53:22','2026-05-09 21:53:22',0,NULL,NULL,0,NULL,NULL),('doc-1778363727750-1eqwp1','9AORP4JspMX4FwngmsT88',445,'questionnaire_majeur','empty','\"{\\\"iv\\\":\\\"b8b8312fcbb3d41862802b72\\\",\\\"tag\\\":\\\"6665f9e0c9552e5bd9c826ccfa179c3f\\\",\\\"data\\\":\\\"88d4\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:55:28','2026-05-09 21:55:28',0,NULL,NULL,0,NULL,NULL),('doc-1778363728031-d6yn20','9AORP4JspMX4FwngmsT88',445,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"1d1bffccee4383a22183516e\\\",\\\"tag\\\":\\\"6fd0adf461423525838ca647a31844c0\\\",\\\"data\\\":\\\"5946\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:55:28','2026-05-09 21:55:28',0,NULL,NULL,0,NULL,NULL),('doc-1778363728152-o1eslp','9AORP4JspMX4FwngmsT88',445,'soins_nez','empty','\"{\\\"iv\\\":\\\"b7a957bc4a4364de3f1f6876\\\",\\\"tag\\\":\\\"cb9086301cdb3f64dcab7b755f4f5d03\\\",\\\"data\\\":\\\"a79b\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 21:55:28','2026-05-09 21:55:28',0,NULL,NULL,0,NULL,NULL);
+INSERT INTO `documents` VALUES ('doc-1778275231608-ondsae','Hu-SFV-V_3r97NkYG9QBE',397,'questionnaire_majeur','empty','\"{\\\"iv\\\":\\\"968e02163f0552f7fb286f55\\\",\\\"tag\\\":\\\"86a198cb591b6f9bd81255d4ca571f9b\\\",\\\"data\\\":\\\"4509\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778275231667-w4ot7c','Hu-SFV-V_3r97NkYG9QBE',397,'fiche_seance_piercing','empty','\"{\\\"iv\\\":\\\"16198870a3af7b1f41e6bce7\\\",\\\"tag\\\":\\\"c787f01639cf96025c08ffc72f5f0171\\\",\\\"data\\\":\\\"4bf0\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778275231720-o7sj0n','Hu-SFV-V_3r97NkYG9QBE',397,'soins_oreilles','empty','\"{\\\"iv\\\":\\\"d71e60944ee65b5d155dec23\\\",\\\"tag\\\":\\\"07cb5e7933b30972dcf5b3581102aec7\\\",\\\"data\\\":\\\"6346\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-08 21:20:32','2026-05-08 21:20:32',0,NULL,NULL,0,NULL,NULL),('doc-1778333932970-2r295g','madzFnJElLW7qqUxDqsxh',397,'questionnaire_tatouage_mineur','empty','\"{\\\"iv\\\":\\\"a627ded76fd228566bf38483\\\",\\\"tag\\\":\\\"92942e9c023dc9c5d362c2e55f6d652d\\\",\\\"data\\\":\\\"0a67\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 13:38:53','2026-05-09 13:38:53',0,NULL,NULL,0,NULL,NULL),('doc-1778333933019-pr75xg','madzFnJElLW7qqUxDqsxh',397,'fiche_seance_tatouage','empty','\"{\\\"iv\\\":\\\"08a0b2539509e422cf88d02e\\\",\\\"tag\\\":\\\"e366cb1ff9db1b40493c53161219a6f5\\\",\\\"data\\\":\\\"2f1d\\\"}\"',NULL,NULL,NULL,NULL,'2026-05-09 13:38:53','2026-05-09 13:38:53',0,NULL,NULL,0,NULL,NULL);
 /*!40000 ALTER TABLE `documents` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -586,7 +586,7 @@ CREATE TABLE `salon_settings` (
   `mentionsLegales` text,
   PRIMARY KEY (`id`),
   UNIQUE KEY `salon_settings_userId_unique` (`userId`)
-) ENGINE=InnoDB AUTO_INCREMENT=42 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -595,7 +595,7 @@ CREATE TABLE `salon_settings` (
 
 LOCK TABLES `salon_settings` WRITE;
 /*!40000 ALTER TABLE `salon_settings` DISABLE KEYS */;
-INSERT INTO `salon_settings` VALUES (25,397,'Studio Pierceur Tatoueur Dermographe',NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@intemporelle.eu',NULL,NULL,NULL,NULL,NULL,'$2b$10$5Z6Zb/E6Zt5xUUQHXkLBtOJ6NZNSceigAx0lQaQPuar4goox8blOG','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6','2026-05-09 02:03:31',NULL,NULL,NULL);
+INSERT INTO `salon_settings` VALUES (25,397,'Studio Pierceur Tatoueur Dermographe',NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@intemporelle.eu',NULL,NULL,NULL,NULL,NULL,'$2b$10$5Z6Zb/E6Zt5xUUQHXkLBtOJ6NZNSceigAx0lQaQPuar4goox8blOG','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6','2026-05-10 01:19:42',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `salon_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -750,7 +750,7 @@ CREATE TABLE `studio_users` (
   `tempPin` varchar(6) DEFAULT NULL,
   `ownerEmail` varchar(320) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=17 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -797,7 +797,7 @@ CREATE TABLE `studios` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `studios_userId_unique` (`userId`),
   UNIQUE KEY `studios_slug_unique` (`slug`)
-) ENGINE=InnoDB AUTO_INCREMENT=65 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=71 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -864,7 +864,7 @@ CREATE TABLE `users` (
   `passwordHash` varchar(255) DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `users_openId_unique` (`openId`)
-) ENGINE=InnoDB AUTO_INCREMENT=449 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=466 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -873,13 +873,9 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (397,'admin-intemporelle','STUDIO INTEMPORELLE','contact@intemporelle.eu',NULL,'admin','2026-05-07 03:34:49','2026-05-09 02:34:45','2026-05-09 00:34:46','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6');
+INSERT INTO `users` VALUES (397,'admin-intemporelle','STUDIO INTEMPORELLE','contact@intemporelle.eu',NULL,'admin','2026-05-07 03:34:49','2026-05-10 03:20:33','2026-05-10 01:20:34','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
-
---
--- Dumping routines for database 'studiomanager'
---
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -890,4 +886,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-05-10  0:52:18
+-- Dump completed on 2026-05-10  4:32:33
