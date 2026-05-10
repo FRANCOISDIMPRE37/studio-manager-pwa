@@ -93,3 +93,4 @@ document.addEventListener('input', (e) => {
 // Force rebuild Fri Apr  3 04:58:19 UTC 2026
 // Force update iPad/PC - Sun May 10 00:16:40 UTC 2026
 // Force update SIRET - Sun May 10 00:32:59 UTC 2026
+// Base propre Intemporelle - Sun May 10 00:46:35 UTC 2026
