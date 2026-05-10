@@ -417,29 +417,6 @@ export default function Parametres() {
       </div>
 
 
-      {/* PIN */}
-      <div className="studio-card p-4">
-        <div className="flex items-center gap-2 mb-4">
-          <Lock size={16} style={{ color: 'var(--brand-cyan)' }} />
-          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.pin_change')}</h2>
-        </div>
-        <form onSubmit={handlePinChange} className="space-y-3">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label style={labelStyle}>{t('settings.pin_new')} (4 {t('common.digits', 'chiffres')})</label>
-              <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={newPin} onChange={e => setNewPin(e.target.value)} placeholder="••••" />
-            </div>
-            <div>
-              <label style={labelStyle}>{t('settings.pin_confirm')}</label>
-              <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={confirmNewPin} onChange={e => setConfirmNewPin(e.target.value)} placeholder="••••" />
-            </div>
-          </div>
-          <button type="submit" className="w-full py-2.5 rounded-lg text-sm font-600" style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', border: '1px solid var(--brand-cyan)', fontWeight: 600 }}>
-            {t('settings.pin_change')}
-          </button>
-        </form>
-      </div>
-
       {/* À propos */}
       <Link href="/a-propos">
         <div className="studio-card p-4 cursor-pointer transition-all hover:border-cyan-400/40" style={{ borderColor: 'var(--brand-border)' }}>
