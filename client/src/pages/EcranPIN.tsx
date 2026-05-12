@@ -22,7 +22,7 @@ export default function EcranPIN(){
   });
   useEffect(()=>{if(pin.length===4&&selId)login.mutate({employeId:selId,pin});},[pin]);
 
-  const ks=['1','2','3','4','5','6','7','8','9','','0','X'];
+  const keys = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '', '0', 'X'];
 
   // Styles
   const pageStyle:React.CSSProperties={
@@ -142,15 +142,15 @@ export default function EcranPIN(){
               </div>
               {/* Keypad */}
               <div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:10,maxWidth:280,margin:'0 auto'}}>
-                {ks.map((k,i)=>(
+                {keys.map((k, i) => (
                   <button
                     key={i}
-                    onClick={()=>{if(!k)return;if(k==='X')setPin(p=>p.slice(0,-1));else if(pin.length<4)setPin(p=>p+k);}}
+                    onClick={() => { if (!k) return; if (k === 'X') setPin(prev => prev.slice(0, -1)); else if (pin.length < 4) setPin(prev => prev + k); }}
                     style={pinBtnStyle(k)}
-                    onMouseEnter={e=>{if(k)(e.currentTarget.style.background=k==='X'?'#f0f0f0':'#f5f5f5');}}
-                    onMouseLeave={e=>{if(k)(e.currentTarget.style.background='#ffffff');}}
+                    onMouseEnter={e => { if (k) (e.currentTarget.style.background = k === 'X' ? '#f0f0f0' : '#f5f5f5'); }}
+                    onMouseLeave={e => { if (k) (e.currentTarget.style.background = '#ffffff'); }}
                   >
-                    {k==='X'?'⌫':k}
+                    {k === 'X' ? '⌫' : k}
                   </button>
                 ))}
               </div>
@@ -160,9 +160,9 @@ export default function EcranPIN(){
         </div>
 
         {/* Bottom links */}
-        <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4,width:'100%'}}>
-          <button onClick={()=>nav('/login-email')} style={linkBtnStyle}>Se connecter avec email →</button>
-          <button onClick={()=>nav('/premiere-connexion')} style={linkBtnStyle}>Première connexion →</button>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, width: '100%' }}>
+          <button onClick={() => nav('/connexion')} style={linkBtnStyle}>Se connecter avec email →</button>
+          <button onClick={() => nav('/inscription')} style={linkBtnStyle}>Première connexion →</button>
         </div>
       </div>
     </div>
