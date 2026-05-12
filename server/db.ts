@@ -159,7 +159,19 @@ export async function createClient(data: InsertClient) {
 export async function updateClientById(clientId: string, userId: number, data: Partial<InsertClient>) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
-  await db.update(clients).set(encryptClient(data)).where(and(eq(clients.id, clientId), eq(clients.userId, userId)));
+  
+  // Préparer les données pour la mise à jour
+  const updateData = encryptClient(data);
+  
+  // Gérer explicitement les champs JSON
+  if (data.prestationsSouhaitees !== undefined) {
+    (updateData as any).prestationsSouhaitees = JSON.stringify(data.prestationsSouhaitees);
+  }
+  if (data.rgpdDroitsExerces !== undefined) {
+    (updateData as any).rgpdDroitsExerces = JSON.stringify(data.rgpdDroitsExerces);
+  }
+  
+  await db.update(clients).set(updateData).where(and(eq(clients.id, clientId), eq(clients.userId, userId)));
 }
 
 export async function deleteClientById(clientId: string, userId: number) {
