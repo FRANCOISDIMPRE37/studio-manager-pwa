@@ -8,7 +8,6 @@ import { ENV } from "./_core/env";
 import nodemailer from "nodemailer";
 import bcrypt from "bcryptjs";
 import {
-  getDb,
   getClientsByUserId, getClientById, createClient, updateClientById, deleteClientById,
   getPrestationsByClientId, getPrestationsByUserId, createPrestation, deletePrestationById,
   getDocumentsByClientId, getDocumentsByUserId, getDocumentById, createDocument, updateDocumentById,
@@ -36,6 +35,9 @@ import {
   saveTracabilitePhotos,
 } from "./db";
 
+// Définir notificationsRouter avant appRouter
+let notificationsRouter = router({});
+
 export const appRouter = router({
   notifications: notificationsRouter,
   system: systemRouter,
@@ -43,16 +45,7 @@ export const appRouter = router({
     me: publicProcedure.query(opts => opts.ctx.user),
     logout: publicProcedure.mutation(({ ctx }) => {
       const cookieOptions = getSessionCookieOptions(ctx.req);
-      const { maxAge: _maxAge, ...clearOptions } = cookieOptions;
-      const expired = new Date(0);
-      const cookieNames = [COOKIE_NAME, "local_session", "employee_session", "studio_session", "temp_studio_id"];
-      
-      for (const name of cookieNames) {
-        ctx.res.clearCookie(name, { ...clearOptions, sameSite: "lax" });
-        ctx.res.clearCookie(name, { ...clearOptions, sameSite: "none" });
-        ctx.res.cookie(name, "", { ...clearOptions, sameSite: "lax", expires: expired, maxAge: 0 });
-        ctx.res.cookie(name, "", { ...clearOptions, sameSite: "none", expires: expired, maxAge: 0 });
-      }
+      ctx.res.clearCookie(COOKIE_NAME, { ...cookieOptions, maxAge: -1 });
       return { success: true } as const;
     }),
     // Connexion par PIN — crée un cookie de session JWT sans passer par Manus OAuth
@@ -163,9 +156,7 @@ export const appRouter = router({
         if (!passwordHash) throw new Error("Email ou mot de passe incorrect");
         const valid = await bcrypt.compare(input.password, passwordHash);
         if (!valid) throw new Error("Email ou mot de passe incorrect");
-        // Utiliser le vrai openId du user (pas email:xxx) pour que la session soit reconnue
-        const openId = (user as any).openId || `email:${input.email}`;
-        const token = await sdk.createSessionToken(openId, { name: user.name || input.email });
+        const token = await sdk.createSessionToken(`email:${input.email}`, { name: user.name || input.email });
         const cookieOptions = getSessionCookieOptions(ctx.req);
         ctx.res.cookie(COOKIE_NAME, token, cookieOptions);
         return { success: true, userId: user.id };
@@ -183,11 +174,8 @@ export const appRouter = router({
   clients: router({
     list: protectedProcedure
       .input(z.object({ employeeId: z.number().optional() }).optional())
-      .query(async ({ ctx }) => {
-        // Cohérence PC/iPad obligatoire : tous les appareils consultent la même source serveur.
-        // On ignore volontairement le filtre employé historique pour éviter qu’un client mineur
-        // créé sur PC soit invisible sur l’iPad à cause d’une session locale différente.
-        return getClientsByUserId(ctx.user.id);
+      .query(async ({ ctx, input }) => {
+        return getClientsByUserId(ctx.user.id, input?.employeeId);
       }),
     get: protectedProcedure
       .input(z.object({ id: z.string() }))
@@ -216,8 +204,6 @@ export const appRouter = router({
         rgpdDroitsExerces: z.array(z.object({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).default([]),
-        prestationsSouhaitees: z.array(z.string()).optional().default([]),
-        notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         return createClient({ ...input, userId: ctx.user.id });
@@ -244,8 +230,6 @@ export const appRouter = router({
         rgpdDroitsExerces: z.array(z.object({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).optional(),
-        prestationsSouhaitees: z.array(z.string()).optional(),
-        notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
@@ -388,28 +372,6 @@ export const appRouter = router({
     get: protectedProcedure.query(async ({ ctx }) => {
       return getSalonSettings(ctx.user.id);
     }),
-    // Récupérer le statut firstLogin depuis la table studios
-    getFirstLogin: protectedProcedure.query(async ({ ctx }) => {
-      const db = await getDb();
-      if (!db) return { firstLogin: false };
-      const [rows] = await (db as any).$client.query(
-        'SELECT firstLogin FROM studios WHERE userId = ? LIMIT 1',
-        [ctx.user.id]
-      );
-      const studio = (rows as any[])[0];
-      if (!studio) return { firstLogin: false };
-      return { firstLogin: studio.firstLogin === 1 || studio.firstLogin === true };
-    }),
-    // Marquer l'onboarding comme terminé (firstLogin = false)
-    completeOnboarding: protectedProcedure.mutation(async ({ ctx }) => {
-      const db = await getDb();
-      if (!db) return { success: true };
-      await (db as any).$client.query(
-        'UPDATE studios SET firstLogin = 0 WHERE userId = ?',
-        [ctx.user.id]
-      );
-      return { success: true };
-    }),
     update: protectedProcedure
       .input(z.object({
         nom: z.string().optional(),
@@ -420,13 +382,9 @@ export const appRouter = router({
         telephone: z.string().optional(),
         email: z.string().optional(),
         siret: z.string().optional(),
-        siren: z.string().max(9).optional(),
         nomPierceur: z.string().optional(),
         nomTatoueur: z.string().optional(),
         nomDermographe: z.string().optional(),
-        logo: z.string().optional(),
-        siteWeb: z.string().optional(),
-        mentionsLegales: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         await upsertSalonSettings(ctx.user.id, input);
@@ -496,13 +454,174 @@ export const appRouter = router({
         throw new Error(`Échec de connexion SMTP : ${err.message}`);
       }
     }),
+    // Envoyer un email avec le contenu d'une fiche
+    sendDocument: protectedProcedure
+      .input(z.object({
+        to: z.string().email(),
+        subject: z.string(),
+        body: z.string(),
+        documentTitle: z.string(),
+        clientNom: z.string(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmtpConfig(ctx.user.id);
+        if (!config || !config.user || !config.password) {
+          throw new Error('Configuration SMTP non configurée. Rendez-vous dans Paramètres > Configuration Email.');
+        }
+        const salon = await getSalonSettings(ctx.user.id);
+        const fromName = config.fromName || salon?.nom || 'Studio Manager';
+        try {
+          const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
+            auth: { user: config.user, pass: config.password },
+            tls: { rejectUnauthorized: false },
+          });
+          await transporter.sendMail({
+            from: `"${fromName}" <${config.user}>`,
+            to: input.to,
+            replyTo: config.replyTo || config.user,
+            subject: input.subject,
+            html: `<div style="font-family:sans-serif;max-width:600px;margin:auto">
+              <h2 style="color:#0A1628">${input.documentTitle}</h2>
+              <p>Bonjour ${input.clientNom},</p>
+              ${input.body}
+              <hr style="margin:24px 0;border:none;border-top:1px solid #eee">
+              <p style="font-size:12px;color:#888">${fromName} — ${salon?.adresse || ''} ${salon?.ville || ''}</p>
+            </div>`,
+          });
+          return { success: true };
+        } catch (err: any) {
+          throw new Error(`Échec d'envoi : ${err.message}`);
+        }
+      }),
+
+    // Envoyer le dossier complet d'un client
+    sendClientDossier: protectedProcedure
+      .input(z.object({
+        to: z.string().email(),
+        clientId: z.string(),
+        clientNom: z.string(),
+        clientPrenom: z.string(),
+        clientDateNaissance: z.string().optional(),
+        clientTelephone: z.string().optional(),
+        documents: z.array(z.object({
+          id: z.string(),
+          type: z.string(),
+          label: z.string(),
+          signed: z.boolean(),
+          updatedAt: z.string().optional(),
+        })),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmtpConfig(ctx.user.id);
+        if (!config || !config.user || !config.password) {
+          throw new Error('Configuration SMTP non configurée. Rendez-vous dans Paramètres > Configuration Email.');
+        }
+        const salon = await getSalonSettings(ctx.user.id);
+        const fromName = config.fromName || salon?.nom || 'Studio Manager';
+        const salonInfo = salon ? `${salon.nom || ''} — ${salon.adresse || ''} ${salon.codePostal || ''} ${salon.ville || ''}`.trim() : 'Studio Manager';
+        const dateEnvoi = new Date().toLocaleDateString('fr-FR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+        const signedDocs = input.documents.filter(d => d.signed);
+        const unsignedDocs = input.documents.filter(d => !d.signed);
+
+        const docRow = (doc: typeof input.documents[0]) => `
+          <tr>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0">${doc.label}</td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;text-align:center">
+              ${doc.signed
+                ? '<span style="color:#16a34a;font-weight:600">&#10003; Signé</span>'
+                : '<span style="color:#dc2626;font-weight:600">&#10007; Non signé</span>'}
+            </td>
+            <td style="padding:8px 12px;border-bottom:1px solid #f0f0f0;color:#888;font-size:12px">
+              ${doc.updatedAt ? new Date(doc.updatedAt).toLocaleDateString('fr-FR') : '—'}
+            </td>
+          </tr>`;
+
+        const html = `
+          <div style="font-family:sans-serif;max-width:680px;margin:auto;color:#1a1a2e">
+            <!-- En-tête -->
+            <div style="background:#0A1628;padding:24px 32px;border-radius:12px 12px 0 0">
+              <h1 style="color:#83D0F5;margin:0;font-size:20px">Studio Manager</h1>
+              <p style="color:#a0aec0;margin:4px 0 0;font-size:13px">by Intemporelle — RGPD &amp; Cybersécurité</p>
+            </div>
+
+            <!-- Corps -->
+            <div style="background:#ffffff;padding:32px;border:1px solid #e2e8f0">
+              <h2 style="color:#0A1628;font-size:18px;margin-top:0">Dossier complet du client</h2>
+
+              <!-- Infos client -->
+              <table style="width:100%;border-collapse:collapse;margin-bottom:24px;background:#f8fafc;border-radius:8px">
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b;width:40%">Nom complet</td><td style="padding:8px 16px;font-weight:600">${input.clientPrenom} ${input.clientNom}</td></tr>
+                ${input.clientDateNaissance ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Date de naissance</td><td style="padding:8px 16px">${input.clientDateNaissance}</td></tr>` : ''}
+                ${input.clientTelephone ? `<tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Téléphone</td><td style="padding:8px 16px">${input.clientTelephone}</td></tr>` : ''}
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Date d'envoi</td><td style="padding:8px 16px">${dateEnvoi}</td></tr>
+                <tr><td style="padding:8px 16px;font-size:13px;color:#64748b">Nombre de documents</td><td style="padding:8px 16px">${input.documents.length} (${signedDocs.length} signé${signedDocs.length > 1 ? 's' : ''})</td></tr>
+              </table>
+
+              <!-- Tableau des documents -->
+              <h3 style="color:#0A1628;font-size:15px;margin-bottom:12px">Documents du dossier</h3>
+              <table style="width:100%;border-collapse:collapse;font-size:13px">
+                <thead>
+                  <tr style="background:#0A1628;color:#83D0F5">
+                    <th style="padding:10px 12px;text-align:left;font-weight:600">Document</th>
+                    <th style="padding:10px 12px;text-align:center;font-weight:600">Statut</th>
+                    <th style="padding:10px 12px;text-align:left;font-weight:600">Date</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${input.documents.map(docRow).join('')}
+                </tbody>
+              </table>
+
+              ${unsignedDocs.length > 0 ? `
+              <div style="margin-top:20px;padding:12px 16px;background:#fef2f2;border-left:4px solid #dc2626;border-radius:4px">
+                <p style="margin:0;font-size:13px;color:#dc2626">
+                  <strong>Attention :</strong> ${unsignedDocs.length} document${unsignedDocs.length > 1 ? 's' : ''} n'${unsignedDocs.length > 1 ? 'ont' : 'a'} pas encore été signé${unsignedDocs.length > 1 ? 's' : ''} par le client.
+                </p>
+              </div>` : `
+              <div style="margin-top:20px;padding:12px 16px;background:#f0fdf4;border-left:4px solid #16a34a;border-radius:4px">
+                <p style="margin:0;font-size:13px;color:#16a34a">
+                  <strong>Dossier complet :</strong> Tous les documents ont été signés par le client.
+                </p>
+              </div>`}
+            </div>
+
+            <!-- Pied de page -->
+            <div style="background:#f8fafc;padding:16px 32px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
+              <p style="margin:0;font-size:12px;color:#94a3b8">${salonInfo}</p>
+              <p style="margin:4px 0 0;font-size:11px;color:#cbd5e1">Document généré par Studio Manager by Intemporelle — Conforme RGPD</p>
+            </div>
+          </div>`;
+
+        try {
+          const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
+            auth: { user: config.user, pass: config.password },
+            tls: { rejectUnauthorized: false },
+          });
+          await transporter.sendMail({
+            from: `"${fromName}" <${config.user}>`,
+            to: input.to,
+            replyTo: config.replyTo || config.user,
+            subject: `Dossier client — ${input.clientPrenom} ${input.clientNom} — ${dateEnvoi}`,
+            html,
+          });
+          return { success: true };
+        } catch (err: any) {
+          throw new Error(`Échec d'envoi : ${err.message}`);
+        }
+      }),
 
     // ─── Alertes RGPD : clients à supprimer dans <= 30 jours ───
-    // NOTE : sendDocument, sendClientDossier et sendRgpdAlert ont été supprimés.
-    // Seul le rappel automatique (rappels.ts) est autorisé pour l'envoi d'emails.
     getRgpdAlerts: protectedProcedure.query(async ({ ctx }) => {
       const clients = await getClientsByUserId(ctx.user.id);
       const now = Date.now();
+      const thirtyDays = 30 * 24 * 60 * 60 * 1000;
       return clients
         .filter(c => !c.estArchive)
         .map(c => {
@@ -513,7 +632,80 @@ export const appRouter = router({
         .filter(c => c.diffDays <= 30)
         .sort((a, b) => a.diffDays - b.diffDays);
     }),
-    }),
+
+    sendRgpdAlert: protectedProcedure
+      .input(z.object({
+        clientId: z.string(),
+        clientNom: z.string(),
+        clientPrenom: z.string(),
+        clientEmail: z.string().email(),
+        dateSuppressionPrevue: z.string(),
+        diffDays: z.number(),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const config = await getSmtpConfig(ctx.user.id);
+        if (!config) throw new Error('Configuration SMTP non configurée. Rendez-vous dans Paramètres → Configuration Email.');
+        const salonSettings = await getSalonSettings(ctx.user.id);
+        const salonNom = salonSettings?.nom || 'Studio Manager';
+        const fromName = salonSettings?.nom || 'Studio Manager by Intemporelle';
+        const dateSupp = new Date(input.dateSuppressionPrevue).toLocaleDateString('fr-FR');
+        const urgencyColor = input.diffDays <= 7 ? '#dc2626' : input.diffDays <= 14 ? '#ea580c' : '#d97706';
+        const urgencyLabel = input.diffDays <= 0 ? 'IMMÉDIATE' : input.diffDays <= 7 ? 'URGENTE (moins de 7 jours)' : input.diffDays <= 14 ? 'Sous 14 jours' : 'Sous 30 jours';
+
+        const html = `
+          <div style="font-family:sans-serif;max-width:640px;margin:auto;color:#1a1a2e">
+            <div style="background:#0A1628;padding:24px 32px;border-radius:12px 12px 0 0">
+              <h1 style="color:#83D0F5;margin:0;font-size:20px">${salonNom}</h1>
+              <p style="color:#a0aec0;margin:4px 0 0;font-size:13px">Notification RGPD — Gestion de vos données personnelles</p>
+            </div>
+            <div style="background:#ffffff;padding:32px;border:1px solid #e2e8f0">
+              <p style="font-size:16px;margin-top:0">Bonjour <strong>${input.clientPrenom} ${input.clientNom}</strong>,</p>
+              <p style="font-size:14px;line-height:1.6;color:#374151">
+                Conformément au Règlement Général sur la Protection des Données (RGPD — UE 2016/679),
+                nous vous informons que vos données personnelles conservées dans notre système
+                seront <strong>supprimées le ${dateSupp}</strong>.
+              </p>
+              <div style="margin:24px 0;padding:16px 20px;background:${urgencyColor}11;border-left:4px solid ${urgencyColor};border-radius:4px">
+                <p style="margin:0;font-size:14px;color:${urgencyColor}">
+                  <strong>⚠ Suppression ${urgencyLabel}</strong>
+                  ${input.diffDays > 0 ? ` — dans <strong>${input.diffDays} jour${input.diffDays > 1 ? 's' : ''}</strong>` : ' — date dépassée'}
+                </p>
+              </div>
+              <p style="font-size:13px;color:#6b7280;line-height:1.6">
+                Si vous souhaitez continuer à bénéficier de nos services et conserver votre dossier,
+                veuillez nous contacter avant cette date pour renouveler votre consentement.
+              </p>
+              <p style="font-size:13px;color:#6b7280;line-height:1.6">
+                Conformément aux articles 15, 17 et 21 du RGPD, vous disposez d'un droit d'accès,
+                de rectification, d'effacement et d'opposition sur vos données.
+              </p>
+            </div>
+            <div style="background:#f8fafc;padding:16px 32px;border:1px solid #e2e8f0;border-top:none;border-radius:0 0 12px 12px">
+              <p style="margin:0;font-size:12px;color:#94a3b8">${salonNom} — Notification automatique RGPD</p>
+              <p style="margin:4px 0 0;font-size:11px;color:#cbd5e1">Généré par Studio Manager by Intemporelle</p>
+            </div>
+          </div>`;
+
+        try {
+          const transporter = nodemailer.createTransport({
+            host: config.host,
+            port: config.port,
+            secure: config.secure,
+            auth: { user: config.user, pass: config.password },
+            tls: { rejectUnauthorized: false },
+          });
+          await transporter.sendMail({
+            from: `"${fromName}" <${config.user}>`,
+            to: input.clientEmail,
+            subject: `[RGPD] Suppression de vos données prévue le ${dateSupp} — ${salonNom}`,
+            html,
+          });
+          return { success: true };
+        } catch (err: any) {
+          throw new Error(`Échec d'envoi : ${err.message}`);
+        }
+      }),
+  }),
 
   // ─── Configuration et envoi SMS via Brevo ────────────────────────────────
   sms: router({
@@ -630,13 +822,9 @@ export const appRouter = router({
         nom: z.string().min(1, 'Le nom est requis'),
         login: z.string().min(3, 'Le login doit faire au moins 3 caractères').regex(/^[a-zA-Z0-9._-]+$/, 'Login invalide (lettres, chiffres, . _ - uniquement)'),
         password: z.string().min(6, 'Le mot de passe doit faire au moins 6 caractères'),
-        pin: z.string().length(4).regex(/^[0-9]{4}$/, 'Le PIN doit être composé de 4 chiffres'),
+        pin: z.string().length(4).regex(/^[0-9]{4}$/, 'Le PIN doit être composé de 4 chiffres').optional(),
         role: z.enum(['admin', 'employe', 'stagiaire']).default('employe'),
-        specialite: z.string().min(1, 'La spécialité est requise'),
-        typeContrat: z.string().min(1, 'Le type de contrat est requis'),
-        dateEntree: z.string().min(1, "La date d'entrée est requise"),
-        dateSortie: z.string().min(1, 'La date de sortie est requise'),
-        adresse: z.string().min(1, "L'adresse est requise"),
+        specialite: z.string().optional(),
         actif: z.boolean().default(true),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -652,11 +840,7 @@ export const appRouter = router({
           passwordHash,
           pinHash,
           role: input.role,
-          specialite: input.specialite,
-          typeContrat: input.typeContrat,
-          dateEntree: input.dateEntree,
-          dateSortie: input.dateSortie,
-          adresse: input.adresse,
+          specialite: input.specialite || null,
           actif: input.actif,
         } as any);
         return { success: true };
@@ -672,11 +856,7 @@ export const appRouter = router({
         password: z.string().min(6).optional(), // vide = ne pas changer
         pin: z.string().length(4).regex(/^[0-9]{4}$/).optional(), // vide = ne pas changer
         role: z.enum(['admin', 'employe', 'stagiaire']).optional(),
-        specialite: z.string().min(1).optional(),
-        typeContrat: z.string().min(1).optional(),
-        dateEntree: z.string().min(1).optional(),
-        dateSortie: z.string().min(1).optional(),
-        adresse: z.string().min(1).optional(),
+        specialite: z.string().optional(),
         actif: z.boolean().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
@@ -788,7 +968,7 @@ export const appRouter = router({
     upsertLicense: publicProcedure
       .input(z.object({
         userId: z.number(),
-        planType: z.enum(['studio']).optional(),
+        planType: z.enum(['trial', 'solo', 'studio', 'multi']).optional(),
         status: z.enum(['active', 'suspended', 'expired', 'cancelled']).optional(),
         expiresAt: z.date().nullable().optional(),
         featureClients: z.boolean().optional(),
@@ -971,7 +1151,8 @@ export const appRouter = router({
     createInvitation: publicProcedure
       .input(z.object({
         email: z.string().email().optional(),
-        planType: z.enum(['studio']),
+        planType: z.enum(['trial', 'solo', 'studio', 'multi']),
+        trialDays: z.number().default(30),
         expiresInDays: z.number().optional(),
       }))
       .mutation(async ({ input }) => {
@@ -994,6 +1175,7 @@ export const appRouter = router({
           code,
           email: input.email,
           planType: input.planType,
+          trialDays: input.trialDays,
           expiresAt,
           createdByUserId,
         });
@@ -1020,7 +1202,8 @@ export const appRouter = router({
         telephone: z.string().optional(),
         ville: z.string().optional(),
         // Licence
-        planType: z.enum(["studio"]).default("studio"),
+        planType: z.enum(["starter", "studio", "premium"]).default("studio"),
+        trialDays: z.number().min(0).max(90).default(30),
         maxClients: z.number().default(500),
         maxUsers: z.number().default(3),
         featureClients: z.boolean().default(true),
@@ -1131,7 +1314,7 @@ export const appRouter = router({
 
           // Créer la licence
           const expiresAt = new Date();
-          expiresAt.setDate(expiresAt.getDate() + 365);
+          expiresAt.setDate(expiresAt.getDate() + (input.trialDays > 0 ? input.trialDays : 365));
 
           await conn.query(
             `INSERT INTO licenses (userId, planType, status, expiresAt, maxClients, maxUsers,
@@ -1253,7 +1436,8 @@ export type AppRouter = typeof appRouter;
 // ===== NOTIFICATIONS =====
 import { adminNotifications } from '../drizzle/schema';
 
-export const notificationsRouter = router({
+// Remplir notificationsRouter avec les procédures
+notificationsRouter = router({
   // Récupérer les notifications du studio connecté
   getMy: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();
