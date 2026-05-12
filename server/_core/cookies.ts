@@ -17,6 +17,7 @@ export function getSessionCookieOptions(
   req: Request
 ): Pick<CookieOptions, "domain" | "httpOnly" | "path" | "sameSite" | "secure" | "maxAge"> {
   return {
+    domain: ".intemporelle.eu",
     httpOnly: true,
     path: "/",
     // iPad/Safari est plus fiable en contexte first-party avec SameSite=Lax.
