@@ -140,29 +140,32 @@ export default function AddClientModal({ onClose, client }: Props) {
     const clientData = {
       prenom: prenom.trim(),
       nom: nom.trim().toUpperCase(),
-      dateNaissance: dateNaissanceISO,
-      telephone: telephone.trim(),
-      email: email.trim(),
-      adresse: adresse.trim(),
-      codePostal: codePostal.trim(),
-      ville: ville.trim(),
-      estMineur: age >= 0 && age < 18,
-    };
+      dateNaissance: dateN  // Sauvegarde automatique à chaque changement pour garantir la persistance
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (formData.nom || formData.prenom) {
+        const clientData = {
+          ...formData,
+          age,
+          ville: ville.trim(),
+          estMineur: age >= 0 && age < 18,
+        };
 
-    try {
-      if (client?.id) {
-        await updateClient({ ...client, ...clientData });
-      } else {
-        // Pour un nouveau client, on le crée dès qu'on a un nom ou prénom
-        // Cela garantit que les données ne disparaissent pas au rafraîchissement
-        const newClient = await addClient(clientData);
-        // On pourrait ici rediriger ou mettre à jour l'état local pour continuer sur ce client
+        try {
+          if (client?.id) {
+            await updateClient({ ...client, ...clientData });
+          } else {
+            // Création immédiate pour éviter la perte au rafraîchissement
+            await addClient(clientData);
+          }
+        } catch (err) {
+          console.error('Auto-save failed:', err);
+        }
       }
-    } catch (err) {
-      console.error('Auto-save failed:', err);
-    }
-  };
+    }, 1000); // Délai de 1s pour ne pas surcharger le serveur
 
+    return () => clearTimeout(timer);
+  }, [formData, age, ville, client?.id, addClient, updateClient]);
   // Calcul de l'âge
   const age = calcAge(dateJour, dateMois, dateAnnee);
   const isMineur = age >= 0 && age < 18;
