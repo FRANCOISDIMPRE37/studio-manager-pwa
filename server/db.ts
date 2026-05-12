@@ -6,7 +6,9 @@ const CLIENT_SENSITIVE_FIELDS = ['telephone', 'email', 'dateNaissance', 'nomRepr
 function encryptClient<T extends Record<string, any>>(data: T): T {
   const result = { ...data };
   for (const field of CLIENT_SENSITIVE_FIELDS) {
-    if (result[field]) result[field] = encryptStr(result[field]);
+    if (result[field] !== undefined && result[field] !== null) {
+      result[field] = encryptStr(result[field]);
+    }
   }
   return result;
 }
