@@ -507,6 +507,8 @@ function AppProviderInner({ children, dispatch, state }: {
           dateConsentement: client.dateConsentement,
           dateSuppressionPrevue: client.dateSuppressionPrevue,
           rgpdDroitsExerces: client.rgpdDroitsExerces || [],
+          prestationsSouhaitees: client.prestationsSouhaitees || [],
+          notes: client.notes,
         });
       } catch (err) {
         console.warn('[Sync] Client update failed:', err);
