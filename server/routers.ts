@@ -213,6 +213,7 @@ export const appRouter = router({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).default([]),
         prestationsSouhaitees: z.array(z.string()).optional().default([]),
+        notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         return createClient({ ...input, userId: ctx.user.id });
@@ -240,6 +241,7 @@ export const appRouter = router({
           type: z.string(), date: z.string(), note: z.string().optional(),
         })).optional(),
         prestationsSouhaitees: z.array(z.string()).optional(),
+        notes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;
