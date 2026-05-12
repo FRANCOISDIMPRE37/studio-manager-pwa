@@ -74,7 +74,7 @@ export default function ClientDetail() {
   };
 
   const togglePrestationTemp = (p: string) => {
-    setPrestationsTemp(prev => prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]);
+    setPrestationsTemp(prev => prev.includes(p) ? prev.filter(item => item !== p) : [...prev, p]);
   };
 
   const savePrestations = () => {

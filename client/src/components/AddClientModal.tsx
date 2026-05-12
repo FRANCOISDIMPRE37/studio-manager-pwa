@@ -119,7 +119,7 @@ export default function AddClientModal({ onClose, client }: Props) {
 
   const togglePrestation = (p: string) => {
     setPrestationsSouhaitees(prev =>
-      prev.includes(p) ? prev.filter(x => x !== p) : [...prev, p]
+      prev.includes(p) ? prev.filter(item => item !== p) : [...prev, p]
     );
   };
 
