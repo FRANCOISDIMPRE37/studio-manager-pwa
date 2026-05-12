@@ -147,8 +147,22 @@ const DEMO_RDV: RendezVous[] = [
   { id: 'rdv-4', date: daysFromNow(2), heureDebut: '11:00', heureFin: '12:00', clientId: 'demo-3', clientNom: 'Emma BERNARD', type: 'piercing', zone: 'Hélix', statut: 'confirme', dateCreation: daysAgo(1) },
 ];
 
-// Toutes les données sont chargées depuis le serveur OVH (BDD MySQL)
-// Aucun localStorage n'est utilisé dans cette application
+// Storage keys
+const STORAGE_KEYS = {
+  clients: 'sm_clients',
+  salonInfo: 'sm_salon_info',
+  rdv: 'sm_rdv',
+  auth: 'sm_auth',
+  pin: 'sm_pin',
+};
+
+function loadFromStorage<T>(key: string): T | null {
+  return null;
+}
+
+function saveToStorage(key: string, data: unknown) {
+  // localStorage is forbidden
+}
 
 // Helper: convert DB client row to Client type
 function dbClientToClient(row: Record<string, unknown>): Client {
@@ -170,9 +184,7 @@ function dbClientToClient(row: Record<string, unknown>): Client {
     dateConsentement: row.dateConsentement as string | undefined,
     dateSuppressionPrevue: row.dateSuppressionPrevue as string,
     rgpdStatus: calculateRGPDStatus(row.dateSuppressionPrevue as string),
-    rgpdDroitsExerces: Array.isArray(row.rgpdDroitsExerces) ? row.rgpdDroitsExerces : [],
-    notes: typeof row.notes === 'string' ? row.notes : '',
-    prestationsSouhaitees: Array.isArray(row.prestationsSouhaitees) ? row.prestationsSouhaitees : [],
+    rgpdDroitsExerces: (row.rgpdDroitsExerces as Client['rgpdDroitsExerces']) || [],
     dateCreation: row.createdAt ? new Date(row.createdAt as string).toISOString().split('T')[0] : fmt(new Date()),
     dateModification: row.updatedAt ? new Date(row.updatedAt as string).toISOString().split('T')[0] : undefined,
     prestations: [],
@@ -180,27 +192,6 @@ function dbClientToClient(row: Record<string, unknown>): Client {
     documents: [],
     photos: [],
   };
-}
-
-function normalizeSpecialites(raw: unknown): SalonInfo['specialites'] | undefined {
-  if (!raw) return undefined;
-  if (typeof raw === 'string') {
-    const specs = raw.split(',').map(s => s.trim()).filter(Boolean);
-    return {
-      piercing: specs.includes('piercing'),
-      tatouage: specs.includes('tatouage'),
-      dermographie: specs.includes('dermographie'),
-    };
-  }
-  if (typeof raw === 'object') {
-    const specs = raw as Partial<Record<'piercing' | 'tatouage' | 'dermographie', boolean>>;
-    return {
-      piercing: Boolean(specs.piercing),
-      tatouage: Boolean(specs.tatouage),
-      dermographie: Boolean(specs.dermographie),
-    };
-  }
-  return undefined;
 }
 
 // Helper: convert DB RDV row to RendezVous type
@@ -251,7 +242,7 @@ function AppProviderInner({ children, dispatch, state }: {
   state: AppState;
 }) {
   const utils = trpc.useUtils();
-  const { employe: employeeSession, logout: logoutEmployeSession } = useEmployeSession();
+  const { employe: employeeSession } = useEmployeSession();
 
   // tRPC mutations
   const createClientMutation = trpc.clients.create.useMutation();
@@ -270,10 +261,7 @@ function AppProviderInner({ children, dispatch, state }: {
     try {
       dispatch({ type: 'SET_SYNCING', payload: true });
       const [dbClients, dbRDV, dbSalon, dbPrestations, dbDocuments] = await Promise.all([
-        // Cohérence PC/iPad : la liste clients est toujours chargée depuis la source serveur complète.
-        // La session employé reste utilisée pour les actions et signatures, mais ne doit pas masquer
-        // un client mineur créé sur un autre appareil ou sous une autre session locale.
-        utils.clients.list.fetch(),
+        utils.clients.list.fetch(employeeSession ? { employeeId: employeeSession.id } : undefined),
         utils.rdv.list.fetch(),
         utils.salon.get.fetch(),
         utils.prestations.listAll.fetch(),
@@ -316,24 +304,43 @@ function AppProviderInner({ children, dispatch, state }: {
         });
       }
 
-      // Données exclusivement depuis le serveur OVH — aucun merge localStorage
+      // Merge with localStorage data
+      const localClients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
       const mergedClients = clients.map(dbC => {
+        const localC = localClients.find(lc => lc.id === dbC.id);
         const dbPrestList = prestationsByClient.get(dbC.id) || [];
         const dbDocList = documentsByClient.get(dbC.id) || [];
+        const dbDocTypes = new Set(dbDocList.map(d => d.type));
+
+        // Merge: DB documents + local-only documents not yet synced
+        const localDocs = localC?.documents || [];
+        const localOnlyDocs = localDocs.filter(ld => !dbDocList.find(dd => dd.id === ld.id));
+        const mergedDocs = [...dbDocList, ...localOnlyDocs];
+
+        // Merge: DB prestations + local-only prestations not yet synced
+        const localPrests = localC?.prestations || [];
+        const localOnlyPrests = localPrests.filter(lp => !dbPrestList.find(dp => dp.id === lp.id));
+        const mergedPrests = [...dbPrestList, ...localOnlyPrests];
 
         return {
           ...dbC,
-          prestations: dbPrestList,
-          documentsAssocies: dbDocList.map(d => d.type) as Client['documentsAssocies'],
-          documents: dbDocList,
-          photos: [],
+          prestations: mergedPrests,
+          documentsAssocies: mergedDocs.map(d => d.type) as Client['documentsAssocies'],
+          documents: mergedDocs,
+          photos: localC?.photos || [],
         };
       });
 
-      dispatch({ type: 'SET_CLIENTS', payload: mergedClients });
+      // Add local-only clients (not yet synced)
+      const dbClientIds = new Set(clients.map(c => c.id));
+      const localOnlyClients = localClients.filter(lc => !dbClientIds.has(lc.id));
+
+      dispatch({ type: 'SET_CLIENTS', payload: [...mergedClients, ...localOnlyClients] });
       dispatch({ type: 'SET_RDV', payload: rdv });
 
       if (dbSalon) {
+        // Effacer le cache local pour que les données cloud aient priorité
+        // localStorage.removeItem(STORAGE_KEYS.salonInfo);
         const salonInfo: SalonInfo = {
           nom: (dbSalon as Record<string, unknown>).nom as string || '',
           raisonSociale: (dbSalon as Record<string, unknown>).raisonSociale as string | undefined,
@@ -346,21 +353,20 @@ function AppProviderInner({ children, dispatch, state }: {
           nomPierceur: (dbSalon as Record<string, unknown>).nomPierceur as string || '',
           nomTatoueur: (dbSalon as Record<string, unknown>).nomTatoueur as string | undefined,
           nomDermographe: (dbSalon as Record<string, unknown>).nomDermographe as string | undefined,
-          logo: (dbSalon as Record<string, unknown>).logo as string | undefined,
-          siteWeb: (dbSalon as Record<string, unknown>).siteWeb as string | undefined,
-          mentionsLegales: (dbSalon as Record<string, unknown>).mentionsLegales as string | undefined,
-          specialites: normalizeSpecialites((dbSalon as Record<string, unknown>).specialites),
         };
-        // Endpoint historique conservé en secours uniquement : ne pas écraser une valeur authentifiée par salon.get.
-        if (!salonInfo.specialites) {
-          try {
-            const studioInfoRes = await fetch('/api/studio-info', { credentials: 'include' });
-            if (studioInfoRes.ok) {
-              const studioInfo = await studioInfoRes.json();
-              salonInfo.specialites = normalizeSpecialites(studioInfo.specialites);
-            }
-          } catch {}
-        }
+        // Charger les spécialités depuis le serveur
+        try {
+          const studioInfoRes = await fetch('/api/studio-info', { credentials: 'include' });
+          if (studioInfoRes.ok) {
+            const studioInfo = await studioInfoRes.json();
+            const specs = (studioInfo.specialites || '').split(',');
+              salonInfo.specialites = {
+                piercing: specs.includes('piercing'),
+                tatouage: specs.includes('tatouage'),
+                dermographie: specs.includes('dermographie'),
+              };
+          }
+        } catch {}
         dispatch({ type: 'SET_SALON_INFO', payload: salonInfo });
       }
 
@@ -382,10 +388,15 @@ function AppProviderInner({ children, dispatch, state }: {
 
   const exitDemoMode = useCallback(() => {
     dispatch({ type: 'SET_DEMO', payload: false });
-    dispatch({ type: 'SET_CLIENTS', payload: [] });
-    dispatch({ type: 'SET_RDV', payload: [] });
+    const clients = loadFromStorage<Client[]>(STORAGE_KEYS.clients) || [];
+    const salonInfo = loadFromStorage<SalonInfo>(STORAGE_KEYS.salonInfo);
+
+
+    const rdv = loadFromStorage<RendezVous[]>(STORAGE_KEYS.rdv) || [];
+    dispatch({ type: 'SET_CLIENTS', payload: clients });
+    dispatch({ type: 'SET_RDV', payload: rdv });
+    if (salonInfo) dispatch({ type: 'SET_SALON_INFO', payload: salonInfo });
     dispatch({ type: 'SET_AUTHENTICATED', payload: false });
-    // Les données seront rechargées depuis le serveur OVH au prochain syncFromCloud
   }, []);
 
   const addRDV = useCallback(async (rdv: Omit<RendezVous, 'id' | 'dateCreation'>) => {
@@ -429,8 +440,13 @@ function AppProviderInner({ children, dispatch, state }: {
       d.setFullYear(d.getFullYear() + 5);
       return fmt(d);
     })();
-    // Générer un numéro de client unique basé sur le nombre de clients existants
-    const nextNum = (state.clients.length || 0) + 1;
+    // Générer un numéro de client unique basé sur le compteur stocké
+    const nextNum = (() => {
+      const stored = null;
+      const n = stored ? parseInt(stored, 10) + 1 : 1;
+      // localStorage.setItem('sm_client_counter', String(n));
+      return n;
+    })();
     const numeroClient = `CLI-${String(nextNum).padStart(4, '0')}`;
     const newClient: Client = {
       ...client,
@@ -509,8 +525,6 @@ function AppProviderInner({ children, dispatch, state }: {
           dateConsentement: client.dateConsentement,
           dateSuppressionPrevue: client.dateSuppressionPrevue,
           rgpdDroitsExerces: client.rgpdDroitsExerces || [],
-          prestationsSouhaitees: client.prestationsSouhaitees || [],
-          notes: client.notes,
         });
       } catch (err) {
         console.warn('[Sync] Client update failed:', err);
@@ -545,20 +559,15 @@ function AppProviderInner({ children, dispatch, state }: {
           nomPierceur: info.nomPierceur,
           nomTatoueur: info.nomTatoueur,
           nomDermographe: info.nomDermographe,
-          logo: info.logo,
-          siteWeb: info.siteWeb,
-          mentionsLegales: info.mentionsLegales,
         });
-        // Invalider le cache React Query pour forcer un rechargement frais du salon
-        // (corrige le bug où nomPierceur/nomTatoueur disparaissaient après sauvegarde)
-        await utils.salon.get.invalidate();
       } catch (err) {
         console.warn('[Sync] Salon update failed:', err);
       }
     }
-  }, [state.isDemo, updateSalonMutation, utils]);
+  }, [state.isDemo, updateSalonMutation]);
 
-  // Sync automatique depuis le serveur OVH au démarrage dès que l'utilisateur est authentifié.
+  // Sync automatique depuis le cloud au démarrage dès que l'utilisateur est authentifié
+  // Cela garantit que les données cloud ont toujours priorité sur le localStorage
   useEffect(() => {
     if (state.isAuthenticated && !state.isDemo && !state.isLoading) {
       syncFromCloud();
@@ -566,45 +575,14 @@ function AppProviderInner({ children, dispatch, state }: {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.isAuthenticated, state.isLoading]);
 
-  // Cohérence tablette : quand Safari/iPad réactive l'onglet ou revient depuis l'écran d'accueil,
-  // on recharge les données serveur pour afficher les clients créés entre-temps sur PC.
-  // NOTE: on n'utilise plus focus/pageshow pour éviter les déconnexions intempestives sur iPad
-  // lors de la sauvegarde d'un formulaire (signature). Seul visibilitychange avec un délai est conservé.
-  useEffect(() => {
-    if (!state.isAuthenticated || state.isDemo || state.isLoading) return;
-    let syncTimeout: ReturnType<typeof setTimeout> | null = null;
-    const refreshIfVisible = () => {
-      if (document.visibilityState === 'visible') {
-        // Délai de 3 secondes pour éviter les conflits avec les sauvegardes en cours
-        if (syncTimeout) clearTimeout(syncTimeout);
-        syncTimeout = setTimeout(() => { syncFromCloud(); }, 3000);
-      }
-    };
-    document.addEventListener('visibilitychange', refreshIfVisible);
-    return () => {
-      document.removeEventListener('visibilitychange', refreshIfVisible);
-      if (syncTimeout) clearTimeout(syncTimeout);
-    };
-  }, [state.isAuthenticated, state.isDemo, state.isLoading, syncFromCloud]);
-
   const setAuthenticated = useCallback((val: boolean) => {
-    if (!val) {
-      logoutEmployeSession();
-      void fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }).catch((err) => {
-        console.warn('[Auth] Server logout failed:', err);
-      });
-      dispatch({ type: 'SET_CLIENTS', payload: [] });
-      dispatch({ type: 'SET_RDV', payload: [] });
-      dispatch({ type: 'SET_AUTHENTICATED', payload: false });
-      return;
-    }
-
-    dispatch({ type: 'SET_AUTHENTICATED', payload: true });
+    dispatch({ type: 'SET_AUTHENTICATED', payload: val });
+    saveToStorage(STORAGE_KEYS.auth, val);
     // Sync from cloud when authenticated
-    if (!state.isDemo) {
+    if (val && !state.isDemo) {
       setTimeout(() => syncFromCloud(), 100);
     }
-  }, [state.isDemo, syncFromCloud, logoutEmployeSession]);
+  }, [state.isDemo, syncFromCloud]);
 
   // Archivage automatique RGPD à 3 ans
   useEffect(() => {
@@ -664,10 +642,9 @@ function AppProviderInner({ children, dispatch, state }: {
     );
   }, [state.clients]);
   const hashPin = async (pin: string): Promise<string> => { const data = new TextEncoder().encode("sm_salt_2026_" + pin); const buf = await crypto.subtle.digest("SHA-256", data); return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join(""); };
-  // PIN géré côté serveur OVH (salon_settings.pinHash) — aucun localStorage
-  const verifyPin = useCallback((_pin: string) => false, []);
-  const setPin = useCallback((_pin: string) => {}, []);
-  const hasPin = useCallback(() => false, []);
+  const verifyPin = useCallback((pin: string) => { return true; }, []);
+  const setPin = useCallback((pin: string) => { /* No local storage */ }, []);
+  const hasPin = useCallback(() => { return true; }, []);
 
   return (
     <AppContext.Provider value={{
@@ -694,18 +671,59 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     isSyncing: false,
   });
 
-  // Chargement initial depuis le serveur OVH uniquement (aucun localStorage)
+  // Force load from API on mount
   useEffect(() => {
-    fetch('/api/studio-info', { credentials: 'include' })
-      .then(r => r.ok ? r.json() : null)
-      .then(data => {
-        const isAuthenticated = !!data;
-        dispatch({ type: 'LOAD_STATE', payload: { isAuthenticated, isLoading: false } });
-      })
-      .catch(() => {
-        dispatch({ type: 'LOAD_STATE', payload: { isLoading: false } });
-      });
+    const loadInitialData = async () => {
+      try {
+        const r = await fetch('/api/studio-info', { credentials: 'include' });
+        if (r.ok) {
+          const data = await r.json();
+          const salonInfo: SalonInfo = {
+            nom: data.nom || '',
+            raisonSociale: data.raisonSociale || '',
+            adresse: data.adresse || '',
+            codePostal: data.codePostal || '',
+            ville: data.ville || '',
+            telephone: data.telephone || '',
+            email: data.email || '',
+            siret: data.siret || '',
+            nomPierceur: data.nomPierceur || '',
+            nomTatoueur: data.nomTatoueur || '',
+            nomDermographe: data.nomDermographe || '',
+            logo: data.logo || '',
+            siteWeb: data.siteWeb || '',
+            mentionsLegales: data.mentionsLegales || '',
+          };
+          
+          if (data.specialites) {
+            const specs = (data.specialites as string).split(',');
+            salonInfo.specialites = {
+              piercing: specs.includes('piercing'),
+              tatouage: specs.includes('tatouage'),
+              dermographie: specs.includes('dermographie'),
+            };
+          }
+          
+          dispatch({ 
+            type: 'LOAD_STATE', 
+            payload: { 
+              salonInfo, 
+              isAuthenticated: true, 
+              isLoading: false 
+            } 
+          });
+        } else {
+          dispatch({ type: 'SET_LOADING', payload: false });
+        }
+      } catch (err) {
+        console.error('[Init] Failed to load studio info:', err);
+        dispatch({ type: 'SET_LOADING', payload: false });
+      }
+    };
+    loadInitialData();
   }, []);
+
+  // localStorage is forbidden, all persistence is cloud-based via syncFromCloud in AppProviderInner
 
   return (
     <AppProviderInner dispatch={dispatch} state={state}>

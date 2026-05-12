@@ -42,9 +42,10 @@ export default function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Largeur sidebar en mémoire uniquement — aucun localStorage
   const [sidebarWidth, setSidebarWidth] = useState(DEFAULT_WIDTH);
   const { loading, user } = useAuth();
+
+  // localStorage is forbidden
 
   if (loading) {
     return <DashboardLayoutSkeleton />

@@ -5,10 +5,6 @@ interface Studio {
   nom: string;
   slug: string;
   email: string;
-  adresse?: string;
-  codePostal?: string;
-  ville?: string;
-  telephone?: string;
   ownerEmail: string;
   planType: string;
   actif: boolean;
@@ -33,16 +29,13 @@ export default function SuperAdmin() {
   const [studios, setStudios] = useState<Studio[]>([]);
   const [showCreate, setShowCreate] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const emptyStudioForm = { nomSalon: "", rue: "", codePostal: "", ville: "", telephone: "", emailSalon: "", ownerEmail: "", siret: "", password: "", pin: "", planType: "studio", specialites: ["piercing", "tatouage", "dermographie"] };
-  const [newStudio, setNewStudio] = useState(emptyStudioForm);
-  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string; password: string; pin: string } | null>(null);
+  const [newStudio, setNewStudio] = useState({ nomSalon: "", ownerEmail: "", password: "", planType: "trial", trialDays: 30, specialites: ["piercing", "tatouage", "dermographie"] });
+  const [created, setCreated] = useState<{ tempPin: string; nomSalon: string; ownerEmail: string } | null>(null);
   const [actionMsg, setActionMsg] = useState("");
   const [editingSpecialites, setEditingSpecialites] = useState<number | null>(null);
   const [showNotif, setShowNotif] = useState(false);
   const [notifForm, setNotifForm] = useState({ titre: "", message: "", type: "info", destinataire: "tous", studioId: "" });
   const [sendingNotif, setSendingNotif] = useState(false);
-  const [editingStudio, setEditingStudio] = useState<any>(null);
-  const [editForm, setEditForm] = useState({ ...emptyStudioForm, password: '' });
 
   useEffect(() => {
     fetch("/api/super-admin/me", { credentials: "include" })
@@ -88,36 +81,6 @@ export default function SuperAdmin() {
     loadStudios();
   }
 
-  async function openEditModal(studio: any) {
-    const specs = typeof studio.specialites === 'string' ? (studio.specialites||'piercing,tatouage,dermographie').split(',').map((s:string)=>s.trim()) : Object.keys(studio.specialites||{}).filter((k:string)=>(studio.specialites as any)[k]);
-    setEditForm({ ...emptyStudioForm, nomSalon: studio.nom||'', rue: studio.adresse||'', codePostal: studio.codePostal||'', ville: studio.ville||'', telephone: studio.telephone||'', emailSalon: studio.email||'', ownerEmail: studio.ownerEmail||'', pin: studio.tempPin||'', password: '', planType: studio.planType||'studio', specialites: specs });
-    setEditingStudio(studio);
-  }
-  async function handleEditStudio(e: React.FormEvent) {
-    e.preventDefault();
-    if (!editingStudio) return;
-    if (editForm.specialites.length === 0) {
-      alert("Sélectionnez au moins une spécialité");
-      return;
-    }
-    const body: Record<string, any> = {
-      nomSalon: editForm.nomSalon,
-      rue: editForm.rue,
-      codePostal: editForm.codePostal,
-      ville: editForm.ville,
-      telephone: editForm.telephone,
-      emailSalon: editForm.emailSalon,
-      ownerEmail: editForm.ownerEmail,
-      pin: editForm.pin,
-      specialites: editForm.specialites.join(','),
-      planType: editForm.planType,
-    };
-    if (editForm.password) body.password = editForm.password;
-    const r = await fetch(`/api/super-admin/studios/${editingStudio.id}`, { method: 'PATCH', headers: {'Content-Type': 'application/json'}, credentials: 'include', body: JSON.stringify(body) });
-    const data = await r.json().catch(() => ({}));
-    if (r.ok) { setActionMsg('Studio mis à jour ✅'); setTimeout(() => setActionMsg(''), 3000); setEditingStudio(null); loadStudios(); }
-    else { alert('Erreur lors de la mise à jour : ' + (data.error || 'validation impossible')); }
-  }
   async function loadStudios() {
     const r = await fetch("/api/super-admin/studios", { credentials: "include" });
     if (r.ok) setStudios(await r.json());
@@ -144,10 +107,6 @@ export default function SuperAdmin() {
 
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
-    if (newStudio.specialites.length === 0) {
-      alert("Sélectionnez au moins une spécialité");
-      return;
-    }
     const r = await fetch("/api/super-admin/studios", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -156,9 +115,9 @@ export default function SuperAdmin() {
     });
     const data = await r.json();
     if (r.ok) {
-      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail, password: newStudio.password, pin: newStudio.pin });
+      setCreated({ tempPin: data.tempPin, nomSalon: data.nomSalon, ownerEmail: data.ownerEmail });
       setShowCreate(false);
-      setNewStudio(emptyStudioForm);
+      setNewStudio({ nomSalon: "", ownerEmail: "", planType: "trial", trialDays: 30 });
       loadStudios();
     } else {
       alert("Erreur : " + data.error);
@@ -267,7 +226,7 @@ export default function SuperAdmin() {
           <div style={{ fontSize: 24 }}>💎</div>
           <div>
             <div style={{ fontWeight: 700, fontSize: 16 }}>Console Super-Admin</div>
-            <div style={{ color: "#555", fontSize: 12 }}>studio.intemporelle.eu</div>
+            <div style={{ color: "#555", fontSize: 12 }}>app.intemporelle.eu</div>
           </div>
         </div>
         <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
@@ -317,15 +276,9 @@ export default function SuperAdmin() {
               <div>📌 <b>Salon :</b> {created.nomSalon}</div>
               <div>📧 <b>Email client :</b> {created.ownerEmail}</div>
               <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 6, textAlign: "center", color: "#a855f7", marginTop: 8 }}>
-                PIN actif : <b>{created.tempPin}</b>
+                PIN temporaire : <b>{created.tempPin}</b>
               </div>
-              <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 18, letterSpacing: 8, textAlign: "center", color: "#f59e0b", marginTop: 8 }}>
-                🔢 Code PIN : <b>{created.pin}</b>
-              </div>
-              <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "12px 16px", fontFamily: "monospace", fontSize: 15, textAlign: "center", color: "#10b981", marginTop: 8 }}>
-                🔐 Mot de passe : <b>{created.password}</b>
-              </div>
-              <div style={{ color: "#888", fontSize: 12, textAlign: "center", marginTop: 4 }}>Communiquez le PIN et le mot de passe au client — ils serviront à la double sécurité</div>
+              <div style={{ color: "#888", fontSize: 12, textAlign: "center" }}>Communiquez ce PIN au client — il devra le changer à la première connexion</div>
             </div>
             <button onClick={() => setCreated(null)} style={{ marginTop: 16, padding: "6px 14px", background: "transparent", border: "1px solid #444", borderRadius: 6, color: "#888", cursor: "pointer", fontSize: 12 }}>
               Fermer
@@ -376,19 +329,28 @@ export default function SuperAdmin() {
                     );
                   })}
                 </div>
-                {/* PIN actif affiché par la fiche super-admin */}
-                {studio.tempPin && (
-                  <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "6px 14px", fontFamily: "monospace", color: "#10b981", fontSize: 14, letterSpacing: 3 }}>
-                    PIN actif: {studio.tempPin}
+                {/* PIN temporaire */}
+                {studio.isTemporary && studio.tempPin && (
+                  <div style={{ background: "#1e1e2e", borderRadius: 8, padding: "6px 14px", fontFamily: "monospace", color: "#a855f7", fontSize: 14, letterSpacing: 3 }}>
+                    PIN: {studio.tempPin}
                   </div>
                 )}
 
+                {/* Plan */}
+                <select
+                  value={studio.planType}
+                  onChange={e => changePlan(studio, e.target.value)}
+                  style={{ padding: "6px 10px", background: "#1e1e2e", border: `1px solid ${planColors[studio.planType] || "#2a2a3a"}`, borderRadius: 6, color: planColors[studio.planType] || "#fff", fontSize: 12, cursor: "pointer" }}
+                >
+                  <option value="trial">Trial</option>
+                  <option value="solo">Solo</option>
+                  <option value="studio">Studio</option>
+                  <option value="multi">Multi-sites</option>
+                </select>
 
-
-                <button onClick={() => openEditModal(studio)} style={{padding: "6px 14px", background: "#6366f120", border: "1px solid #6366f1", borderRadius: 6, color: "#818cf8", cursor: "pointer", fontSize: 12, fontWeight: 600}}>✏️ Modifier</button>
-                {/* Lien vers l'app */}
+                {/* Lien direct */}
                 <button
-                  onClick={() => window.open(`/api/super-admin/studios/${studio.id}/open`, '_blank')}
+                  onClick={() => window.open('https://app.intemporelle.eu', '_blank')}
                   style={{ padding: "6px 14px", background: "#10b98120", border: "1px solid #10b981", borderRadius: 6, color: "#10b981", cursor: "pointer", fontSize: 12, fontWeight: 600 }}
                 >
                   🔗 Ouvrir
@@ -415,7 +377,7 @@ export default function SuperAdmin() {
       {/* Modal notification */}
       {showNotif && (
         <div style={{ position: "fixed", inset: 0, background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-          <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 16, padding: 32, width: 520, maxWidth: "90vw", maxHeight: "90vh", overflowY: "auto" }}>
+          <div style={{ background: "#13131a", border: "1px solid #2a2a3a", borderRadius: 16, padding: 32, width: 420, maxWidth: "90vw" }}>
             <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 24 }}>🔔 Envoyer une notification</div>
             <form onSubmit={sendNotification}>
               <div style={{ marginBottom: 16 }}>
@@ -495,72 +457,6 @@ export default function SuperAdmin() {
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>RUE *</label>
-                <input
-                  value={newStudio.rue}
-                  onChange={e => setNewStudio({ ...newStudio, rue: e.target.value })}
-                  placeholder="Ex: 12 rue des Arts"
-                  required
-                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                />
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-                <div>
-                  <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>CODE POSTAL *</label>
-                  <input
-                    value={newStudio.codePostal}
-                    onChange={e => setNewStudio({ ...newStudio, codePostal: e.target.value })}
-                    placeholder="75001"
-                    required
-                    style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>VILLE *</label>
-                  <input
-                    value={newStudio.ville}
-                    onChange={e => setNewStudio({ ...newStudio, ville: e.target.value })}
-                    placeholder="Paris"
-                    required
-                    style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                  />
-                </div>
-              </div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-                <div>
-                  <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>TÉLÉPHONE *</label>
-                  <input
-                    type="tel"
-                    value={newStudio.telephone}
-                    onChange={e => setNewStudio({ ...newStudio, telephone: e.target.value })}
-                    placeholder="01 23 45 67 89"
-                    required
-                    style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                  />
-                </div>
-                <div>
-                  <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>EMAIL SALON *</label>
-                  <input
-                    type="email"
-                    value={newStudio.emailSalon}
-                    onChange={e => setNewStudio({ ...newStudio, emailSalon: e.target.value })}
-                    placeholder="contact@salon.fr"
-                    required
-                    style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                  />
-                </div>
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>SIRET</label>
-                <input
-                  type="text"
-                  value={newStudio.siret}
-                  onChange={e => setNewStudio({ ...newStudio, siret: e.target.value })}
-                  placeholder="Ex: 12345678901234"
-                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                />
-              </div>
-              <div style={{ marginBottom: 16 }}>
                 <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>EMAIL DU PROPRIÉTAIRE</label>
                 <input
                   type="email"
@@ -569,20 +465,6 @@ export default function SuperAdmin() {
                   placeholder="patron@salon.fr"
                   required
                   style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
-                />
-              </div>
-              <div style={{ marginBottom: 16 }}>
-                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>CODE PIN (4 chiffres)</label>
-                <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={4}
-                  pattern="[0-9]{4}"
-                  value={newStudio.pin}
-                  onChange={e => setNewStudio({ ...newStudio, pin: e.target.value.replace(/\D/g, '').slice(0, 4) })}
-                  placeholder="Ex: 1234"
-                  required
-                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none", letterSpacing: 8, fontSize: 18 }}
                 />
               </div>
               <div style={{ marginBottom: 16 }}>
@@ -602,7 +484,19 @@ export default function SuperAdmin() {
                   </button>
                 </div>
               </div>
-
+              <div style={{ marginBottom: 16 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>PLAN</label>
+                <select
+                  value={newStudio.planType}
+                  onChange={e => setNewStudio({ ...newStudio, planType: e.target.value })}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box" }}
+                >
+                  <option value="trial">Trial (essai gratuit)</option>
+                  <option value="solo">Solo</option>
+                  <option value="studio">Studio</option>
+                  <option value="multi">Multi-sites</option>
+                </select>
+              </div>
               <div style={{ marginBottom: 16 }}>
                 <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 8 }}>SPÉCIALITÉS</label>
                 <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
@@ -618,7 +512,7 @@ export default function SuperAdmin() {
                           Oui
                         </button>
                         <button type="button"
-                          onClick={() => setNewStudio(n => ({ ...n, specialites: n.specialites.filter(x => x !== s) }))}
+                          onClick={() => setNewStudio(n => ({ ...n, specialites: n.specialites.filter(specItem => specItem !== s) }))}
                           style={{ padding: "4px 14px", borderRadius: 6, border: "none", cursor: "pointer",
                             background: !newStudio.specialites.includes(s) ? "#ef4444" : "#333",
                             color: !newStudio.specialites.includes(s) ? "#fff" : "#888", fontWeight: 600, fontSize: 13 }}>
@@ -628,95 +522,23 @@ export default function SuperAdmin() {
                     </div>
                   ))}
                 </div>
-                {newStudio.specialites.length === 0 && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 8 }}>Au moins une spécialité doit être sélectionnée.</div>}
               </div>
-
+              <div style={{ marginBottom: 24 }}>
+                <label style={{ display: "block", color: "#888", fontSize: 12, marginBottom: 6 }}>JOURS D'ESSAI</label>
+                <input
+                  type="number" min={1} max={365}
+                  value={newStudio.trialDays}
+                  onChange={e => setNewStudio({ ...newStudio, trialDays: parseInt(e.target.value) })}
+                  style={{ width: "100%", padding: "10px 14px", background: "#1e1e2e", border: "1px solid #2a2a3a", borderRadius: 8, color: "#fff", boxSizing: "border-box", outline: "none" }}
+                />
+              </div>
               <div style={{ display: "flex", gap: 12 }}>
                 <button type="button" onClick={() => setShowCreate(false)} style={{ flex: 1, padding: "10px", background: "transparent", border: "1px solid #2a2a3a", borderRadius: 8, color: "#888", cursor: "pointer" }}>
                   Annuler
                 </button>
-                <button type="submit" disabled={newStudio.specialites.length === 0} style={{ flex: 1, padding: "10px", background: newStudio.specialites.length === 0 ? "#333" : "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: newStudio.specialites.length === 0 ? "not-allowed" : "pointer" }}>
+                <button type="submit" style={{ flex: 1, padding: "10px", background: "linear-gradient(135deg, #7c3aed, #a855f7)", border: "none", borderRadius: 8, color: "#fff", fontWeight: 700, cursor: "pointer" }}>
                   Créer le studio
                 </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {editingStudio && (
-        <div style={{position:"fixed",inset:0,background:"#000a",display:"flex",alignItems:"center",justifyContent:"center",zIndex:100}}>
-          <div style={{background:"#13131a",border:"1px solid #2a2a3a",borderRadius:16,padding:32,width:460,maxWidth:"90vw",maxHeight:"90vh",overflowY:"auto"}}>
-            <div style={{fontWeight:700,fontSize:18,marginBottom:4}}>Modifier le studio</div>
-            <div style={{color:"#555",fontSize:13,marginBottom:24}}>{editingStudio.nom}</div>
-            <form onSubmit={handleEditStudio}>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>NOM DU SALON *</label>
-                <input value={editForm.nomSalon} onChange={e=>setEditForm({...editForm,nomSalon:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>EMAIL PROPRIETAIRE *</label>
-                <input type="email" value={editForm.ownerEmail} onChange={e=>setEditForm({...editForm,ownerEmail:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>RUE *</label>
-                <input value={editForm.rue} onChange={e=>setEditForm({...editForm,rue:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
-                <div>
-                  <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>CODE POSTAL *</label>
-                  <input value={editForm.codePostal} onChange={e=>setEditForm({...editForm,codePostal:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-                </div>
-                <div>
-                  <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>VILLE *</label>
-                  <input value={editForm.ville} onChange={e=>setEditForm({...editForm,ville:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-                </div>
-              </div>
-              <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12,marginBottom:16}}>
-                <div>
-                  <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>TÉLÉPHONE *</label>
-                  <input type="tel" value={editForm.telephone} onChange={e=>setEditForm({...editForm,telephone:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-                </div>
-                <div>
-                  <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>EMAIL SALON *</label>
-                  <input type="email" value={editForm.emailSalon} onChange={e=>setEditForm({...editForm,emailSalon:e.target.value})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-                </div>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>CODE PIN (4 chiffres) *</label>
-                <input type="text" inputMode="numeric" maxLength={4} value={editForm.pin} onChange={e=>setEditForm({...editForm,pin:e.target.value.replace(/\D/g,"").slice(0,4)})} required style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none",letterSpacing:8,fontSize:18}}/>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>NOUVEAU MOT DE PASSE <span style={{color:"#555"}}>(vide = inchange)</span></label>
-                <input type="password" value={editForm.password} onChange={e=>setEditForm({...editForm,password:e.target.value})} placeholder="Laisser vide = inchange" style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box",outline:"none"}}/>
-              </div>
-              <div style={{marginBottom:16}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:6}}>PLAN</label>
-                <select value={editForm.planType} onChange={e=>setEditForm({...editForm,planType:e.target.value})} style={{width:"100%",padding:"10px 14px",background:"#1e1e2e",border:"1px solid #2a2a3a",borderRadius:8,color:"#fff",boxSizing:"border-box"}}>
-                  <option value="trial">Essai gratuit</option>
-                  <option value="solo">Solo</option>
-                  <option value="studio">Studio</option>
-                  <option value="multi">Multi</option>
-                </select>
-              </div>
-              <div style={{marginBottom:20}}>
-                <label style={{display:"block",color:"#888",fontSize:12,marginBottom:8}}>SPECIALITES</label>
-                <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                  {["piercing","tatouage","dermographie"].map(s=>(
-                    <div key={s} style={{display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-                      <span style={{color:"#ccc",fontSize:13,textTransform:"capitalize"}}>{s}</span>
-                      <div style={{display:"flex",gap:6}}>
-                        <button type="button" onClick={()=>setEditForm(f=>({...f,specialites:[...new Set([...f.specialites,s])]}))} style={{padding:"4px 14px",borderRadius:6,border:"none",cursor:"pointer",background:editForm.specialites.includes(s)?"#a855f7":"#333",color:editForm.specialites.includes(s)?"#fff":"#888",fontWeight:600,fontSize:13}}>Oui</button>
-                        <button type="button" onClick={()=>setEditForm(f=>({...f,specialites:f.specialites.filter(x=>x!==s)}))} style={{padding:"4px 14px",borderRadius:6,border:"none",cursor:"pointer",background:!editForm.specialites.includes(s)?"#ef4444":"#333",color:!editForm.specialites.includes(s)?"#fff":"#888",fontWeight:600,fontSize:13}}>Non</button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                {editForm.specialites.length === 0 && <div style={{ color: "#ef4444", fontSize: 12, marginTop: 8 }}>Au moins une spécialité doit être sélectionnée.</div>}
-              </div>
-              <div style={{display:"flex",gap:12}}>
-                <button type="button" onClick={()=>setEditingStudio(null)} style={{flex:1,padding:"10px",background:"transparent",border:"1px solid #2a2a3a",borderRadius:8,color:"#888",cursor:"pointer"}}>Annuler</button>
-                <button type="submit" disabled={editForm.specialites.length === 0} style={{flex:2,padding:"10px",background:editForm.specialites.length === 0 ? "#333" : "linear-gradient(135deg,#6366f1,#8b5cf6)",border:"none",borderRadius:8,color:"#fff",fontWeight:700,cursor:editForm.specialites.length === 0 ? "not-allowed" : "pointer"}}>Enregistrer les modifications</button>
               </div>
             </form>
           </div>

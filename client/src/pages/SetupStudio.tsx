@@ -106,6 +106,11 @@ export default function SetupStudio() {
             </div>
           ))}
         </div>
+        <div className="p-3 rounded-lg mb-2" style={{ background: 'rgba(201,168,76,0.08)', border: '1px solid rgba(201,168,76,0.2)', maxWidth: '420px' }}>
+          <p className="text-xs text-center" style={{ color: 'rgba(201,168,76,0.9)', lineHeight: 1.6 }}>
+            🔒 Vos données sont synchronisées en temps réel avec nos serveurs sécurisés OVH.
+          </p>
+        </div>
 
         {/* ÉTAPE 1 : Infos studio */}
         {step === 'info' && (

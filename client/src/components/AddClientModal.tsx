@@ -53,19 +53,6 @@ interface Props {
   client?: any;
 }
 
-function splitDateParts(value?: string): { jour: string; mois: string; annee: string } {
-  if (!value) return { jour: '', mois: '', annee: '' };
-  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
-  if (match) return { jour: match[3], mois: match[2], annee: match[1] };
-  const date = new Date(value);
-  if (isNaN(date.getTime())) return { jour: '', mois: '', annee: '' };
-  return {
-    jour: String(date.getDate()).padStart(2, '0'),
-    mois: String(date.getMonth() + 1).padStart(2, '0'),
-    annee: String(date.getFullYear()),
-  };
-}
-
 function calcAge(j: string, m: string, a: string): number {
   if (!j || !m || !a || a.length < 4) return -1;
   const birth = new Date(parseInt(a), parseInt(m) - 1, parseInt(j));
@@ -79,8 +66,6 @@ function calcAge(j: string, m: string, a: string): number {
 
 export default function AddClientModal({ onClose, client }: Props) {
   const { addClient, updateClient, state } = useApp();
-  const isEditMode = Boolean(client?.id);
-  const initialDateParts = splitDateParts(client?.dateNaissance);
 
   // Champs du formulaire
   const refPrenom = useRef<HTMLInputElement>(null);
@@ -93,9 +78,19 @@ export default function AddClientModal({ onClose, client }: Props) {
 
   const [prenom, setPrenom] = useState(client?.prenom || '');
   const [nom, setNom] = useState(client?.nom || '');
-  const [dateJour, setDateJour] = useState(initialDateParts.jour);
-  const [dateMois, setDateMois] = useState(initialDateParts.mois);
-  const [dateAnnee, setDateAnnee] = useState(initialDateParts.annee);
+  // Parser la date ISO (YYYY-MM-DD) en JJ/MM/AAAA
+  const parseDateISO = (dateISO: string | undefined) => {
+    if (!dateISO) return { jour: '', mois: '', annee: '' };
+    const parts = dateISO.split('-');
+    if (parts.length === 3) {
+      return { jour: parts[2], mois: parts[1], annee: parts[0] };
+    }
+    return { jour: '', mois: '', annee: '' };
+  };
+  const initialDate = parseDateISO(client?.dateNaissance);
+  const [dateJour, setDateJour] = useState(initialDate.jour);
+  const [dateMois, setDateMois] = useState(initialDate.mois);
+  const [dateAnnee, setDateAnnee] = useState(initialDate.annee);
   const [telephone, setTelephone] = useState(client?.telephone || '');
   const [email, setEmail] = useState(client?.email || '');
   const [adresse, setAdresse] = useState(client?.adresse || '');
@@ -134,10 +129,10 @@ export default function AddClientModal({ onClose, client }: Props) {
   // Calcul de l'âge
   const age = calcAge(dateJour, dateMois, dateAnnee);
   const isMineur = age >= 0 && age < 18;
-  const [nomRepresentant, setNomRepresentant] = useState(client?.nomRepresentantLegal || '');
-  const [prenomRepresentant, setPrenomRepresentant] = useState(client?.prenomRepresentantLegal || '');
-  const [lienRepresentant, setLienRepresentant] = useState(client?.lienRepresentantLegal || '');
-  const [telephoneRepresentant, setTelephoneRepresentant] = useState(client?.telephoneRepresentantLegal || '');
+  const [nomRepresentant, setNomRepresentant] = useState('');
+  const [prenomRepresentant, setPrenomRepresentant] = useState('');
+  const [lienRepresentant, setLienRepresentant] = useState('');
+  const [telephoneRepresentant, setTelephoneRepresentant] = useState('');
   const isDateValid = age >= 0 && age <= 120;
 
   // Validation des champs requis
@@ -150,46 +145,39 @@ export default function AddClientModal({ onClose, client }: Props) {
       case 'prenom': return !prenom.trim() ? 'Le prénom est requis' : '';
       case 'nom': return !nom.trim() ? 'Le nom est requis' : '';
       case 'telephone': return !telephone.trim() ? 'Le téléphone est requis' : '';
-      case 'email': return isMineur && !email.trim() ? 'L’adresse mail est obligatoire pour une fiche mineur' : '';
-      case 'adresse': return isMineur && !adresse.trim() ? 'L’adresse est requise pour une fiche mineur' : '';
-      case 'codePostal': return isMineur && !codePostal.trim() ? 'Le code postal est requis pour une fiche mineur' : '';
-      case 'ville': return isMineur && !ville.trim() ? 'La ville est requise pour une fiche mineur' : '';
-      case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? 'Le type de pièce d’identité est requis pour une fiche mineur' : '';
-      case 'pieceIdentiteNumero': return isMineur && !pieceIdentiteNumero.trim() ? 'Le numéro de pièce d’identité est requis pour une fiche mineur' : '';
-      case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? 'Le nom du représentant légal est requis' : '';
-      case 'prenomRepresentant': return isMineur && !prenomRepresentant.trim() ? 'Le prénom du représentant légal est requis' : '';
-      case 'lienRepresentant': return isMineur && !lienRepresentant.trim() ? 'Le lien avec le mineur est requis' : '';
-      case 'telephoneRepresentant': return isMineur && !telephoneRepresentant.trim() ? 'Le téléphone du représentant légal est requis' : '';
-      case 'prestationsSouhaitees': return isMineur && prestationsSouhaitees.length === 0 ? 'Au moins une prestation est requise pour une fiche mineur' : '';
+      case 'email': return !email.trim() ? 'L\'email est requis' : '';
       case 'date':
         if (!dateJour || !dateMois || !dateAnnee) return 'La date de naissance est requise';
         if (!isDateValid) return 'Date invalide';
         return '';
+      case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? 'Le nom du représentant est requis' : '';
+      case 'prenomRepresentant': return isMineur && !prenomRepresentant.trim() ? 'Le prénom du représentant est requis' : '';
+      case 'lienRepresentant': return isMineur && !lienRepresentant.trim() ? 'Le lien avec le mineur est requis' : '';
+      case 'telephoneRepresentant': return isMineur && !telephoneRepresentant.trim() ? 'Le téléphone du représentant est requis' : '';
       default: return '';
     }
   };
 
   const isFormValid = (): boolean => {
-    return (
+    const baseValid = (
       prenom.trim() !== '' &&
       nom.trim() !== '' &&
       telephone.trim() !== '' &&
+      email.trim() !== '' &&
       dateJour !== '' && dateMois !== '' && dateAnnee !== '' &&
-      isDateValid &&
-      (!isMineur || (
-        email.trim() !== '' &&
-        adresse.trim() !== '' &&
-        codePostal.trim() !== '' &&
-        ville.trim() !== '' &&
-        pieceIdentiteType.trim() !== '' &&
-        pieceIdentiteNumero.trim() !== '' &&
+      isDateValid
+    );
+    
+    // Si c'est un mineur, vérifier aussi les champs du représentant légal
+    if (isMineur) {
+      return baseValid && 
         nomRepresentant.trim() !== '' &&
         prenomRepresentant.trim() !== '' &&
         lienRepresentant.trim() !== '' &&
-        telephoneRepresentant.trim() !== '' &&
-        prestationsSouhaitees.length > 0
-      ))
-    );
+        telephoneRepresentant.trim() !== '';
+    }
+    
+    return baseValid;
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -209,7 +197,7 @@ export default function AddClientModal({ onClose, client }: Props) {
     d.setFullYear(d.getFullYear() + 5);
     const dateSuppressionPrevue = d.toISOString().split('T')[0];
 
-    const commonClientFields = {
+    const clientData = {
       prenom: prenom.trim(),
       nom: nom.trim().toUpperCase(),
       dateNaissance: dateNaissanceISO,
@@ -226,21 +214,6 @@ export default function AddClientModal({ onClose, client }: Props) {
       prenomRepresentantLegal: isMineur ? prenomRepresentant : undefined,
       lienRepresentantLegal: isMineur ? lienRepresentant : undefined,
       telephoneRepresentantLegal: isMineur ? telephoneRepresentant : undefined,
-    };
-
-    if (isEditMode && client?.id) {
-      updateClient({
-        ...client,
-        ...commonClientFields,
-        dateModification: new Date().toISOString().split('T')[0],
-      });
-      toast.success(`✓ ${prenom.trim()} ${nom.trim().toUpperCase()} modifié(e)`);
-      onClose();
-      return;
-    }
-
-    addClient({
-      ...commonClientFields,
       prestations: [],
       documentsAssocies: docsAssocies,
       documents: [],
@@ -249,9 +222,16 @@ export default function AddClientModal({ onClose, client }: Props) {
       dateSuppressionPrevue,
       rgpdDroitsExerces: [],
       estArchive: false,
-    });
+    };
 
-    toast.success(`✓ ${prenom.trim()} ${nom.trim().toUpperCase()} ajouté(e)`);
+    // Si c'est une modification (client existant), mettre à jour
+    if (client?.id) {
+      updateClient({ ...client, ...clientData });
+      toast.success(`✓ ${prenom.trim()} ${nom.trim().toUpperCase()} modifié(e)`);
+    } else {
+      addClient(clientData);
+      toast.success(`✓ ${prenom.trim()} ${nom.trim().toUpperCase()} ajouté(e)`);
+    }
     onClose();
   };
 
@@ -287,17 +267,6 @@ export default function AddClientModal({ onClose, client }: Props) {
   const errPrenom = getError('prenom');
   const errNom = getError('nom');
   const errTel = getError('telephone');
-  const errEmail = getError('email');
-  const errAdresse = getError('adresse');
-  const errCodePostal = getError('codePostal');
-  const errVille = getError('ville');
-  const errPieceIdentiteType = getError('pieceIdentiteType');
-  const errPieceIdentiteNumero = getError('pieceIdentiteNumero');
-  const errNomRepresentant = getError('nomRepresentant');
-  const errPrenomRepresentant = getError('prenomRepresentant');
-  const errLienRepresentant = getError('lienRepresentant');
-  const errTelephoneRepresentant = getError('telephoneRepresentant');
-  const errPrestations = getError('prestationsSouhaitees');
   const errDate = getError('date');
   const dateInputStyle = errDate ? inputErrorStyle : inputBase;
 
@@ -314,7 +283,7 @@ export default function AddClientModal({ onClose, client }: Props) {
           style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy-light)' }}
         >
           <h2 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>
-            {isEditMode ? 'Modifier le client' : 'Nouveau client'}
+            Nouveau client
           </h2>
           {state.isDemo && (
             <span
@@ -344,7 +313,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                 <input
                   ref={refPrenom}
                   style={getStyle('prenom')}
-                  required
                   value={prenom}
                   onChange={e => {
                     setPrenom(e.target.value);
@@ -370,7 +338,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                 <input
                   ref={refNom}
                   style={getStyle('nom')}
-                  required
                   value={nom}
                   onChange={e => setNom(e.target.value)}
                   onKeyDown={e => { if (e.key === 'Enter' || e.key === 'Tab') { e.preventDefault(); refJour.current?.focus(); } }}
@@ -396,7 +363,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refJour}
                   type="number"
                   style={dateInputStyle}
-                  required
                   value={dateJour}
                   onChange={e => {
                     const v = e.target.value.slice(0, 2);
@@ -411,7 +377,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refMois}
                   type="number"
                   style={dateInputStyle}
-                  required
                   value={dateMois}
                   onChange={e => {
                     const v = e.target.value.slice(0, 2);
@@ -426,7 +391,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refAnnee}
                   type="number"
                   style={dateInputStyle}
-                  required
                   value={dateAnnee}
                   onChange={e => {
                     const v = e.target.value.slice(0, 4);
@@ -484,7 +448,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                   ref={refTelephone}
                   type="tel"
                   style={getStyle('telephone')}
-                  required
                   value={telephone}
                   onChange={e => setTelephone(e.target.value)}
                   onBlur={() => touch('telephone')}
@@ -499,7 +462,7 @@ export default function AddClientModal({ onClose, client }: Props) {
               </div>
 
               <div>
-                <label style={labelStyle}>Adresse mail{isMineur ? ' obligatoire *' : ''}</label>
+                <label style={labelStyle}>Adresse email *</label>
                 <input
                   ref={refEmail}
                   type="email"
@@ -509,111 +472,17 @@ export default function AddClientModal({ onClose, client }: Props) {
                   onBlur={() => touch('email')}
                   placeholder="exemple@email.com"
                   autoComplete="off"
-                  required={isMineur}
-                  aria-required={isMineur}
                 />
-                {isMineur && !errEmail && (
-                  <p className="mt-1 text-xs" style={{ color: 'var(--brand-text-muted)', opacity: 0.75 }}>
-                    Adresse mail obligatoire pour créer une fiche mineur.
-                  </p>
-                )}
-                {errEmail && (
+                {getError('email') && (
                   <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
-                    <AlertCircle size={11} /> {errEmail}
+                    <AlertCircle size={11} /> {getError('email')}
                   </p>
                 )}
               </div>
             </div>
           </div>
 
-          {/* COORDONNÉES ET IDENTITÉ — obligatoires pour les mineurs */}
-          {isMineur && (
-            <div>
-              <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                Coordonnées et pièce d’identité *
-              </p>
-              <div className="space-y-3">
-                <div>
-                  <label style={labelStyle}>Adresse complète *</label>
-                  <input
-                    type="text"
-                    style={getStyle('adresse')}
-                    value={adresse}
-                    onChange={e => setAdresse(e.target.value)}
-                    onBlur={() => touch('adresse')}
-                    placeholder="Numéro, rue, bâtiment..."
-                    autoComplete="street-address"
-                    required
-                  />
-                  {errAdresse && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errAdresse}</p>}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label style={labelStyle}>Code postal *</label>
-                    <input
-                      type="text"
-                      style={getStyle('codePostal')}
-                      value={codePostal}
-                      onChange={e => setCodePostal(e.target.value)}
-                      onBlur={() => touch('codePostal')}
-                      placeholder="75000"
-                      inputMode="numeric"
-                      autoComplete="postal-code"
-                      required
-                    />
-                    {errCodePostal && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errCodePostal}</p>}
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Ville *</label>
-                    <input
-                      type="text"
-                      style={getStyle('ville')}
-                      value={ville}
-                      onChange={e => setVille(e.target.value)}
-                      onBlur={() => touch('ville')}
-                      placeholder="Ville"
-                      autoComplete="address-level2"
-                      required
-                    />
-                    {errVille && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errVille}</p>}
-                  </div>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label style={labelStyle}>Type de pièce d’identité *</label>
-                    <select
-                      style={getStyle('pieceIdentiteType')}
-                      value={pieceIdentiteType}
-                      onChange={e => setPieceIdentiteType(e.target.value)}
-                      onBlur={() => touch('pieceIdentiteType')}
-                      required
-                    >
-                      <option value="">Sélectionner</option>
-                      <option value="carte_identite">Carte d’identité</option>
-                      <option value="passeport">Passeport</option>
-                      <option value="titre_sejour">Titre de séjour</option>
-                      <option value="autre">Autre</option>
-                    </select>
-                    {errPieceIdentiteType && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteType}</p>}
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Numéro de pièce d’identité *</label>
-                    <input
-                      type="text"
-                      style={getStyle('pieceIdentiteNumero')}
-                      value={pieceIdentiteNumero}
-                      onChange={e => setPieceIdentiteNumero(e.target.value)}
-                      onBlur={() => touch('pieceIdentiteNumero')}
-                      placeholder="Numéro du document"
-                      autoComplete="off"
-                      required
-                    />
-                    {errPieceIdentiteNumero && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteNumero}</p>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
+
 
           {/* REPRÉSENTANT LÉGAL */}
           {isMineur && (
@@ -624,31 +493,47 @@ export default function AddClientModal({ onClose, client }: Props) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label style={labelStyle}>Nom du représentant légal *</label>
-                  <input type="text" style={getStyle('nomRepresentant')} value={nomRepresentant} onChange={e => setNomRepresentant(e.target.value)} onBlur={() => touch('nomRepresentant')} placeholder="Nom" autoComplete="off" required />
-                  {errNomRepresentant && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errNomRepresentant}</p>}
+                  <input type="text" style={getStyle('nomRepresentant')} value={nomRepresentant} onChange={e => setNomRepresentant(e.target.value)} onBlur={() => setTouched({...touched, nomRepresentant: true})} placeholder="Nom" autoComplete="off" />
+                  {getError('nomRepresentant') && (
+                    <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
+                      <AlertCircle size={11} /> {getError('nomRepresentant')}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label style={labelStyle}>Prénom du représentant légal *</label>
-                  <input type="text" style={getStyle('prenomRepresentant')} value={prenomRepresentant} onChange={e => setPrenomRepresentant(e.target.value)} onBlur={() => touch('prenomRepresentant')} placeholder="Prénom" autoComplete="off" required />
-                  {errPrenomRepresentant && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPrenomRepresentant}</p>}
+                  <input type="text" style={getStyle('prenomRepresentant')} value={prenomRepresentant} onChange={e => setPrenomRepresentant(e.target.value)} onBlur={() => setTouched({...touched, prenomRepresentant: true})} placeholder="Prénom" autoComplete="off" />
+                  {getError('prenomRepresentant') && (
+                    <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
+                      <AlertCircle size={11} /> {getError('prenomRepresentant')}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label style={labelStyle}>Lien avec le mineur *</label>
-                  <input type="text" style={getStyle('lienRepresentant')} value={lienRepresentant} onChange={e => setLienRepresentant(e.target.value)} onBlur={() => touch('lienRepresentant')} placeholder="Père, Mère, Tuteur..." autoComplete="off" required />
-                  {errLienRepresentant && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errLienRepresentant}</p>}
+                  <input type="text" style={getStyle('lienRepresentant')} value={lienRepresentant} onChange={e => setLienRepresentant(e.target.value)} onBlur={() => setTouched({...touched, lienRepresentant: true})} placeholder="Père, Mère, Tuteur..." autoComplete="off" />
+                  {getError('lienRepresentant') && (
+                    <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
+                      <AlertCircle size={11} /> {getError('lienRepresentant')}
+                    </p>
+                  )}
                 </div>
                 <div>
                   <label style={labelStyle}>Téléphone du représentant *</label>
-                  <input type="tel" style={getStyle('telephoneRepresentant')} value={telephoneRepresentant} onChange={e => setTelephoneRepresentant(e.target.value)} onBlur={() => touch('telephoneRepresentant')} placeholder="06 XX XX XX XX" autoComplete="off" required />
-                  {errTelephoneRepresentant && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errTelephoneRepresentant}</p>}
+                  <input type="tel" style={getStyle('telephoneRepresentant')} value={telephoneRepresentant} onChange={e => setTelephoneRepresentant(e.target.value)} onBlur={() => setTouched({...touched, telephoneRepresentant: true})} placeholder="06 XX XX XX XX" autoComplete="off" />
+                  {getError('telephoneRepresentant') && (
+                    <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
+                      <AlertCircle size={11} /> {getError('telephoneRepresentant')}
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
           )}
           {/* PRESTATIONS SOUHAITÉES */}
           <div>
-            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: errPrestations ? '#F44336' : 'var(--brand-cyan)', fontWeight: 600 }}>
-              Prestations souhaitées{isMineur ? ' *' : ''}
+            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
+              Prestations souhaitées
             </p>
             <div className="flex flex-wrap gap-2">
               {PRESTATIONS_OPTIONS.map(p => {
@@ -671,11 +556,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                 );
               })}
             </div>
-            {errPrestations && (
-              <p className="flex items-center gap-1 mt-2 text-xs" style={{ color: '#F44336' }}>
-                <AlertCircle size={11} /> {errPrestations}
-              </p>
-            )}
           </div>
 
           {/* BOUTONS */}
@@ -702,7 +582,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                 fontWeight: 700,
               }}
             >
-              {isEditMode ? 'Enregistrer les modifications' : 'Créer le client'}
+              Créer le client
             </button>
           </div>
         </form>

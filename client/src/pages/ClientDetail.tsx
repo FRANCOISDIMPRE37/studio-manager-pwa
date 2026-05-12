@@ -25,6 +25,7 @@ const DOC_ORDER: DocumentType[] = [
   // Tatouage
   'questionnaire_tatouage_majeur',
   'consentement_soins_tatouage',
+  'questionnaire_patch_test',
   'fiche_retouche_dermographie',
   'fiche_seance_tatouage',
   // Dermographie
@@ -340,6 +341,11 @@ export default function ClientDetail() {
                 </p>
               )}
             </div>
+
+            <button onClick={() => setShowDossierModal(true)} className="w-full py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all mb-3"
+              style={{ background: 'rgba(131,208,245,0.12)', border: '1px solid rgba(131,208,245,0.3)', color: 'var(--brand-cyan)', fontWeight: 600 }}>
+              <Send size={14} />Envoyer le dossier complet
+            </button>
 
             <div className="flex gap-3">
               <button onClick={handleArchive} className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"

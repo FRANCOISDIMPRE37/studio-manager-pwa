@@ -1,7 +1,7 @@
 /*
  * DESIGN: Studio Nocturne — Page paramètres avec infos salon, PIN, RGPD
  */
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useApp } from '@/lib/app-context';
 import { useTranslation } from 'react-i18next';
 import { Building2, Phone, Mail, MapPin, Hash, User, Shield, Lock, LogOut, Info, ExternalLink, Download, Upload, Users, Archive, Stethoscope, FileText, AlertTriangle, ImageIcon, ChevronRight, Send, CheckCircle, XCircle, Server } from 'lucide-react';
@@ -11,127 +11,7 @@ import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
 
-function SmtpSection() {
-  const utils = trpc.useUtils();
-  const { data: cfg, isLoading } = trpc.smtp.get.useQuery();
-  const save = trpc.smtp.save.useMutation({
-    onSuccess: () => { utils.smtp.get.invalidate(); toast.success('Configuration email sauvegardée !'); },
-    onError: (e: any) => toast.error(e.message),
-  });
-  const test = trpc.smtp.test.useMutation({
-    onSuccess: (r: any) => toast.success(r.message || 'Connexion SMTP réussie !'),
-    onError: (e: any) => toast.error(e.message),
-  });
-
-  const [form, setForm] = useState({
-    host: '', port: 587, secure: false, user: '', password: '', fromName: '', replyTo: '',
-  });
-  const [loaded, setLoaded] = useState(false);
-
-  if (!loaded && cfg) {
-    setForm({
-      host: (cfg as any).host ?? '',
-      port: (cfg as any).port ?? 587,
-      secure: (cfg as any).secure ?? false,
-      user: (cfg as any).user ?? '',
-      password: '',
-      fromName: (cfg as any).fromName ?? '',
-      replyTo: (cfg as any).replyTo ?? '',
-    });
-    setLoaded(true);
-  }
-
-  const inp = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', borderRadius: 8, padding: '8px 12px', width: '100%', fontSize: 13, outline: 'none' } as React.CSSProperties;
-  const lbl = { color: 'rgba(255,255,255,0.6)', fontSize: 11, display: 'block', marginBottom: 4 } as React.CSSProperties;
-
-  return (
-    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '20px', marginBottom: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <Mail size={18} style={{ color: 'var(--brand-cyan)' }} />
-        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'white' }}>Configuration Email (SMTP)</h3>
-        {cfg && <span style={{ marginLeft: 'auto', fontSize: 11, color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 20, padding: '2px 10px' }}>✓ Configuré</span>}
-      </div>
-
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>
-        Configurez votre serveur email pour envoyer des rappels automatiques 24h avant chaque RDV et des documents à vos clients.
-      </p>
-
-      {isLoading ? (
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Chargement...</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
-            <div>
-              <label style={lbl}>Serveur SMTP (host)</label>
-              <input style={inp} placeholder="ex: smtp.gmail.com" value={form.host} onChange={e => setForm(f => ({ ...f, host: e.target.value }))} />
-            </div>
-            <div style={{ minWidth: 90 }}>
-              <label style={lbl}>Port</label>
-              <input style={inp} type="number" placeholder="587" value={form.port} onChange={e => setForm(f => ({ ...f, port: Number(e.target.value) }))} />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div>
-              <label style={lbl}>Email expéditeur (login SMTP)</label>
-              <input style={inp} type="email" placeholder="votre@email.com" value={form.user} onChange={e => setForm(f => ({ ...f, user: e.target.value }))} />
-            </div>
-            <div>
-              <label style={lbl}>{(cfg as any)?.passwordSet ? 'Nouveau mot de passe (vide = inchangé)' : 'Mot de passe SMTP'}</label>
-              <input style={inp} type="password" placeholder={(cfg as any)?.passwordSet ? '••••••••' : 'Mot de passe'} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div>
-              <label style={lbl}>Nom affiché (optionnel)</label>
-              <input style={inp} placeholder="ex: Studio Intemporelle" value={form.fromName} onChange={e => setForm(f => ({ ...f, fromName: e.target.value }))} />
-            </div>
-            <div>
-              <label style={lbl}>Email de réponse (optionnel)</label>
-              <input style={inp} type="email" placeholder="reponse@email.com" value={form.replyTo} onChange={e => setForm(f => ({ ...f, replyTo: e.target.value }))} />
-            </div>
-          </div>
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, cursor: 'pointer' }}
-            onClick={() => setForm(f => ({ ...f, secure: !f.secure }))}
-          >
-            <div style={{ width: 36, height: 20, background: form.secure ? '#6366f1' : 'rgba(255,255,255,0.15)', borderRadius: 10, position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
-              <div style={{ position: 'absolute', top: 2, left: form.secure ? 18 : 2, width: 16, height: 16, background: 'white', borderRadius: '50%', transition: 'left 0.2s' }} />
-            </div>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>Connexion sécurisée SSL/TLS (port 465)</span>
-          </div>
-
-          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-            <button
-              onClick={() => save.mutate({ host: form.host, port: form.port, secure: form.secure, user: form.user, password: form.password || undefined, fromName: form.fromName || undefined, replyTo: form.replyTo || undefined })}
-              disabled={save.isPending || !form.host || !form.user}
-              style={{ flex: 1, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', color: 'white', borderRadius: 8, padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: (!form.host || !form.user) ? 0.5 : 1 }}
-            >
-              {save.isPending ? 'Sauvegarde...' : '💾 Sauvegarder'}
-            </button>
-            <button
-              onClick={() => test.mutate()}
-              disabled={test.isPending || !cfg}
-              style={{ flex: 1, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', borderRadius: 8, padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: !cfg ? 0.4 : 1 }}
-            >
-              {test.isPending ? 'Test en cours...' : '📡 Tester la connexion'}
-            </button>
-          </div>
-
-          <div style={{ background: 'rgba(131,208,245,0.06)', border: '1px solid rgba(131,208,245,0.15)', borderRadius: 10, padding: '12px 14px' }}>
-            <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>Gmail :</strong> smtp.gmail.com · port 587 · activer "Mot de passe d'application" dans votre compte Google<br />
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>OVH :</strong> ssl0.ovh.net · port 587<br />
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>Orange :</strong> smtp.orange.fr · port 587
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
+// SmtpSection supprimée
 
 function SalarieSection() {
   const [showForm, setShowForm] = useState(false);
@@ -178,25 +58,17 @@ function SalarieSection() {
   );
 }
 
-const EMPTY_SALON_INFO: SalonInfo = {
-  nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
-  telephone: '', email: '', siret: '', nomPierceur: '', nomTatoueur: '', nomDermographe: '', logo: '',
-  siteWeb: '', mentionsLegales: '',
-  specialites: { piercing: true, tatouage: true, dermographie: true },
-};
-
 export default function Parametres() {
   const { state, updateSalonInfo, setAuthenticated, setPin, exitDemoMode } = useApp();
   const { t } = useTranslation();
 
   const [editingSalon, setEditingSalon] = useState(false);
-  const [salonForm, setSalonForm] = useState<SalonInfo>({ ...EMPTY_SALON_INFO, ...(state.salonInfo || {}) });
+  const [salonForm, setSalonForm] = useState<SalonInfo>(state.salonInfo || {
+    nom: '', raisonSociale: '', adresse: '', codePostal: '', ville: '',
+    telephone: '', email: '', siret: '', nomPierceur: '', nomTatoueur: '', nomDermographe: '', logo: '',
+    siteWeb: '', mentionsLegales: '',
+  });
   const logoInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!state.salonInfo) return;
-    setSalonForm({ ...EMPTY_SALON_INFO, ...state.salonInfo });
-  }, [state.salonInfo]);
 
   const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -207,27 +79,7 @@ export default function Parametres() {
     }
     const reader = new FileReader();
     reader.onload = (ev) => {
-      const result = ev.target?.result as string;
-      // Compresser l'image si elle dépasse 500 Ko
-      if (result && result.length > 500 * 1024) {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const maxSize = 800;
-          let w = img.width, h = img.height;
-          if (w > maxSize || h > maxSize) {
-            if (w > h) { h = Math.round(h * maxSize / w); w = maxSize; }
-            else { w = Math.round(w * maxSize / h); h = maxSize; }
-          }
-          canvas.width = w; canvas.height = h;
-          canvas.getContext('2d')?.drawImage(img, 0, 0, w, h);
-          const compressed = canvas.toDataURL('image/jpeg', 0.7);
-          setSalonForm(f => ({ ...f, logo: compressed }));
-        };
-        img.src = result;
-      } else {
-        setSalonForm(f => ({ ...f, logo: result }));
-      }
+      setSalonForm(f => ({ ...f, logo: ev.target?.result as string }));
     };
     reader.readAsDataURL(file);
     e.target.value = '';
@@ -235,21 +87,11 @@ export default function Parametres() {
   const [newPin, setNewPin] = useState('');
   const [confirmNewPin, setConfirmNewPin] = useState('');
 
-  const [savingLogo, setSavingLogo] = useState(false);
-
-  const handleSalonSave = async (e: React.FormEvent) => {
+  const handleSalonSave = (e: React.FormEvent) => {
     e.preventDefault();
-    setSavingLogo(true);
-    try {
-      await updateSalonInfo(salonForm);
-      setEditingSalon(false);
-      toast.success(t('settings.saved'));
-    } catch (err) {
-      console.error('[Logo] Erreur sauvegarde:', err);
-      toast.error('Erreur lors de la sauvegarde. Veuillez réessayer.');
-    } finally {
-      setSavingLogo(false);
-    }
+    updateSalonInfo(salonForm);
+    setEditingSalon(false);
+    toast.success(t('settings.saved'));
   };
 
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -292,10 +134,15 @@ export default function Parametres() {
         }
         // Confirmation avant import
         if (!window.confirm(`Importer ${backup.clients.length} client(s) depuis la sauvegarde du ${backup.exportDate ? new Date(backup.exportDate).toLocaleDateString('fr-FR') : 'date inconnue'} ?\n\nATTENTION : Cela remplacera toutes les données actuelles.`)) return;
-        // La restauration se fait uniquement via le serveur OVH
-        // Aucune donnée n'est stockée localement
-        toast.error('La restauration locale est désactivée. Contactez votre administrateur pour restaurer depuis le serveur OVH.');
-        return;
+        if (backup.salonInfo) {
+          localStorage.setItem('sm_salon_info', JSON.stringify(backup.salonInfo));
+        }
+        localStorage.setItem('sm_clients', JSON.stringify(backup.clients));
+        if (backup.rendezVous) {
+          localStorage.setItem('sm_rdv', JSON.stringify(backup.rendezVous));
+        }
+        toast.success('Sauvegarde importée ! Rechargement en cours...');
+        setTimeout(() => window.location.reload(), 1500);
       } catch {
         toast.error('Erreur lors de la lecture du fichier');
       }
@@ -386,6 +233,19 @@ export default function Parametres() {
               <div><label style={labelStyle}>Nom du tatoueur</label><input style={inputStyle} value={salonForm.nomTatoueur || ''} onChange={e => setSalonForm(f => ({ ...f, nomTatoueur: e.target.value }))} /></div>
               <div><label style={labelStyle}>Nom du dermographe</label><input style={inputStyle} value={salonForm.nomDermographe || ''} onChange={e => setSalonForm(f => ({ ...f, nomDermographe: e.target.value }))} /></div>
             </div>
+
+            {/* Spécialités du salon */}
+            <div>
+              <label style={labelStyle}>Spécialités du salon</label>
+              <div className="flex gap-4 mt-2">
+                {(['piercing', 'tatouage', 'dermographie'] as const).map(s => (
+                  <label key={s} className="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" checked={salonForm.specialites?.[s] ?? false} onChange={e => setSalonForm(f => ({ ...f, specialites: { piercing: true, tatouage: true, dermographie: true, ...f.specialites, [s]: e.target.checked } }))} />
+                    <span style={{ color: 'var(--brand-text)', textTransform: 'capitalize' }}>{s}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
             {/* Logo du salon */}
             <div>
               <label style={labelStyle}>Logo du salon</label>
@@ -422,7 +282,7 @@ export default function Parametres() {
             </div>
             <div className="flex gap-3 pt-2">
               <button type="button" onClick={() => setEditingSalon(false)} className="flex-1 py-2.5 rounded-lg text-sm" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>{t('common.cancel')}</button>
-              <button type="submit" disabled={savingLogo} className="flex-1 py-2.5 rounded-lg text-sm font-700" style={{ background: savingLogo ? 'rgba(0,200,200,0.4)' : 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700, cursor: savingLogo ? 'not-allowed' : 'pointer' }}>{savingLogo ? 'Enregistrement...' : t('settings.save')}</button>
+              <button type="submit" className="flex-1 py-2.5 rounded-lg text-sm font-700" style={{ background: 'var(--brand-cyan)', color: 'var(--brand-navy)', fontWeight: 700 }}>{t('settings.save')}</button>
             </div>
           </form>
         ) : state.salonInfo ? (
@@ -446,6 +306,29 @@ export default function Parametres() {
         )}
       </div>
 
+
+      {/* PIN */}
+      <div className="studio-card p-4">
+        <div className="flex items-center gap-2 mb-4">
+          <Lock size={16} style={{ color: 'var(--brand-cyan)' }} />
+          <h2 className="text-sm font-600" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>{t('settings.pin_change')}</h2>
+        </div>
+        <form onSubmit={handlePinChange} className="space-y-3">
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label style={labelStyle}>{t('settings.pin_new')} (4 {t('common.digits', 'chiffres')})</label>
+              <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={newPin} onChange={e => setNewPin(e.target.value)} placeholder="••••" />
+            </div>
+            <div>
+              <label style={labelStyle}>{t('settings.pin_confirm')}</label>
+              <input type="password" maxLength={4} pattern="\d{4}" style={inputStyle} value={confirmNewPin} onChange={e => setConfirmNewPin(e.target.value)} placeholder="••••" />
+            </div>
+          </div>
+          <button type="submit" className="w-full py-2.5 rounded-lg text-sm font-600" style={{ background: 'var(--brand-cyan-dim)', color: 'var(--brand-cyan)', border: '1px solid var(--brand-cyan)', fontWeight: 600 }}>
+            {t('settings.pin_change')}
+          </button>
+        </form>
+      </div>
 
       {/* À propos */}
       <Link href="/a-propos">
@@ -538,8 +421,7 @@ export default function Parametres() {
         </div>
       </div>
 
-      {/* Configuration Email */}
-      <SmtpSection />
+      {/* Configuration Email supprimée */}
 
       {/* Salariés */}
       <SalarieSection />
