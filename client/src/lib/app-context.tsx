@@ -171,6 +171,8 @@ function dbClientToClient(row: Record<string, unknown>): Client {
     dateSuppressionPrevue: row.dateSuppressionPrevue as string,
     rgpdStatus: calculateRGPDStatus(row.dateSuppressionPrevue as string),
     rgpdDroitsExerces: (row.rgpdDroitsExerces as Client['rgpdDroitsExerces']) || [],
+    notes: (row.notes as string) || undefined,
+    prestationsSouhaitees: (row.prestationsSouhaitees as string[]) || [],
     dateCreation: row.createdAt ? new Date(row.createdAt as string).toISOString().split('T')[0] : fmt(new Date()),
     dateModification: row.updatedAt ? new Date(row.updatedAt as string).toISOString().split('T')[0] : undefined,
     prestations: [],
