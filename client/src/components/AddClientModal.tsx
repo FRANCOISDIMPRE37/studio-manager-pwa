@@ -1,6 +1,6 @@
 /*
  * DESIGN: Studio Nocturne — Modal d'ajout de client
- * Version 5 — SAUVEGARDE ULTRA-RÉACTIVE (Zéro perte de données)
+ * Version 6 — RESTAURATION DESIGN ORIGINAL + SAUVEGARDE ULTRA-RÉACTIVE
  */
 import { useState, useEffect, useCallback } from 'react';
 import { useApp } from '@/lib/app-context';
@@ -163,52 +163,18 @@ export default function AddClientModal({ onClose, client: initialClient }: Props
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
       <div className="bg-[#0B1120] border border-white/10 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col shadow-2xl">
-        {/* Header avec indicateur de statut OVH */}
+        {/* Header */}
         <div className="p-6 border-b border-white/10 flex items-center justify-between bg-gradient-to-r from-blue-500/10 to-purple-500/10">
-          <div className="flex items-center gap-4">
-            <div className={`p-3 rounded-xl ${currentClient?.id ? 'bg-green-500/20 text-green-400' : 'bg-blue-500/20 text-blue-400'}`}>
-              <CheckCircle2 className="w-6 h-6" />
-            </div>
-            <div>
-              <h2 className="text-xl font-bold text-white">
-                {currentClient?.id ? 'Fiche Client Sécurisée' : 'Nouveau Client'}
-              </h2>
-              <div className="flex items-center gap-2 mt-0.5">
-                {isSaving ? (
-                  <>
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-ping" />
-                    <span className="text-[10px] font-bold text-blue-400 uppercase tracking-widest">Synchronisation OVH...</span>
-                  </>
-                ) : lastSaved ? (
-                  <>
-                    <div className="w-2 h-2 bg-green-500 rounded-full" />
-                    <span className="text-[10px] font-bold text-green-400 uppercase tracking-widest">Sauvegardé à {lastSaved.toLocaleTimeString()}</span>
-                  </>
-                ) : (
-                  <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest">En attente de saisie</span>
-                )}
-              </div>
-            </div>
-          </div>
+          <h2 className="text-xl font-bold text-white">Nouveau client</h2>
           <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full transition-colors">
             <X className="w-6 h-6 text-gray-400" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-6 space-y-8 custom-scrollbar">
-          {/* Alerte Info */}
-          <div className="bg-blue-500/5 border border-blue-500/20 rounded-xl p-4 flex gap-3 items-start">
-            <AlertCircle className="w-5 h-5 text-blue-400 shrink-0 mt-0.5" />
-            <p className="text-sm text-blue-200/80 leading-relaxed">
-              <strong>Protection des données :</strong> Chaque modification est instantanément transmise à votre serveur OVH. En cas de coupure ou de rafraîchissement, vos données sont déjà à l'abri.
-            </p>
-          </div>
-
-          <section className="space-y-4">
-            <h3 className="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-              <span className="w-1 h-1 bg-blue-400 rounded-full" />
-              Identité
-            </h3>
+          {/* IDENTITÉ */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-blue-400 uppercase tracking-wider">IDENTITÉ</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-300">Prénom *</label>
@@ -219,7 +185,6 @@ export default function AddClientModal({ onClose, client: initialClient }: Props
                   placeholder="Ex: Marie"
                   className={`w-full bg-white/5 border ${getError('prenom') ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
                 />
-                {getError('prenom') && <p className="text-xs text-red-400 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {getError('prenom')}</p>}
               </div>
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-300">Nom *</label>
@@ -230,7 +195,6 @@ export default function AddClientModal({ onClose, client: initialClient }: Props
                   placeholder="Ex: DUPUIS"
                   className={`w-full bg-white/5 border ${getError('nom') ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
                 />
-                {getError('nom') && <p className="text-xs text-red-400 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {getError('nom')}</p>}
               </div>
             </div>
 
@@ -259,15 +223,12 @@ export default function AddClientModal({ onClose, client: initialClient }: Props
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white text-center focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                 />
               </div>
-              {getError('date') && <p className="text-xs text-red-400 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {getError('date')}</p>}
             </div>
-          </section>
+          </div>
 
-          <section className="space-y-4">
-            <h3 className="text-xs font-bold text-purple-400 uppercase tracking-wider flex items-center gap-2">
-              <span className="w-1 h-1 bg-purple-400 rounded-full" />
-              Contact
-            </h3>
+          {/* CONTACT */}
+          <div className="space-y-4">
+            <h3 className="text-xs font-bold text-blue-400 uppercase tracking-wider">CONTACT</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="text-sm font-medium text-gray-300">Téléphone *</label>
@@ -275,67 +236,37 @@ export default function AddClientModal({ onClose, client: initialClient }: Props
                   value={telephone}
                   onChange={e => setTelephone(e.target.value)}
                   onBlur={() => touch('telephone')}
-                  placeholder="06 00 00 00 00"
+                  placeholder="06 XX XX XX XX"
                   className={`w-full bg-white/5 border ${getError('telephone') ? 'border-red-500/50' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all`}
                 />
-                {getError('telephone') && <p className="text-xs text-red-400 flex items-center gap-1"><AlertCircle className="w-3 h-3" /> {getError('telephone')}</p>}
               </div>
               <div className="space-y-1.5">
-                <label className="text-sm font-medium text-gray-300">Email</label>
+                <label className="text-sm font-medium text-gray-300">Email *</label>
                 <input
                   value={email}
                   onChange={e => setEmail(e.target.value)}
-                  placeholder="marie@exemple.com"
+                  placeholder="exemple@email.com"
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all"
                 />
               </div>
             </div>
-          </section>
-
-          <section className="space-y-4">
-            <h3 className="text-xs font-bold text-green-400 uppercase tracking-wider flex items-center gap-2">
-              <span className="w-1 h-1 bg-green-400 rounded-full" />
-              Prestations
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {['Oreilles', 'Nez', 'Nombril', 'Téton', 'Arcade / Sourcil', 'Surface / Dermal', 'Labret', 'Tatouage', 'Dermographie'].map(p => (
-                <button
-                  key={p}
-                  type="button"
-                  onClick={() => togglePrestation(p)}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                    prestationsSouhaitees.includes(p)
-                      ? 'bg-blue-500 text-white shadow-lg shadow-blue-500/20'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10 border border-white/5'
-                  }`}
-                >
-                  {p}
-                </button>
-              ))}
-            </div>
-          </section>
+          </div>
         </form>
 
-        <div className="p-6 border-t border-white/10 bg-white/5 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-gray-500">
-            <Cloud className="w-4 h-4" />
-            <span className="text-[11px] italic">Synchronisation OVH active</span>
-          </div>
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-6 py-2.5 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-all"
-            >
-              Fermer
-            </button>
-            <button
-              onClick={handleSubmit}
-              className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all"
-            >
-              Terminer
-            </button>
-          </div>
+        <div className="p-6 border-t border-white/10 bg-white/5 flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-6 py-2.5 rounded-xl bg-white/5 text-white font-medium hover:bg-white/10 transition-all"
+          >
+            Annuler
+          </button>
+          <button
+            onClick={handleSubmit}
+            className="px-8 py-2.5 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 shadow-lg shadow-blue-600/20 transition-all"
+          >
+            Créer le client
+          </button>
         </div>
       </div>
     </div>
