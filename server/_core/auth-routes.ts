@@ -2,6 +2,7 @@ import type { Express, Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { SignJWT } from "jose";
 import { getDb } from "../db";
+import { getSessionCookieOptions } from "./cookies";
 import { COOKIE_NAME } from "@shared/const";
 import { auditLogs } from "../../drizzle/schema";
 async function logAudit(db: any, action: string, req: any, success: boolean, details?: string, userId?: number, studioUserId?: number) {
@@ -54,13 +55,8 @@ export function registerAuthRoutes(app: Express) {
         .setExpirationTime("365d")
         .sign(JWT_SECRET);
 
-      res.cookie("local_session", token, {
-        httpOnly: true,
-        path: "/",
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-        maxAge: 365 * 24 * 60 * 60 * 1000,
-      });
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie("local_session", token, cookieOptions);
 
       const dbA = await getDb(); if(dbA) await logAudit(dbA, "login_email", req, true, user.email, user.id);
       return res.json({ success: true, name: user.name, email: user.email });
@@ -82,7 +78,8 @@ export function registerAuthRoutes(app: Express) {
           // Utiliser ownerId comme userId pour que les clients soient liés au bon studio
           const ownerUserId = user.ownerId || user.id;
           const token = await new SignJWT({ openId: ownerUserId.toString(), userId: ownerUserId, employeeId: user.id, ownerId: user.ownerId, role: user.role }).setProtectedHeader({ alg: "HS256" }).setExpirationTime("365d").sign(JWT_SECRET);
-          res.cookie("local_session", token, { httpOnly: true, path: "/", secure: process.env.NODE_ENV === "production", sameSite: "lax", maxAge: 365 * 24 * 60 * 60 * 1000 });
+          const cookieOptions = getSessionCookieOptions(req);
+          res.cookie("local_session", token, cookieOptions);
           const dbC = await getDb(); if(dbC) await logAudit(dbC, "login_pin", req, true, undefined, undefined, user.id);
           return res.json({ success: true, name: user.prenom + " " + user.nom, role: user.role });
         }

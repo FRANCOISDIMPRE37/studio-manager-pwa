@@ -152,8 +152,11 @@ function vitePluginManusDebugCollector(): Plugin {
 
 const plugins = [react(), tailwindcss(), jsxLocPlugin(), vitePluginManusRuntime(), vitePluginManusDebugCollector()];
 
+// Configuration optimisée pour les performances
+const isProduction = process.env.NODE_ENV === 'production';
+
 export default defineConfig({
-  plugins,
+  plugins: isProduction ? plugins : plugins,
   resolve: {
     alias: {
       "@": path.resolve(import.meta.dirname, "client", "src"),
@@ -167,6 +170,22 @@ export default defineConfig({
   build: {
     outDir: path.resolve(import.meta.dirname, "dist/public"),
     emptyOutDir: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks
+          'vendor-react': ['react', 'react-dom'],
+          'vendor-ui': ['@radix-ui/react-dialog', '@radix-ui/react-dropdown-menu', '@radix-ui/react-select', '@radix-ui/react-tabs'],
+          'vendor-charts': ['recharts'],
+          'vendor-forms': ['react-hook-form', '@hookform/resolvers', 'zod'],
+          'vendor-utils': ['date-fns', 'clsx', 'tailwind-merge', 'sonner'],
+          // Feature chunks (lazy-loaded)
+          'feature-admin': ['./client/src/pages/Admin.tsx'],
+          'feature-documents': ['./client/src/pages/Documents.tsx', './client/src/pages/DocumentForm.tsx'],
+          'feature-clients': ['./client/src/pages/Clients.tsx', './client/src/pages/ClientDetail.tsx'],
+        },
+      },
+    },
   },
   server: {
     host: true,
@@ -182,6 +201,12 @@ export default defineConfig({
     fs: {
       strict: true,
       deny: ["**/.*"],
+    },
+  },
+  optimize: {
+    // Optimiser les dépendances pré-bundlées
+    esbuildOptions: {
+      target: 'esnext',
     },
   },
 });

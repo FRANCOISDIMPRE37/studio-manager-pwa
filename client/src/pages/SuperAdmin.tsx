@@ -21,6 +21,15 @@ interface Studio {
 }
 
 export default function SuperAdmin() {
+  // Redirection : si on est sur un domaine studio spécifique (pas app.intemporelle.eu), rediriger vers le dashboard du studio
+  useEffect(() => {
+    const hostname = window.location.hostname;
+    if (hostname !== 'app.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
+      // C'est un domaine studio spécifique (studio.intemporelle.eu, studio-francois.intemporelle.eu, etc.)
+      window.location.href = '/';
+    }
+  }, []);
+
   const [authed, setAuthed] = useState(false);
   const [loading, setLoading] = useState(true);
   const [username, setUsername] = useState("");

@@ -73,13 +73,8 @@ export function registerBypassLogin(app: Express) {
         name: 'Admin',
         expiresInMs: 1000 * 60 * 60 * 24 * 365,
       });
-      res.cookie('app_session_id', sessionToken, {
-        httpOnly: true,
-        secure: true,
-        sameSite: 'lax',
-        maxAge: 1000 * 60 * 60 * 24 * 365,
-        path: '/',
-      });
+      const cookieOptions = getSessionCookieOptions(req);
+      res.cookie('app_session_id', sessionToken, cookieOptions);
       res.redirect(302, '/');
     } catch (error) {
       console.error('[DirectLogin] Failed', error);

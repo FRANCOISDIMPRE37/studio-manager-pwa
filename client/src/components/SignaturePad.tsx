@@ -156,8 +156,7 @@ export default function SignaturePad({
     };
     setConfidentialityData(data);
     setConfidentialityAccepted(accepted);
-    console.log('Engagement de confidentialité:', data);
-    // Réinitialiser la taille du canvas après acceptation
+   // Réinitialiser la taille du canvas après acceptation
     setTimeout(() => {
       const canvas = canvasRef.current;
       if (!canvas) return;

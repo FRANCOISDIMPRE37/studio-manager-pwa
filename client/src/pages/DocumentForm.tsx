@@ -88,11 +88,27 @@ export default function DocumentForm() {
         // Champs mineur (Questionnaire médical mineur piercing)
         pieceIdMineurType: client.pieceIdentiteType || '',
         pieceIdMineurNumero: client.pieceIdentiteNumero || '',
-        // Pré-remplissage de la zone à percer depuis les prestations souhaitées
+        // Pré-remplissage intelligent de la zone (Piercing, Tatouage ou Dermographie)
         zonePiercing: (() => {
-          const prestationsPiercing = ['Oreilles', 'Nez', 'Nombril', 'Téton', 'Arcade / Sourcil', 'Surface / Dermal'];
-          const zones = (client.prestationsSouhaitees || []).filter(p => prestationsPiercing.includes(p));
-          return zones.length > 0 ? zones.join(', ') : '';
+          // 1. Chercher d'abord dans les prestations souhaitées (champ multi-sélection)
+          const zonesSouhaitees = client.prestationsSouhaitees || [];
+          if (zonesSouhaitees.length > 0) return zonesSouhaitees.join(', ');
+
+          // 2. Sinon, chercher la zone de la toute dernière prestation enregistrée
+          const lastPrestation = client.prestations && client.prestations.length > 0 
+            ? [...client.prestations].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+            : null;
+          
+          return lastPrestation ? lastPrestation.zone : '';
+        })(),
+        // Synchronisation pour les autres types de formulaires (Tatouage/Dermo)
+        zone: (() => {
+          const zonesSouhaitees = client.prestationsSouhaitees || [];
+          if (zonesSouhaitees.length > 0) return zonesSouhaitees.join(', ');
+          const lastPrestation = client.prestations && client.prestations.length > 0 
+            ? [...client.prestations].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0]
+            : null;
+          return lastPrestation ? lastPrestation.zone : '';
         })(),
         // Champs de signature client pré-remplis
         nomClientSign: client.nom ? `${client.prenom || ''} ${client.nom}`.trim() : '',
@@ -123,10 +139,19 @@ export default function DocumentForm() {
         for (const key of identityKeys) {
           if (clientIdentity[key]) merged[key] = clientIdentity[key];
         }
+        // S'assurer que les noms des professionnels sont toujours synchronisés depuis salonInfo
+        if (state.salonInfo?.nomPierceur) merged.nomPierceurSign = state.salonInfo.nomPierceur;
+        if (state.salonInfo?.nomTatoueur) merged.nomTatoueurSign = state.salonInfo.nomTatoueur;
+        if (state.salonInfo?.nomDermographe) merged.nomDermographeSign = state.salonInfo.nomDermographe;
         setFormData(merged);
       } else {
         // Nouveau document : on pré-remplit avec toutes les données du client
-        setFormData(clientIdentity);
+        // Nouveau document : on pré-remplit avec toutes les données du client et les noms des professionnels
+        const initialFormData = { ...clientIdentity };
+        if (state.salonInfo?.nomPierceur) initialFormData.nomPierceurSign = state.salonInfo.nomPierceur;
+        if (state.salonInfo?.nomTatoueur) initialFormData.nomTatoueurSign = state.salonInfo.nomTatoueur;
+        if (state.salonInfo?.nomDermographe) initialFormData.nomDermographeSign = state.salonInfo.nomDermographe;
+        setFormData(initialFormData);
       }
     }
    }, [client?.id, docType]);
@@ -400,24 +425,48 @@ export default function DocumentForm() {
     }
     setIsSaving(true);
     try {
-      const existingDocIdx = (client.documents || []).findIndex(d => d.type === docType);
+      const existingDoc = (client.documents || []).find(d => d.type === docType);
       const now = new Date().toISOString();
-      const doc = {
-        id: existingDocIdx >= 0 ? client.documents[existingDocIdx].id : `doc-${Date.now()}`,
+      const dateShort = new Date().toISOString().split('T')[0]; // Format AAAA-MM-JJ (10 chars)
+      const isSigned = !!formData.signatureImageClient || docType === 'engagement_confidentialite';
+      
+      const docData = {
+        id: existingDoc ? existingDoc.id : `doc-${client.id.substring(0, 8)}-${Date.now()}`,
+        clientId: client.id,
         type: docType,
-        status: (formData.signatureImageClient || docType === 'engagement_confidentialite') ? 'signed' as const : 'filled' as const,
+        status: isSigned ? 'signed' as const : 'filled' as const,
         data: formData,
-        dateCreation: existingDocIdx >= 0 ? client.documents[existingDocIdx].dateCreation : now,
-        dateSigned: (formData.signatureImageClient || docType === 'engagement_confidentialite') ? now : (existingDocIdx >= 0 ? client.documents[existingDocIdx].dateSigned : undefined),
+        dateSigned: isSigned ? dateShort : (existingDoc ? existingDoc.dateSigned : undefined),
       };
+
+      // Stratégie "Zéro Erreur" : Mise à jour si existe, sinon création
+      if (existingDoc) {
+        await updateDocMutation.mutateAsync({
+          id: existingDoc.id,
+          status: docData.status,
+          data: docData.data,
+          dateSigned: docData.dateSigned,
+        });
+      } else {
+        await createDocMutation.mutateAsync(docData);
+      }
+      
+      // Mise à jour de l'état local pour un affichage immédiat
       const newDocs = [...(client.documents || [])];
-      if (existingDocIdx >= 0) newDocs[existingDocIdx] = doc;
-      else newDocs.push(doc);
-      await updateClient({ ...client, documents: newDocs });
-      toast.success('Document sauvegardé avec succès');
+      const existingIdx = newDocs.findIndex(d => d.type === docType);
+      if (existingIdx >= 0) {
+        newDocs[existingIdx] = { ...newDocs[existingIdx], ...docData };
+      } else {
+        newDocs.push({ ...docData, dateCreation: now });
+      }
+      
+      updateClient({ ...client, documents: newDocs });
+      
+      toast.success('Données sécurisées chez OVH à l\'instant T');
       setTimeout(() => navigate(-1), 1000);
-    } catch {
-      toast.error('Erreur lors de la sauvegarde');
+    } catch (error) {
+      console.error('[Save] Error:', error);
+      toast.error('Erreur de synchronisation OVH - Veuillez réessayer');
     } finally {
       setIsSaving(false);
     }

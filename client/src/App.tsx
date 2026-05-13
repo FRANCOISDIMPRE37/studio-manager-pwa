@@ -1,38 +1,52 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { useEffect } from "react";
+import { useEffect, lazy, Suspense } from "react";
 import { Route, Switch } from "wouter";
-import Archives from '@/pages/Archives';
-import ArchivesNumerisees from '@/pages/ArchivesNumerisees';
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AppProvider, useApp } from "./lib/app-context";
 import { trpc } from "@/lib/trpc";
 import Layout from "./components/Layout";
-import EcranPIN from '@/pages/EcranPIN';
-import GestionUtilisateurs from '@/pages/GestionUtilisateurs';
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Clients from "./pages/Clients";
-import ClientDetail from "./pages/ClientDetail";
-import SuperAdmin from "./pages/SuperAdmin";
-import SetupStudio from "./pages/SetupStudio";
-import Documents from "./pages/Documents";
-import Parametres from "./pages/Parametres";
-import Salaries from "./pages/Salaries";
-import Engagements from "./pages/Engagements";
 import NotFound from "./pages/NotFound";
-import DocumentForm from "./pages/DocumentForm";
-import AffichageSalon from '@/pages/AffichageSalon';
-import RgpdSalarie from "@/pages/RgpdSalarie";
-import PolitiqueConfidentialite from "@/pages/PolitiqueConfidentialite";
-import MentionsLegales from "@/pages/MentionsLegales";
-import VideosDemoPage from "@/pages/VideosDemoPage";
-import Onboarding from "@/pages/Onboarding";
-import APropos from "@/pages/APropos";
 import Inscription from "@/pages/Inscription";
 import ConnexionEmail from "@/pages/ConnexionEmail";
-import Admin from "@/pages/Admin";
+
+// Lazy-loaded pages (chargées à la demande)
+const Archives = lazy(() => import('@/pages/Archives'));
+const ArchivesNumerisees = lazy(() => import('@/pages/ArchivesNumerisees'));
+const EcranPIN = lazy(() => import('@/pages/EcranPIN'));
+const GestionUtilisateurs = lazy(() => import('@/pages/GestionUtilisateurs'));
+const Clients = lazy(() => import("./pages/Clients"));
+const ClientDetail = lazy(() => import("./pages/ClientDetail"));
+const SuperAdmin = lazy(() => import("./pages/SuperAdmin"));
+const SetupStudio = lazy(() => import("./pages/SetupStudio"));
+const Documents = lazy(() => import("./pages/Documents"));
+const Parametres = lazy(() => import("./pages/Parametres"));
+const Salaries = lazy(() => import("./pages/Salaries"));
+const Engagements = lazy(() => import("./pages/Engagements"));
+const DocumentForm = lazy(() => import("./pages/DocumentForm"));
+const AffichageSalon = lazy(() => import('@/pages/AffichageSalon'));
+const RgpdSalarie = lazy(() => import("@/pages/RgpdSalarie"));
+const PolitiqueConfidentialite = lazy(() => import("@/pages/PolitiqueConfidentialite"));
+const MentionsLegales = lazy(() => import("@/pages/MentionsLegales"));
+const VideosDemoPage = lazy(() => import("@/pages/VideosDemoPage"));
+const Onboarding = lazy(() => import("@/pages/Onboarding"));
+const APropos = lazy(() => import("@/pages/APropos"));
+const Admin = lazy(() => import("@/pages/Admin"));
+
+// Composant de chargement
+function LoadingFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--brand-navy)' }}>
+      <div className="flex flex-col items-center gap-4">
+        <div className="w-12 h-12 border-4 border-cyan-400 border-t-transparent rounded-full animate-spin" />
+        <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Chargement...</p>
+      </div>
+    </div>
+  );
+}
 
 function AppRoutes() {
   const { state, setAuthenticated } = useApp();
@@ -70,10 +84,20 @@ function AppRoutes() {
 
   // Routes publiques accessibles sans authentification
   const path = window.location.pathname;
+  const hostname = window.location.hostname;
+
   if (path === '/inscription') return <Inscription />;
   if (path === '/connexion') return <ConnexionEmail />;
-  if (path === '/super-admin') return <SuperAdmin />;
-  if (path === '/setup-studio' || path.startsWith('/setup-studio')) return <Onboarding />;
+  
+  if (path === '/super-admin') {
+    if (hostname !== 'app.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
+      window.location.href = '/';
+      return null;
+    }
+    return <Suspense fallback={<LoadingFallback />}><SuperAdmin /></Suspense>;
+  }
+
+  if (path === '/setup-studio' || path.startsWith('/setup-studio')) return <Suspense fallback={<LoadingFallback />}><Onboarding /></Suspense>;
 
   if (!state.isAuthenticated || firstLoginError) {
     return <Login />;
@@ -96,35 +120,39 @@ function AppRoutes() {
     );
   }
   if (firstLoginData?.firstLogin === true) {
-    return <Onboarding />;
+    return <Suspense fallback={<LoadingFallback />}><Onboarding /></Suspense>;
   }
 
   // make sure to consider if you need authentication for certain routes
   return (
     <Layout>
-      <Switch>
-        <Route path="/super-admin" component={SuperAdmin} />
-        <Route path="/pin" component={EcranPIN} /><Route path="/gestion-utilisateurs" component={GestionUtilisateurs} /><Route path="/" component={Dashboard} />
-        <Route path="/clients" component={Clients} />
-        <Route path="/clients/:id" component={ClientDetail} />
-        <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />
-        <Route path="/document/:docType" component={DocumentForm} />
-        <Route path="/documents" component={Documents} />
-        <Route path="/parametres" component={Parametres} />
-        <Route path="/salaries" component={Salaries} />
-        <Route path="/engagements" component={Engagements} />
-        <Route path="/archives" component={Archives} />
-        <Route path="/archives-numerisees" component={ArchivesNumerisees} />
-        <Route path="/rgpd-salarie" component={RgpdSalarie} />
+      <Suspense fallback={<LoadingFallback />}>
+        <Switch>
+          <Route path="/super-admin" component={SuperAdmin} />
+          <Route path="/pin" component={EcranPIN} />
+          <Route path="/gestion-utilisateurs" component={GestionUtilisateurs} />
+          <Route path="/" component={Dashboard} />
+          <Route path="/clients" component={Clients} />
+          <Route path="/clients/:id" component={ClientDetail} />
+          <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />
+          <Route path="/document/:docType" component={DocumentForm} />
+          <Route path="/documents" component={Documents} />
+          <Route path="/parametres" component={Parametres} />
+          <Route path="/salaries" component={Salaries} />
+          <Route path="/engagements" component={Engagements} />
+          <Route path="/archives" component={Archives} />
+          <Route path="/archives-numerisees" component={ArchivesNumerisees} />
+          <Route path="/rgpd-salarie" component={RgpdSalarie} />
           <Route path="/info-client-rgpd" component={AffichageSalon} />
-        <Route path="/confidentialite" component={PolitiqueConfidentialite} />
-        <Route path="/mentions-legales" component={MentionsLegales} />
-        <Route path="/videos-demo" component={VideosDemoPage} />
-        <Route path="/a-propos" component={APropos} />
-        <Route path="/inscription" component={Inscription} />
-        <Route path="/connexion" component={ConnexionEmail} />
-        <Route component={NotFound} />
-      </Switch>
+          <Route path="/confidentialite" component={PolitiqueConfidentialite} />
+          <Route path="/mentions-legales" component={MentionsLegales} />
+          <Route path="/videos-demo" component={VideosDemoPage} />
+          <Route path="/a-propos" component={APropos} />
+          <Route path="/inscription" component={Inscription} />
+          <Route path="/connexion" component={ConnexionEmail} />
+          <Route component={NotFound} />
+        </Switch>
+      </Suspense>
     </Layout>
   );
 }

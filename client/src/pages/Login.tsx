@@ -1,6 +1,6 @@
 /*
- * DESIGN: Studio Nocturne — Écran de connexion avec deux onglets
- * "Déjà client" → saisie PIN enregistré → double sécurité email + mot de passe
+ * DESIGN: Studio Nocturne — Écran de connexion simplifié
+ * "Déjà client" → saisie PIN uniquement (accès direct)
  * "Nouveau"     → connexion email + mot de passe (première connexion)
  */
 import { useState } from 'react';
@@ -11,27 +11,22 @@ import { trpc } from '@/lib/trpc';
 import { useEmployeSession } from '@/contexts/EmployeSessionContext';
 
 type Tab = 'pin' | 'email';
-type PinStep = 'pin' | 'double';   // pin = saisie PIN, double = vérif email+mdp
 
 export default function Login() {
   const { state, setAuthenticated } = useApp();
   const { setEmploye } = useEmployeSession();
 
   const [activeTab, setActiveTab] = useState<Tab>('pin');
-  const [pinStep, setPinStep] = useState<PinStep>('pin');
 
   // PIN
   const [pin, setLocalPin] = useState('');
   const [shake, setShake] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Double sécurité (après PIN valide)
-  const [dblEmail, setDblEmail] = useState('');
-  const [dblPassword, setDblPassword] = useState('');
-
   // Salarié
-  const [selEmp, setSelEmp] = useState<any>(null);
   const { data: emps } = trpc.studioUsers.listForPin.useQuery();
+  const [selEmp, setSelEmp] = useState<any>(null);
+  
   const empLogin = trpc.studioUsers.loginWithPin.useMutation({
     onSuccess: (d) => {
       const employeSession = { ...d.employe, loginAt: new Date().toISOString() };
@@ -39,14 +34,18 @@ export default function Login() {
       setAuthenticated(true);
       toast.success('Bonjour ' + d.employe.prenom + ' !');
     },
-    onError: (e) => { toast.error(e.message || 'PIN incorrect'); setLocalPin(''); },
+    onError: (e) => { 
+      toast.error(e.message || 'PIN incorrect'); 
+      setLocalPin(''); 
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+    },
   });
 
   // Onglet Nouveau
   const [newEmail, setNewEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
 
-  const pinLoginMutation = trpc.auth.pinLogin.useMutation();
   const loginEmailMutation = trpc.auth.loginEmail.useMutation();
 
   // ── Saisie PIN ──────────────────────────────────────────────────────────────
@@ -57,28 +56,32 @@ export default function Login() {
 
     if (newPin.length === 4) {
       setTimeout(async () => {
-        // Si salarié → connexion directe via API
+        setIsLoading(true);
+        
+        // Si salarié sélectionné
         if (selEmp) {
-          setIsLoading(true);
           empLogin.mutate({ employeId: selEmp.id, pin: newPin });
+          setIsLoading(false);
           return;
         }
-        // Vérifier le PIN côté serveur (salon_settings.pinHash en BDD OVH)
-        setIsLoading(true);
+
+        // Connexion Studio via PIN direct
         try {
-          const res = await fetch('/api/auth/verify-pin', {
+          const res = await fetch('/api/auth/login-pin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pin: newPin }),
           });
-          const data = await res.json();
-          if (data.valid) {
-            setPinStep('double');
-            setLocalPin('');
+          
+          if (res.ok) {
+            setAuthenticated(true);
+            toast.success("Connexion réussie !");
+            window.location.href = "/";
           } else {
+            const data = await res.json();
             setShake(true);
             setTimeout(() => { setShake(false); setLocalPin(''); }, 600);
-            toast.error('Code PIN incorrect');
+            toast.error(data.message || 'Code PIN incorrect');
           }
         } catch {
           toast.error('Erreur de connexion au serveur');
@@ -94,21 +97,6 @@ export default function Login() {
     if (!isLoading) setLocalPin(prev => prev.slice(0, -1));
   };
 
-  // ── Double sécurité (email + mdp) ──────────────────────────────────────────
-  const handleDoubleAuth = async () => {
-    if (!dblEmail || !dblPassword) return;
-    setIsLoading(true);
-    try {
-      await loginEmailMutation.mutateAsync({ email: dblEmail, password: dblPassword });
-      setAuthenticated(true);
-      toast.success("Connexion réussie !");
-      window.location.href = "/";
-    } catch (error: any) {
-      toast.error(error?.message || "Email ou mot de passe incorrect");
-    } finally {
-      setIsLoading(false);
-    }
-  };
   // ── Onglet Nouveau ──────────────────────────────────────────────────────────
   const handleNewLogin = async () => {
     if (!newEmail || !newPassword) return;
@@ -210,13 +198,13 @@ export default function Login() {
         }}>
           <button
             style={activeTab === 'pin' ? { ...tabBase, background: 'var(--brand-cyan)', color: '#0A1628' } : { ...tabBase, background: 'rgba(255,255,255,0.05)', color: 'var(--brand-text-muted)' }}
-            onClick={() => { setActiveTab('pin'); setLocalPin(''); setPinStep('pin'); }}
+            onClick={() => { setActiveTab('pin'); setLocalPin(''); }}
           >
             Déjà client
           </button>
           <button
             style={activeTab === 'email' ? { ...tabBase, background: 'var(--brand-cyan)', color: '#0A1628' } : { ...tabBase, background: 'rgba(255,255,255,0.05)', color: 'var(--brand-text-muted)' }}
-            onClick={() => { setActiveTab('email'); setLocalPin(''); setPinStep('pin'); }}
+            onClick={() => { setActiveTab('email'); setLocalPin(''); }}
           >
             Nouveau
           </button>
@@ -225,114 +213,69 @@ export default function Login() {
         {/* ── Onglet Déjà client ── */}
         {activeTab === 'pin' && (
           <div style={cardStyle}>
-            {pinStep === 'pin' ? (
-              /* Étape 1 : saisie PIN */
-              <>
-                <h2 className="text-center text-base mb-6" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
-                  Entrez votre code PIN
-                </h2>
+            <h2 className="text-center text-base mb-6" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
+              Entrez votre code PIN
+            </h2>
 
-                {/* Dots */}
-                <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-bounce' : ''}`}>
-                  {pinDots.map((filled, i) => (
-                    <div key={i} className="w-4 h-4 rounded-full transition-all duration-200" style={{
-                      background: filled ? 'var(--brand-cyan)' : 'transparent',
-                      border: `2px solid ${filled ? 'var(--brand-cyan)' : 'var(--brand-border)'}`,
-                      boxShadow: filled ? '0 0 8px rgba(131, 208, 245, 0.5)' : 'none',
-                    }} />
+            {/* Dots */}
+            <div className={`flex justify-center gap-4 mb-6 ${shake ? 'animate-bounce' : ''}`}>
+              {pinDots.map((filled, i) => (
+                <div key={i} className="w-4 h-4 rounded-full transition-all duration-200" style={{
+                  background: filled ? 'var(--brand-cyan)' : 'transparent',
+                  border: `2px solid ${filled ? 'var(--brand-cyan)' : 'var(--brand-border)'}`,
+                  boxShadow: filled ? '0 0 8px rgba(131, 208, 245, 0.5)' : 'none',
+                }} />
+              ))}
+            </div>
+
+            {isLoading && (
+              <div className="flex justify-center mb-4">
+                <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--brand-cyan)', borderTopColor: 'transparent' }} />
+              </div>
+            )}
+
+            {/* Clavier */}
+            <div className="grid grid-cols-3 gap-3">
+              {[1,2,3,4,5,6,7,8,9].map(n => (
+                <button key={n} onClick={() => handlePinInput(String(n))} disabled={isLoading}
+                  className="h-14 rounded-lg text-xl transition-all duration-150 active:scale-95 disabled:opacity-50"
+                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 600 }}
+                  onMouseEnter={e => (e.currentTarget.style.background = 'rgba(131,208,245,0.1)')}
+                  onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+                >{n}</button>
+              ))}
+              <div />
+              <button onClick={() => handlePinInput('0')} disabled={isLoading}
+                className="h-14 rounded-lg text-xl transition-all duration-150 active:scale-95 disabled:opacity-50"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 600 }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(131,208,245,0.1)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
+              >0</button>
+              <button onClick={handleDelete} disabled={isLoading}
+                className="h-14 rounded-lg transition-all duration-150 active:scale-95 flex items-center justify-center disabled:opacity-50"
+                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
+              >
+                <Delete size={24} />
+              </button>
+            </div>
+
+            {/* Salariés */}
+            {emps && emps.filter(e => e.hasPinSet).length > 0 && (
+              <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--brand-border)' }}>
+                <p style={{ color: 'var(--brand-text-muted)', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Connexion salarié</p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
+                  {selEmp ? (
+                    <p style={{ color: 'var(--brand-cyan)', fontSize: 12 }}>
+                      PIN de {selEmp.prenom}{' '}
+                      <button onClick={() => { setSelEmp(null); setLocalPin(''); }} style={{ background: 'none', border: 'none', color: 'var(--brand-text-muted)', cursor: 'pointer' }}>×</button>
+                    </p>
+                  ) : emps.filter(e => e.hasPinSet).map(e => (
+                    <button key={e.id} onClick={() => { setSelEmp(e); setLocalPin(''); }}
+                      style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--brand-cyan)', background: 'rgba(131,208,245,0.1)', color: 'var(--brand-cyan)', cursor: 'pointer', fontWeight: 600 }}
+                    >{e.prenom}</button>
                   ))}
                 </div>
-
-                {isLoading && (
-                  <div className="flex justify-center mb-4">
-                    <div className="w-5 h-5 rounded-full border-2 animate-spin" style={{ borderColor: 'var(--brand-cyan)', borderTopColor: 'transparent' }} />
-                  </div>
-                )}
-
-                {/* Clavier */}
-                <div className="grid grid-cols-3 gap-3">
-                  {[1,2,3,4,5,6,7,8,9].map(n => (
-                    <button key={n} onClick={() => handlePinInput(String(n))} disabled={isLoading}
-                      className="h-14 rounded-lg text-xl transition-all duration-150 active:scale-95 disabled:opacity-50"
-                      style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 600 }}
-                      onMouseEnter={e => (e.currentTarget.style.background = 'rgba(131,208,245,0.1)')}
-                      onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                    >{n}</button>
-                  ))}
-                  <div />
-                  <button onClick={() => handlePinInput('0')} disabled={isLoading}
-                    className="h-14 rounded-lg text-xl transition-all duration-150 active:scale-95 disabled:opacity-50"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)', fontFamily: 'Outfit', fontWeight: 600 }}
-                    onMouseEnter={e => (e.currentTarget.style.background = 'rgba(131,208,245,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  >0</button>
-                  <button onClick={handleDelete} disabled={isLoading}
-                    className="h-14 rounded-lg transition-all duration-150 active:scale-95 flex items-center justify-center disabled:opacity-50"
-                    style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}
-                  ><Delete size={20} /></button>
-                </div>
-
-                {/* Salariés */}
-                {emps && emps.filter(e => e.hasPinSet).length > 0 && (
-                  <div style={{ marginTop: 16, paddingTop: 12, borderTop: '1px solid var(--brand-border)' }}>
-                    <p style={{ color: 'var(--brand-text-muted)', fontSize: 12, textAlign: 'center', marginBottom: 8 }}>Connexion salarié</p>
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center' }}>
-                      {selEmp ? (
-                        <p style={{ color: 'var(--brand-cyan)', fontSize: 12 }}>
-                          PIN de {selEmp.prenom}{' '}
-                          <button onClick={() => { setSelEmp(null); setLocalPin(''); }} style={{ background: 'none', border: 'none', color: 'var(--brand-text-muted)', cursor: 'pointer' }}>×</button>
-                        </p>
-                      ) : emps.filter(e => e.hasPinSet).map(e => (
-                        <button key={e.id} onClick={() => { setSelEmp(e); setLocalPin(''); }}
-                          style={{ padding: '6px 14px', borderRadius: 8, border: '1px solid var(--brand-cyan)', background: 'rgba(131,208,245,0.1)', color: 'var(--brand-cyan)', cursor: 'pointer', fontWeight: 600 }}
-                        >{e.prenom}</button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </>
-            ) : (
-              /* Étape 2 : double sécurité email + mot de passe */
-              <>
-                <div className="flex flex-col items-center mb-6">
-                  <ShieldCheck size={36} style={{ color: 'var(--brand-cyan)', marginBottom: 10 }} />
-                  <h2 className="text-center text-base" style={{ color: 'var(--brand-text)', fontWeight: 600 }}>
-                    Double sécurité
-                  </h2>
-                  <p className="text-center text-xs mt-2" style={{ color: 'var(--brand-text-muted)' }}>
-                    Confirmez votre identité avec votre email et mot de passe.
-                  </p>
-                </div>
-
-                <input
-                  type="email"
-                  placeholder="Adresse email"
-                  value={dblEmail}
-                  onChange={e => setDblEmail(e.target.value)}
-                  style={inputStyle}
-                />
-                <input
-                  type="password"
-                  placeholder="Mot de passe"
-                  value={dblPassword}
-                  onChange={e => setDblPassword(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && handleDoubleAuth()}
-                  style={{ ...inputStyle, marginBottom: 16 }}
-                />
-                <button
-                  onClick={handleDoubleAuth}
-                  disabled={isLoading || !dblEmail || !dblPassword}
-                  style={isLoading || !dblEmail || !dblPassword ? btnDisabled : btnPrimary}
-                >
-                  {isLoading ? 'Vérification...' : 'Confirmer et accéder'}
-                </button>
-                <button
-                  onClick={() => { setPinStep('pin'); setLocalPin(''); setDblEmail(''); setDblPassword(''); }}
-                  style={{ marginTop: 10, color: 'var(--brand-text-muted)', background: 'none', border: 'none', cursor: 'pointer', fontSize: 13, width: '100%' }}
-                >
-                  ← Retour au PIN
-                </button>
-              </>
+              </div>
             )}
           </div>
         )}

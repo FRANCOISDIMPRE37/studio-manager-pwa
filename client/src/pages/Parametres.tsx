@@ -11,127 +11,7 @@ import { toast } from 'sonner';
 import { trpc } from '@/lib/trpc';
 
 
-function SmtpSection() {
-  const utils = trpc.useUtils();
-  const { data: cfg, isLoading } = trpc.smtp.get.useQuery();
-  const save = trpc.smtp.save.useMutation({
-    onSuccess: () => { utils.smtp.get.invalidate(); toast.success('Configuration email sauvegardée !'); },
-    onError: (e: any) => toast.error(e.message),
-  });
-  const test = trpc.smtp.test.useMutation({
-    onSuccess: (r: any) => toast.success(r.message || 'Connexion SMTP réussie !'),
-    onError: (e: any) => toast.error(e.message),
-  });
 
-  const [form, setForm] = useState({
-    host: '', port: 587, secure: false, user: '', password: '', fromName: '', replyTo: '',
-  });
-  const [loaded, setLoaded] = useState(false);
-
-  if (!loaded && cfg) {
-    setForm({
-      host: (cfg as any).host ?? '',
-      port: (cfg as any).port ?? 587,
-      secure: (cfg as any).secure ?? false,
-      user: (cfg as any).user ?? '',
-      password: '',
-      fromName: (cfg as any).fromName ?? '',
-      replyTo: (cfg as any).replyTo ?? '',
-    });
-    setLoaded(true);
-  }
-
-  const inp = { background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', borderRadius: 8, padding: '8px 12px', width: '100%', fontSize: 13, outline: 'none' } as React.CSSProperties;
-  const lbl = { color: 'rgba(255,255,255,0.6)', fontSize: 11, display: 'block', marginBottom: 4 } as React.CSSProperties;
-
-  return (
-    <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: '20px', marginBottom: 16 }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
-        <Mail size={18} style={{ color: 'var(--brand-cyan)' }} />
-        <h3 style={{ margin: 0, fontSize: 15, fontWeight: 700, color: 'white' }}>Configuration Email (SMTP)</h3>
-        {cfg && <span style={{ marginLeft: 'auto', fontSize: 11, color: '#22c55e', background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.3)', borderRadius: 20, padding: '2px 10px' }}>✓ Configuré</span>}
-      </div>
-
-      <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.45)', marginBottom: 16, lineHeight: 1.5 }}>
-        Configurez votre serveur email pour envoyer des rappels automatiques 24h avant chaque RDV et des documents à vos clients.
-      </p>
-
-      {isLoading ? (
-        <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>Chargement...</p>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 10 }}>
-            <div>
-              <label style={lbl}>Serveur SMTP (host)</label>
-              <input style={inp} placeholder="ex: smtp.gmail.com" value={form.host} onChange={e => setForm(f => ({ ...f, host: e.target.value }))} />
-            </div>
-            <div style={{ minWidth: 90 }}>
-              <label style={lbl}>Port</label>
-              <input style={inp} type="number" placeholder="587" value={form.port} onChange={e => setForm(f => ({ ...f, port: Number(e.target.value) }))} />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div>
-              <label style={lbl}>Email expéditeur (login SMTP)</label>
-              <input style={inp} type="email" placeholder="votre@email.com" value={form.user} onChange={e => setForm(f => ({ ...f, user: e.target.value }))} />
-            </div>
-            <div>
-              <label style={lbl}>{(cfg as any)?.passwordSet ? 'Nouveau mot de passe (vide = inchangé)' : 'Mot de passe SMTP'}</label>
-              <input style={inp} type="password" placeholder={(cfg as any)?.passwordSet ? '••••••••' : 'Mot de passe'} value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))} />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
-            <div>
-              <label style={lbl}>Nom affiché (optionnel)</label>
-              <input style={inp} placeholder="ex: Studio Intemporelle" value={form.fromName} onChange={e => setForm(f => ({ ...f, fromName: e.target.value }))} />
-            </div>
-            <div>
-              <label style={lbl}>Email de réponse (optionnel)</label>
-              <input style={inp} type="email" placeholder="reponse@email.com" value={form.replyTo} onChange={e => setForm(f => ({ ...f, replyTo: e.target.value }))} />
-            </div>
-          </div>
-
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 12px', background: 'rgba(255,255,255,0.04)', borderRadius: 8, cursor: 'pointer' }}
-            onClick={() => setForm(f => ({ ...f, secure: !f.secure }))}
-          >
-            <div style={{ width: 36, height: 20, background: form.secure ? '#6366f1' : 'rgba(255,255,255,0.15)', borderRadius: 10, position: 'relative', transition: 'background 0.2s', flexShrink: 0 }}>
-              <div style={{ position: 'absolute', top: 2, left: form.secure ? 18 : 2, width: 16, height: 16, background: 'white', borderRadius: '50%', transition: 'left 0.2s' }} />
-            </div>
-            <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.8)' }}>Connexion sécurisée SSL/TLS (port 465)</span>
-          </div>
-
-          <div style={{ display: 'flex', gap: 10, marginTop: 4 }}>
-            <button
-              onClick={() => save.mutate({ host: form.host, port: form.port, secure: form.secure, user: form.user, password: form.password || undefined, fromName: form.fromName || undefined, replyTo: form.replyTo || undefined })}
-              disabled={save.isPending || !form.host || !form.user}
-              style={{ flex: 1, background: 'linear-gradient(135deg,#6366f1,#8b5cf6)', border: 'none', color: 'white', borderRadius: 8, padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: (!form.host || !form.user) ? 0.5 : 1 }}
-            >
-              {save.isPending ? 'Sauvegarde...' : '💾 Sauvegarder'}
-            </button>
-            <button
-              onClick={() => test.mutate()}
-              disabled={test.isPending || !cfg}
-              style={{ flex: 1, background: 'rgba(34,197,94,0.1)', border: '1px solid rgba(34,197,94,0.3)', color: '#22c55e', borderRadius: 8, padding: '10px 0', fontSize: 13, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, opacity: !cfg ? 0.4 : 1 }}
-            >
-              {test.isPending ? 'Test en cours...' : '📡 Tester la connexion'}
-            </button>
-          </div>
-
-          <div style={{ background: 'rgba(131,208,245,0.06)', border: '1px solid rgba(131,208,245,0.15)', borderRadius: 10, padding: '12px 14px' }}>
-            <p style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.45)', lineHeight: 1.6 }}>
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>Gmail :</strong> smtp.gmail.com · port 587 · activer "Mot de passe d'application" dans votre compte Google<br />
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>OVH :</strong> ssl0.ovh.net · port 587<br />
-              <strong style={{ color: 'rgba(255,255,255,0.65)' }}>Orange :</strong> smtp.orange.fr · port 587
-            </p>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
 
 function SalarieSection() {
   const [showForm, setShowForm] = useState(false);
@@ -538,8 +418,7 @@ export default function Parametres() {
         </div>
       </div>
 
-      {/* Configuration Email */}
-      <SmtpSection />
+
 
       {/* Salariés */}
       <SalarieSection />

@@ -150,16 +150,16 @@ export default function AddClientModal({ onClose, client }: Props) {
       case 'prenom': return !prenom.trim() ? 'Le prénom est requis' : '';
       case 'nom': return !nom.trim() ? 'Le nom est requis' : '';
       case 'telephone': return !telephone.trim() ? 'Le téléphone est requis' : '';
-      case 'email': return isMineur && !email.trim() ? 'L’adresse mail est obligatoire pour une fiche mineur' : '';
-      case 'adresse': return isMineur && !adresse.trim() ? 'L’adresse est requise pour une fiche mineur' : '';
+      case 'email': return !email.trim() ? "L'adresse mail est obligatoire" : '';
+      case 'adresse': return isMineur && !adresse.trim() ? "L'adresse est requise pour une fiche mineur" : '';
       case 'codePostal': return isMineur && !codePostal.trim() ? 'Le code postal est requis pour une fiche mineur' : '';
       case 'ville': return isMineur && !ville.trim() ? 'La ville est requise pour une fiche mineur' : '';
-      case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? 'Le type de pièce d’identité est requis pour une fiche mineur' : '';
-      case 'pieceIdentiteNumero': return isMineur && !pieceIdentiteNumero.trim() ? 'Le numéro de pièce d’identité est requis pour une fiche mineur' : '';
-      case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? 'Le nom du représentant légal est requis' : '';
-      case 'prenomRepresentant': return isMineur && !prenomRepresentant.trim() ? 'Le prénom du représentant légal est requis' : '';
-      case 'lienRepresentant': return isMineur && !lienRepresentant.trim() ? 'Le lien avec le mineur est requis' : '';
-      case 'telephoneRepresentant': return isMineur && !telephoneRepresentant.trim() ? 'Le téléphone du représentant légal est requis' : '';
+      case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? "Le type de pièce d'identité est requis pour une fiche mineur" : '';
+      case 'pieceIdentiteNumero': return isMineur && !pieceIdentiteNumero.trim() ? "Le numéro de pièce d'identité est requis pour une fiche mineur" : '';
+      case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? "Le nom du représentant légal est requis" : '';
+      case 'prenomRepresentant': return isMineur && !prenomRepresentant.trim() ? "Le prénom du représentant légal est requis" : '';
+      case 'lienRepresentant': return isMineur && !lienRepresentant.trim() ? "Le lien avec le mineur est requis" : '';
+      case 'telephoneRepresentant': return isMineur && !telephoneRepresentant.trim() ? "Le téléphone du représentant légal est requis" : '';
       case 'prestationsSouhaitees': return isMineur && prestationsSouhaitees.length === 0 ? 'Au moins une prestation est requise pour une fiche mineur' : '';
       case 'date':
         if (!dateJour || !dateMois || !dateAnnee) return 'La date de naissance est requise';
@@ -174,10 +174,10 @@ export default function AddClientModal({ onClose, client }: Props) {
       prenom.trim() !== '' &&
       nom.trim() !== '' &&
       telephone.trim() !== '' &&
+      email.trim() !== '' &&
       dateJour !== '' && dateMois !== '' && dateAnnee !== '' &&
       isDateValid &&
       (!isMineur || (
-        email.trim() !== '' &&
         adresse.trim() !== '' &&
         codePostal.trim() !== '' &&
         ville.trim() !== '' &&
@@ -499,7 +499,7 @@ export default function AddClientModal({ onClose, client }: Props) {
               </div>
 
               <div>
-                <label style={labelStyle}>Adresse mail{isMineur ? ' obligatoire *' : ''}</label>
+                <label style={labelStyle}>Adresse mail *</label>
                 <input
                   ref={refEmail}
                   type="email"
@@ -509,12 +509,12 @@ export default function AddClientModal({ onClose, client }: Props) {
                   onBlur={() => touch('email')}
                   placeholder="exemple@email.com"
                   autoComplete="off"
-                  required={isMineur}
-                  aria-required={isMineur}
+                  required
+                  aria-required="true"
                 />
-                {isMineur && !errEmail && (
+                {!errEmail && (
                   <p className="mt-1 text-xs" style={{ color: 'var(--brand-text-muted)', opacity: 0.75 }}>
-                    Adresse mail obligatoire pour créer une fiche mineur.
+                    L'adresse mail est obligatoire pour tous les clients.
                   </p>
                 )}
                 {errEmail && (

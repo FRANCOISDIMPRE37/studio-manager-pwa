@@ -48,14 +48,10 @@ router.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), as
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    console.log('[Stripe] Paiement réussi:', session.metadata);
-    // TODO: activer l'abonnement du studio en base
+    const session = event.data.object as Stripe.Checkout.Session;    // TODO: activer l'abonnement du studio en base
   }
 
-  if (event.type === 'customer.subscription.deleted') {
-    console.log('[Stripe] Abonnement annulé');
-    // TODO: désactiver le studio en base
+  if (event.type === 'customer.subscription.deleted') {    // TODO: désactiver le studio en base
   }
 
   res.json({ received: true });
