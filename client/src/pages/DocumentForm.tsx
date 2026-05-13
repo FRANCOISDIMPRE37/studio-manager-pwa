@@ -465,9 +465,10 @@ export default function DocumentForm() {
       
       toast.success('Données sécurisées chez OVH à l\'instant T');
       setTimeout(() => navigate(-1), 1000);
-    } catch (error) {
+    } catch (error: any) {
       console.error('[Save] Error:', error);
-      toast.error('Erreur de synchronisation OVH - Veuillez réessayer');
+      const msg = error?.message || 'Erreur inconnue';
+      toast.error(`Erreur de synchronisation OVH : ${msg}`);
     } finally {
       setIsSaving(false);
     }
