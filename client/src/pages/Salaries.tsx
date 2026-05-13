@@ -20,7 +20,6 @@ type SalarieRole = 'employe' | 'admin' | 'stagiaire';
 type SalarieForm = {
   prenom: string;
   nom: string;
-  pin: string;
   role: SalarieRole;
   specialite: string;
   typeContrat: string;
@@ -32,7 +31,6 @@ type SalarieForm = {
 const EMPTY_FORM: SalarieForm = {
   prenom: '',
   nom: '',
-  pin: '',
   role: 'employe',
   specialite: '',
   typeContrat: '',
@@ -56,7 +54,6 @@ export default function Salaries() {
   const { state } = useApp();
   const [showForm, setShowForm] = useState(true);
   const [editingId, setEditingId] = useState<number | null>(null);
-  const [editingHasPinSet, setEditingHasPinSet] = useState(false);
   const [form, setForm] = useState<SalarieForm>(EMPTY_FORM);
   const utils = trpc.useUtils();
 
@@ -64,7 +61,6 @@ export default function Salaries() {
 
   const resetForm = () => {
     setEditingId(null);
-    setEditingHasPinSet(false);
     setForm(EMPTY_FORM);
   };
 
@@ -97,18 +93,11 @@ export default function Salaries() {
 
   const validateRequiredFields = () => {
     const missing = REQUIRED_FIELDS.filter(({ key }) => {
-      if (key === 'pin' && editingId && editingHasPinSet) return false;
       return !String(form[key] ?? '').trim();
     });
 
     if (missing.length > 0) {
       toast.error(`Tous les champs de la fiche salarié sont obligatoires : ${missing.map(f => f.label).join(', ')}`);
-      return false;
-    }
-
-    // PIN optionnel : si renseigné, doit être 4 chiffres
-    if (form.pin.trim() && !/^\d{4}$/.test(form.pin)) {
-      toast.error('Le PIN doit contenir exactement 4 chiffres (ou laisser vide).');
       return false;
     }
 
@@ -122,7 +111,6 @@ export default function Salaries() {
       ...form,
       prenom: form.prenom.trim(),
       nom: form.nom.trim(),
-      pin: form.pin.trim(),
       specialite: form.specialite.trim(),
       typeContrat: form.typeContrat.trim(),
       dateEntree: form.dateEntree.trim(),
@@ -131,11 +119,9 @@ export default function Salaries() {
     };
 
     if (editingId) {
-      const { pin, ...fields } = cleanForm;
       update.mutate({
         id: editingId,
-        ...fields,
-        ...(pin ? { pin } : {}),
+        ...cleanForm,
       });
       return;
     }
@@ -149,7 +135,6 @@ export default function Salaries() {
     setForm({
       prenom: salarie.prenom || '',
       nom: salarie.nom || '',
-      pin: '',
       role: (salarie.role || 'employe') as SalarieRole,
       specialite: salarie.specialite || '',
       typeContrat: salarie.typeContrat || '',
@@ -158,7 +143,6 @@ export default function Salaries() {
       adresse: salarie.adresse || '',
     });
     setEditingId(Number(salarie.id));
-    setEditingHasPinSet(Boolean(salarie.hasPinSet));
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -233,20 +217,14 @@ export default function Salaries() {
             </div>
           </div>
 
-          {/* PIN / Rôle */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
-            <div>
-              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{editingId && editingHasPinSet ? 'PIN (déjà enregistré, saisir pour modifier)' : 'PIN (optionnel)'}</label>
-              <input inputMode="numeric" maxLength={4} pattern="[0-9]{4}" style={inp} value={form.pin} onChange={e => setForm(f => ({ ...f, pin: e.target.value.replace(/\D/g, '').slice(0, 4) }))} placeholder={editingId && editingHasPinSet ? 'PIN déjà enregistré' : '4 chiffres (optionnel)'} />
-            </div>
-            <div>
-              <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel('Rôle')}</label>
-              <select required style={inp} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value as SalarieRole }))}>
-                <option value="employe">Employé</option>
-                <option value="admin">Admin</option>
-                <option value="stagiaire">Stagiaire</option>
-              </select>
-            </div>
+          {/* Rôle */}
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel('Rôle')}</label>
+            <select required style={inp} value={form.role} onChange={e => setForm(f => ({ ...f, role: e.target.value as SalarieRole }))}>
+              <option value="employe">Employé</option>
+              <option value="admin">Admin</option>
+              <option value="stagiaire">Stagiaire</option>
+            </select>
           </div>
 
           {/* Spécialité / Type de contrat */}
@@ -265,8 +243,8 @@ export default function Salaries() {
             </div>
           </div>
 
-          {/* Dates */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14, marginBottom: 14 }}>
+          {/* Dates - Correction espacement iPad */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, marginBottom: 14 }}>
             <div>
               <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel("Date d'entrée")}</label>
               <input required type="date" style={inp} value={form.dateEntree} onChange={e => setForm(f => ({ ...f, dateEntree: e.target.value }))} />
@@ -280,74 +258,65 @@ export default function Salaries() {
           {/* Adresse */}
           <div style={{ marginBottom: 20 }}>
             <label style={{ color: 'rgba(255,255,255,0.6)', fontSize: 12, display: 'block', marginBottom: 6 }}>{requiredLabel('Adresse')}</label>
-            <input
-              required
-              style={inp}
-              placeholder="Ex: 3 rue de Tours, 37000 Tours"
-              value={form.adresse}
-              onChange={e => setForm(f => ({ ...f, adresse: e.target.value }))}
-            />
+            <input required style={inp} value={form.adresse} onChange={e => setForm(f => ({ ...f, adresse: e.target.value }))} placeholder="Ex: 3 rue de Tours, 37000 Tours" />
           </div>
 
-          {/* Bouton créer / modifier */}
           <button
             onClick={handleSubmit}
             disabled={isSaving}
-            style={{ background: 'linear-gradient(135deg,#22c55e,#16a34a)', border: 'none', color: 'white', borderRadius: 10, padding: '14px', fontWeight: 700, cursor: 'pointer', width: '100%', fontSize: 15 }}
+            style={{ width: '100%', background: '#22c55e', border: 'none', color: 'white', borderRadius: 12, padding: '14px', fontSize: 15, fontWeight: 700, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: isSaving ? 0.7 : 1 }}
           >
-            {isSaving ? 'Enregistrement...' : editingId ? 'Enregistrer la fiche salarié' : 'Créer le salarié'}
+            {isSaving ? 'Enregistrement...' : (editingId ? 'Enregistrer les modifications' : 'Créer le salarié')}
           </button>
         </div>
       )}
 
-      {/* Liste vide */}
-      {(list.data ?? []).length === 0 && !showForm && (
-        <div style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>
-          <p style={{ fontSize: 40 }}>👥</p>
-          <p>Aucun salarié</p>
-        </div>
-      )}
-
       {/* Liste des salariés */}
-      {(list.data ?? []).map((s: any) => (
-        <div key={s.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 20px', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, marginBottom: 10 }}>
-          <div>
-            <p style={{ margin: 0, fontWeight: 700, color: 'white', fontSize: 16 }}>{s.prenom} {s.nom}</p>
-            <p style={{ margin: '4px 0 0', fontSize: 13, color: 'rgba(255,255,255,0.5)' }}>
-              {s.role}{s.specialite ? ` · ${s.specialite}` : ''} · PIN {s.hasPinSet ? '✅' : '❌'}
-              {hasSignedEngagement(String(s.id)) && <span style={{ color: '#4ade80', marginLeft: 8 }}>· RGPD ✅</span>}
-            </p>
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>
-              {s.typeContrat || 'Contrat non renseigné'} · Entrée : {s.dateEntree || 'non renseignée'} · Sortie : {s.dateSortie || 'non renseignée'}
-            </p>
-            <p style={{ margin: '2px 0 0', fontSize: 12, color: 'rgba(255,255,255,0.35)' }}>{s.adresse || 'Adresse non renseignée'}</p>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: 16 }}>
+        {list.data?.map((salarie: any) => (
+          <div key={salarie.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20 }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
+              <div>
+                <h4 style={{ margin: 0, color: 'white', fontSize: 16, fontWeight: 700 }}>{salarie.prenom} {salarie.nom}</h4>
+                <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 12 }}>
+                  {salarie.specialite} • {salarie.role}
+                </p>
+                <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+                  {salarie.typeContrat} • Entrée : {salarie.dateEntree || 'non renseignée'}
+                  {salarie.dateSortie ? ` • Sortie : ${salarie.dateSortie}` : ''}
+                </p>
+                <p style={{ margin: '4px 0 0', color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>
+                  Adresse : {salarie.adresse || 'non renseignée'}
+                </p>
+              </div>
+              <div style={{ display: 'flex', gap: 8 }}>
+                <button
+                  onClick={() => startEdit(salarie)}
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+                >
+                  <Pencil size={14} /> Modifier
+                </button>
+                <button
+                  onClick={() => {
+                    navigate(`/documents/engagement-confidentialite?salarieId=${salarie.id}`);
+                  }}
+                  style={{ background: hasSignedEngagement(salarie.id) ? 'rgba(34,197,94,0.15)' : 'rgba(99,102,241,0.15)', border: `1px solid ${hasSignedEngagement(salarie.id) ? '#22c55e' : '#6366f1'}`, color: hasSignedEngagement(salarie.id) ? '#22c55e' : '#6366f1', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+                >
+                  <FileText size={14} /> {hasSignedEngagement(salarie.id) ? 'Signé' : 'Signer RGPD'}
+                </button>
+                <button
+                  onClick={() => {
+                    if (confirm('Supprimer ce salarié ?')) del.mutate({ id: salarie.id });
+                  }}
+                  style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid #ef4444', color: '#ef4444', borderRadius: 8, padding: '8px', cursor: 'pointer' }}
+                >
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button
-              onClick={() => startEdit(s)}
-              style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.16)', color: 'white', borderRadius: 8, padding: '8px 12px', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
-            >
-              <Pencil size={14} />
-              Modifier
-            </button>
-            {!hasSignedEngagement(String(s.id)) && (
-              <button
-                onClick={() => navigate(`/rgpd-salarie?salarieId=${s.id}`)}
-                style={{ background: 'rgba(131,208,245,0.15)', border: '1px solid rgba(131,208,245,0.3)', color: '#83d0f5', borderRadius: 8, padding: '8px 12px', fontSize: 13, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6 }}
-              >
-                <FileText size={14} />
-                Signer RGPD
-              </button>
-            )}
-            <button
-              onClick={() => { if (confirm('Supprimer ce salarié ?')) del.mutate({ id: Number(s.id) }) }}
-              style={{ background: 'rgba(239,68,68,0.15)', border: '1px solid rgba(239,68,68,0.3)', color: '#ef4444', borderRadius: 8, padding: '8px 12px', fontSize: 13, cursor: 'pointer' }}
-            >
-              <Trash2 size={14} />
-            </button>
-          </div>
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }
