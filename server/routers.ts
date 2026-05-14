@@ -36,6 +36,9 @@ import {
   saveTracabilitePhotos,
 } from "./db";
 
+// Déclaration anticipée de notificationsRouter pour éviter l'erreur de référence
+let notificationsRouter: any;
+
 export const appRouter = router({
   notifications: notificationsRouter,
   system: systemRouter,
@@ -1247,7 +1250,7 @@ export type AppRouter = typeof appRouter;
 // ===== NOTIFICATIONS =====
 import { adminNotifications } from '../drizzle/schema';
 
-export const notificationsRouter = router({
+notificationsRouter = router({
   // Récupérer les notifications du studio connecté
   getMy: protectedProcedure.query(async ({ ctx }) => {
     const db = await getDb();

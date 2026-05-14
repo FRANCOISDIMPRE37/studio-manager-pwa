@@ -143,51 +143,26 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
 
 
+      <FormSection title="3 — SIGNATURE DU PIERCEUR" />
+      <div className="grid grid-cols-1 gap-3">
+        <FormField label="Nom du pierceur" value={data.nomPierceur || salonInfo?.nomTatoueur || ''} onChange={v => update('nomPierceur', v)} />
+        <FormField label="Date" value={data.datePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('datePierceur', v)} />
+        <div className="mt-3">
+          <SignaturePad
+            label="Signature du pierceur"
+            value={data.signaturePierceur || ''}
+            onChange={v => update('signaturePierceur', v ?? '')}
+          />
+        </div>
+      </div>
+
       <LegalBox>
         <em>Conservation : 5 ans minimum à compter de la dernière prestation (Art. R 1311-7 CSP + Arrêté 13/03/2009). Copie conservée par le salon. VOS DROITS RGPD — Pour exercer vos droits : {salonInfo?.email || "contact@votresalon.fr"}<br />
         Support : L'écrit électronique a la même force probante que l'écrit papier (Art. 1366 du Code civil).</em>
       </LegalBox>
 
 
-      {/* Photos matériel stérile */}
-      <FormSection title="📷 PHOTOS MATÉRIEL STÉRILE (ARS obligatoire)" />
-      <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(0,180,216,0.05)', border: '1px solid rgba(0,180,216,0.3)' }}>
-        <p className="text-xs mb-2" style={{ color: '#0369a1', fontWeight: 600 }}>
-          Photographiez les emballages des produits utilisés (lot, péremption, fabricant) — Arrêté ARS 3 déc. 2008 + Règlement UE 2020/2081
-        </p>
-        <p className="text-xs mb-3" style={{ color: '#C0396A', fontWeight: 700 }}>
-          Photo obligatoire : au moins une photo doit être ajoutée pour sauvegarder cette fiche.
-        </p>
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#00B4D8', color: 'white', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-          📷 Photographier le matériel
-          <input type="file" accept="image/*" capture="environment" multiple onChange={e => {
-            const files = e.target.files;
-            if (!files) return;
-            const photos = [...(data.photosTracabilite || [])];
-            Array.from(files).forEach(file => {
-              const reader = new FileReader();
-              reader.onload = (ev) => {
-                photos.push({ id: Date.now() + Math.random(), url: ev.target?.result, nom: file.name, date: new Date().toLocaleDateString('fr-FR') });
-                update('photosTracabilite', [...photos]);
-              };
-              reader.readAsDataURL(file);
-            });
-          }} style={{ display: 'none' }} />
-        </label>
-        <span style={{ marginLeft: 12, fontSize: 12, color: (data.photosTracabilite || []).length > 0 ? '#15803d' : '#C0396A', fontWeight: 700 }}>{(data.photosTracabilite || []).length} photo(s) — obligatoire</span>
-        {(data.photosTracabilite || []).length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8, marginTop: 12 }}>
-            {(data.photosTracabilite || []).map((p: any, i: number) => (
-              <div key={p.id || i} style={{ position: 'relative', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
-                <img src={p.url} alt={p.nom} style={{ width: '100%', height: 100, objectFit: 'cover' }} />
-                <button onClick={() => { const ph = (data.photosTracabilite || []).filter((_: any, idx: number) => idx !== i); update('photosTracabilite', ph); }}
-                  style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', border: 'none', borderRadius: '50%', width: 20, height: 20, color: 'white', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                <p style={{ fontSize: 10, color: '#6b7280', padding: '2px 4px', textAlign: 'center' }}>{p.date}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+
       <RgpdMentions />
 
     </>
@@ -513,42 +488,7 @@ function FormFicheSeanceTatouage({ data, update, client }: { data: Record<string
       <CheckboxField label="Conseils de cicatrisation expliqués oralement" value={!!data.conseilsOraux} onToggle={() => update('conseilsOraux', !data.conseilsOraux)} required />
       <FormField label="Autres documents remis" value={data.autresDocuments || ''} onChange={v => update('autresDocuments', v)} placeholder="Préciser si nécessaire" />
 
-      {/* Photos matériel stérile */}
-      <FormSection title="📷 PHOTOS MATÉRIEL STÉRILE (ARS obligatoire)" />
-      <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(0,180,216,0.05)', border: '1px solid rgba(0,180,216,0.3)' }}>
-        <p className="text-xs mb-3" style={{ color: '#0369a1', fontWeight: 600 }}>
-          Photographiez les emballages des produits utilisés (lot, péremption, fabricant) — Arrêté ARS 3 déc. 2008 + Règlement UE 2020/2081
-        </p>
-        <label style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#00B4D8', color: 'white', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600 }}>
-          📷 Photographier le matériel
-          <input type="file" accept="image/*" capture="environment" multiple onChange={e => {
-            const files = e.target.files;
-            if (!files) return;
-            const photos = [...(data.photosTracabilite || [])];
-            Array.from(files).forEach(file => {
-              const reader = new FileReader();
-              reader.onload = (ev) => {
-                photos.push({ id: Date.now() + Math.random(), url: ev.target?.result, nom: file.name, date: new Date().toLocaleDateString('fr-FR') });
-                update('photosTracabilite', [...photos]);
-              };
-              reader.readAsDataURL(file);
-            });
-          }} style={{ display: 'none' }} />
-        </label>
-        <span style={{ marginLeft: 12, fontSize: 12, color: '#6b7280' }}>{(data.photosTracabilite || []).length} photo(s)</span>
-        {(data.photosTracabilite || []).length > 0 && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8, marginTop: 12 }}>
-            {(data.photosTracabilite || []).map((p: any, i: number) => (
-              <div key={p.id || i} style={{ position: 'relative', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden' }}>
-                <img src={p.url} alt={p.nom} style={{ width: '100%', height: 100, objectFit: 'cover' }} />
-                <button onClick={() => { const ph = (data.photosTracabilite || []).filter((_: any, idx: number) => idx !== i); update('photosTracabilite', ph); }}
-                  style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', border: 'none', borderRadius: '50%', width: 20, height: 20, color: 'white', fontSize: 12, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>×</button>
-                <p style={{ fontSize: 10, color: '#6b7280', padding: '2px 4px', textAlign: 'center' }}>{p.date}</p>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+
       <FormSection title="8 — SIGNATURE" />
       <div className="grid grid-cols-1 gap-6">
         <div className="p-4 rounded-xl" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>

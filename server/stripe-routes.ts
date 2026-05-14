@@ -2,7 +2,7 @@ import express from 'express';
 import Stripe from 'stripe';
 
 const router = express.Router();
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY) : null;
 
 const PRICES: Record<string, string> = {
   solo: process.env.STRIPE_PRICE_SOLO!,
@@ -13,6 +13,7 @@ const PRICES: Record<string, string> = {
 // Créer une session de paiement Stripe Checkout
 router.post('/api/stripe/checkout', async (req, res) => {
   try {
+    if (!stripe) return res.status(503).json({ error: 'Stripe non configuré' });
     const { plan, studioId, email } = req.body;
     if (!PRICES[plan]) return res.status(400).json({ error: 'Plan invalide' });
 
@@ -35,6 +36,7 @@ router.post('/api/stripe/checkout', async (req, res) => {
 
 // Webhook Stripe — écoute les événements de paiement
 router.post('/api/stripe/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
+  if (!stripe) return res.status(503).json({ error: 'Stripe non configuré' });
   const sig = req.headers['stripe-signature']!;
   const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
