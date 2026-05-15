@@ -583,16 +583,20 @@ export default function AddClientModal({ onClose, client }: Props) {
                     <label style={labelStyle}>Type de pièce d’identité *</label>
                     <select
                       style={getStyle('pieceIdentiteType')}
-                      value={pieceIdentiteType}
+                      value={pieceIdentiteType || ''}
                       onChange={e => {
-                        setPieceIdentiteType(e.target.value);
+                        const value = e.target.value;
+                        setPieceIdentiteType(value);
                         touch('pieceIdentiteType');
                       }}
                       onBlur={() => touch('pieceIdentiteType')}
+                      onInput={e => {
+                        setPieceIdentiteType((e.target as HTMLSelectElement).value);
+                      }}
                       required
                     >
                       <option value="">Sélectionner</option>
-                      <option value="carte_identite">Carte d’identité</option>
+                      <option value="carte_identite">Carte d'identité</option>
                       <option value="passeport">Passeport</option>
                       <option value="titre_sejour">Titre de séjour</option>
                       <option value="autre">Autre</option>
