@@ -141,7 +141,6 @@ export default function ClientDetail() {
   };
 
   const TABS: { key: Tab; label: string; icon: React.ElementType }[] = [
-    { key: 'infos', label: 'Infos', icon: CreditCard },
     { key: 'documents', label: 'Documents', icon: FileText },
     { key: 'rgpd', label: 'RGPD', icon: ShieldCheck },
   ];
@@ -185,9 +184,8 @@ export default function ClientDetail() {
 
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {tab === 'infos' && (
-          <>
-            <div className="studio-card p-4 space-y-3">
+        {/* Identité toujours affichée */}
+        <div className="studio-card p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Identité</p>
                 <button onClick={() => setShowEditModal(true)} className="text-xs px-2 py-1 rounded" style={{ background: 'var(--brand-cyan)', color: '#000' }}>Modifier</button>
@@ -200,6 +198,11 @@ export default function ClientDetail() {
                 ...(client.email ? [{ icon: CreditCard, label: 'Email', value: client.email }] : []),
                 ...(client.adresse ? [{ icon: CreditCard, label: 'Adresse', value: `${client.adresse} ${client.codePostal || ''} ${client.ville || ''}`.trim() }] : []),
                 ...(client.pieceIdentiteType ? [{ icon: CreditCard, label: "Pièce d'identité", value: `${client.pieceIdentiteType}${client.pieceIdentiteNumero ? ' — ' + client.pieceIdentiteNumero : ''}` }] : []),
+                ...(client.prestationsSouhaitees && client.prestationsSouhaitees.length > 0 ? [{ icon: CreditCard, label: 'Prestations', value: client.prestationsSouhaitees.join(', ') }] : []),
+                // Champs du représentant légal pour les mineurs
+                ...(client.estMineur && client.nomRepresentantLegal ? [{ icon: CreditCard, label: 'Représentant légal', value: `${client.prenomRepresentantLegal || ''} ${client.nomRepresentantLegal}`.trim() }] : []),
+                ...(client.estMineur && client.lienRepresentantLegal ? [{ icon: CreditCard, label: 'Lien', value: client.lienRepresentantLegal }] : []),
+                ...(client.estMineur && client.telephoneRepresentantLegal ? [{ icon: Phone, label: 'Tél. représentant', value: client.telephoneRepresentantLegal }] : []),
 
               ].map((item, i) => (
                 <div key={i} className="flex items-start gap-3">
@@ -210,38 +213,9 @@ export default function ClientDetail() {
                   </div>
                 </div>
               ))}
-            </div>
+        </div>
 
-            {/* Bloc Prestations souhaitées */}
-            <div className="studio-card p-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>Prestations souhaitées</p>
-                <button
-                  onClick={openEditPrestations}
-                  className="flex items-center gap-1 text-xs px-2 py-1 rounded-lg transition-all"
-                  style={{ color: 'var(--brand-cyan)', background: 'rgba(131,208,245,0.08)', border: '1px solid rgba(131,208,245,0.2)' }}
-                >
-                  <Edit size={11} /> Modifier
-                </button>
-              </div>
-              {client.prestationsSouhaitees && client.prestationsSouhaitees.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {client.prestationsSouhaitees.map(p => (
-                    <span
-                      key={p}
-                      className="px-3 py-1 rounded-full text-xs"
-                      style={{ background: 'rgba(131,208,245,0.12)', color: 'var(--brand-cyan)', border: '1px solid rgba(131,208,245,0.3)', fontWeight: 600 }}
-                    >
-                      {p}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-xs" style={{ color: 'var(--brand-text-muted)' }}>Aucune prestation sélectionnée</p>
-              )}
-            </div>
-
-            {/* Modal modification prestations */}
+        {/* Modal modification prestations */}
             {editingPrestations && (
               <div className="fixed inset-0 z-50 flex items-center justify-center p-4" style={{ background: 'rgba(0,0,0,0.7)' }}>
                 <div className="w-full max-w-sm rounded-xl p-5" style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)' }}>
@@ -292,69 +266,70 @@ export default function ClientDetail() {
               </div>
             )}
 
-            {/* Bloc Notes */}
-            <div className="studio-card p-4">
-              <div className="flex items-center justify-between mb-2">
-                <p className="text-xs font-600 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                  <StickyNote size={12} className="inline mr-1.5" />Notes
-                </p>
-                {!editingNotes ? (
-                  <button
-                    onClick={() => { setNotesValue(client.notes || ''); setEditingNotes(true); }}
-                    className="text-xs px-2 py-1 rounded transition-all"
-                    style={{ color: 'var(--brand-cyan)', background: 'var(--brand-cyan-dim)' }}
-                  >
-                    <Edit size={11} className="inline mr-1" />Modifier
-                  </button>
-                ) : (
-                  <div className="flex gap-2">
-                    <button
-                      onClick={() => setEditingNotes(false)}
-                      className="text-xs px-2 py-1 rounded transition-all"
-                      style={{ color: 'var(--brand-text-muted)', background: 'rgba(255,255,255,0.05)' }}
-                    >
-                      Annuler
-                    </button>
-                    <button
-                      onClick={() => { updateClient({ ...client, notes: notesValue }); setEditingNotes(false); toast.success('Notes sauvegardées'); }}
-                      className="text-xs px-2 py-1 rounded transition-all"
-                      style={{ color: 'var(--brand-navy)', background: 'var(--brand-cyan)', fontWeight: 600 }}
-                    >
-                      Sauvegarder
-                    </button>
-                  </div>
-                )}
-              </div>
-              {editingNotes ? (
-                <textarea
-                  value={notesValue}
-                  onChange={e => setNotesValue(e.target.value)}
-                  rows={4}
-                  placeholder="Allergies, préférences, observations post-séance..."
-                  className="w-full px-3 py-2.5 rounded-lg text-sm outline-none resize-none"
-                  style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }}
-                />
-              ) : (
-                <p className="text-sm whitespace-pre-wrap" style={{ color: client.notes ? 'var(--brand-text)' : 'var(--brand-text-muted)' }}>
-                  {client.notes || 'Aucune note — appuyez sur Modifier pour en ajouter.'}
-                </p>
-              )}
-            </div>
 
-            <div className="flex gap-3">
-              <button onClick={handleArchive} className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
-                style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-                <Archive size={14} />{client.estArchive ? 'Désarchiver' : 'Archiver'}
-              </button>
-              <button onClick={handleDelete} className="flex-1 py-2.5 rounded-lg text-sm flex items-center justify-center gap-2 transition-all"
-                style={{ background: 'rgba(244,67,54,0.1)', border: '1px solid rgba(244,67,54,0.3)', color: '#F44336' }}>
-                <Trash2 size={14} />Supprimer
-              </button>
-            </div>
-          </>
+
+        {/* Documents tab */}
+        {tab === 'documents' && (
+          <div className="space-y-3">
+            {client.documentsAssocies.length === 0 ? (
+              <div className="text-center py-12">
+                <FileText size={32} className="mx-auto mb-2 opacity-30" style={{ color: 'var(--brand-text-muted)' }} />
+                <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Aucun document associé</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {sortDocs(client.documentsAssocies).map(docType => {
+                  const doc = client.documents?.find(d => d.type === docType);
+                  const status = doc?.status || 'empty';
+                  const statusColors = { empty: '#FF9800', filled: 'var(--brand-cyan)', signed: '#4CAF50' };
+                  const statusLabels = { empty: 'À remplir', filled: 'Rempli', signed: 'Signé' };
+                  const canPrint = status === 'filled' || status === 'signed';
+                  return (
+                    <div
+                      key={docType}
+                      className="w-full flex items-center gap-2 p-3 rounded-lg"
+                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}
+                    >
+                      <button
+                        onClick={() => navigate(`/clients/${client.id}/document/${docType}`)}
+                        className="flex items-center gap-3 flex-1 text-left transition-all hover:opacity-80"
+                      >
+                        <FileText size={14} style={{ color: 'var(--brand-text-muted)', flexShrink: 0 }} />
+                        <span className="flex-1 text-sm" style={{ color: 'var(--brand-text)' }}>{DOCUMENT_LABELS[docType]}</span>
+                        <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: statusColors[status] + '22', color: statusColors[status], border: `1px solid ${statusColors[status]}` }}>
+                          {statusLabels[status]}
+                        </span>
+                        <Edit size={12} style={{ color: 'var(--brand-text-muted)', flexShrink: 0 }} />
+                      </button>
+                      {canPrint && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); navigate(`/clients/${client.id}/document/${docType}?print=1`); }}
+                          title="Imprimer ce document"
+                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all hover:opacity-80 flex-shrink-0"
+                          style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.3)', color: 'var(--brand-cyan)' }}
+                        >
+                          <Printer size={13} />
+                          <span className="text-xs font-medium">Imprimer</span>
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+            <button
+              onClick={() => navigate('/documents')}
+              className="w-full py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
+              style={{ background: 'rgba(131,208,245,0.05)', border: '1px dashed rgba(131,208,245,0.3)', color: 'var(--brand-cyan)' }}
+            >
+              <PlusCircle size={14} />
+              Voir tous les documents disponibles
+            </button>
+          </div>
         )}
 
 
+        {/* RGPD tab */}
         {tab === 'rgpd' && (() => {
           const now = new Date();
           const dateCreation = new Date(client.dateCreation);
@@ -459,71 +434,8 @@ export default function ClientDetail() {
                 Supprime toutes les données y compris médicales. Action irréversible.
               </p>
             </div>
-          );
-        })()}
-
-        {tab === 'documents' && (
-          <div className="space-y-3">
-
-            {client.documentsAssocies.length === 0 ? (
-              <div className="text-center py-12">
-                <FileText size={32} className="mx-auto mb-2 opacity-30" style={{ color: 'var(--brand-text-muted)' }} />
-                <p className="text-sm" style={{ color: 'var(--brand-text-muted)' }}>Aucun document associé</p>
-              </div>
-            ) : (
-              <div className="space-y-2">
-                {sortDocs(client.documentsAssocies).map(docType => {
-                  const doc = client.documents?.find(d => d.type === docType);
-                  const status = doc?.status || 'empty';
-                  const statusColors = { empty: '#FF9800', filled: 'var(--brand-cyan)', signed: '#4CAF50' };
-                  const statusLabels = { empty: 'À remplir', filled: 'Rempli', signed: 'Signé' };
-                  const canPrint = status === 'filled' || status === 'signed';
-                  return (
-                    <div
-                      key={docType}
-                      className="w-full flex items-center gap-2 p-3 rounded-lg"
-                      style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid var(--brand-border)' }}
-                    >
-                      <button
-                        onClick={() => navigate(`/clients/${client.id}/document/${docType}`)}
-                        className="flex items-center gap-3 flex-1 text-left transition-all hover:opacity-80"
-                      >
-                        <FileText size={14} style={{ color: 'var(--brand-text-muted)', flexShrink: 0 }} />
-                        <span className="flex-1 text-sm" style={{ color: 'var(--brand-text)' }}>{DOCUMENT_LABELS[docType]}</span>
-                        <span className="text-xs px-1.5 py-0.5 rounded" style={{ background: statusColors[status] + '22', color: statusColors[status], border: `1px solid ${statusColors[status]}` }}>
-                          {statusLabels[status]}
-                        </span>
-                        <Edit size={12} style={{ color: 'var(--brand-text-muted)', flexShrink: 0 }} />
-                      </button>
-                      {canPrint && (
-                        <button
-                          onClick={(e) => { e.stopPropagation(); navigate(`/clients/${client.id}/document/${docType}?print=1`); }}
-                          title="Imprimer ce document"
-                          className="flex items-center gap-1 px-2 py-1.5 rounded-lg transition-all hover:opacity-80 flex-shrink-0"
-                          style={{ background: 'rgba(131,208,245,0.1)', border: '1px solid rgba(131,208,245,0.3)', color: 'var(--brand-cyan)' }}
-                        >
-                          <Printer size={13} />
-                          <span className="text-xs font-medium">Imprimer</span>
-                        </button>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {/* Bouton ajouter un document */}
-            <button
-              onClick={() => navigate('/documents')}
-              className="w-full py-3 rounded-xl text-sm flex items-center justify-center gap-2 transition-all"
-              style={{ background: 'rgba(131,208,245,0.05)', border: '1px dashed rgba(131,208,245,0.3)', color: 'var(--brand-cyan)' }}
-            >
-              <PlusCircle size={14} />
-              Voir tous les documents disponibles
-            </button>
           </div>
-        )}
-
-
+        </div>
       </div>
     </div>
     {/* Modal envoi dossier complet */}

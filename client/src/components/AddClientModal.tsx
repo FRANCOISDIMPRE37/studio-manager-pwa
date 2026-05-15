@@ -628,38 +628,7 @@ export default function AddClientModal({ onClose, client }: Props) {
               </div>
             </div>
           )}
-          {/* PRESTATIONS SOUHAITÉES */}
-          <div>
-            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: errPrestations ? '#F44336' : 'var(--brand-cyan)', fontWeight: 600 }}>
-              Prestations souhaitées{isMineur ? ' *' : ''}
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {PRESTATIONS_OPTIONS.map(p => {
-                const selected = prestationsSouhaitees.includes(p);
-                return (
-                  <button
-                    key={p}
-                    type="button"
-                    onClick={() => togglePrestation(p)}
-                    className="px-3 py-1.5 rounded-full text-xs transition-all"
-                    style={{
-                      background: selected ? 'var(--brand-cyan)' : 'rgba(255,255,255,0.05)',
-                      color: selected ? 'var(--brand-navy)' : 'var(--brand-text-muted)',
-                      border: selected ? '1px solid var(--brand-cyan)' : '1px solid var(--brand-border)',
-                      fontWeight: selected ? 700 : 500,
-                    }}
-                  >
-                    {p}
-                  </button>
-                );
-              })}
-            </div>
-            {errPrestations && (
-              <p className="flex items-center gap-1 mt-2 text-xs" style={{ color: '#F44336' }}>
-                <AlertCircle size={11} /> {errPrestations}
-              </p>
-            )}
-          </div>
+
 
           {/* BOUTONS */}
           <div className="flex gap-3 pt-2">
