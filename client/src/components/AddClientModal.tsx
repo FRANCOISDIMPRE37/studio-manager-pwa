@@ -181,8 +181,6 @@ export default function AddClientModal({ onClose, client }: Props) {
         adresse.trim() !== '' &&
         codePostal.trim() !== '' &&
         ville.trim() !== '' &&
-        pieceIdentiteType.trim() !== '' &&
-        pieceIdentiteNumero.trim() !== '' &&
         nomRepresentant.trim() !== '' &&
         prenomRepresentant.trim() !== '' &&
         lienRepresentant.trim() !== '' &&
@@ -208,8 +206,6 @@ export default function AddClientModal({ onClose, client }: Props) {
         if (!adresse.trim()) errors.push('Adresse requise');
         if (!codePostal.trim()) errors.push('Code postal requis');
         if (!ville.trim()) errors.push('Ville requise');
-        if (!pieceIdentiteType.trim()) errors.push('Type de pièce d\'identité requis');
-        if (!pieceIdentiteNumero.trim()) errors.push('Numéro de pièce d\'identité requis');
         if (!nomRepresentant.trim()) errors.push('Nom du représentant légal requis');
         if (!prenomRepresentant.trim()) errors.push('Prénom du représentant légal requis');
         if (!lienRepresentant.trim()) errors.push('Lien avec le mineur requis');
@@ -598,45 +594,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                     {errVille && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errVille}</p>}
                   </div>
                 </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label style={labelStyle}>Type de pièce d’identité *</label>
-                    <select
-                      style={getStyle('pieceIdentiteType')}
-                      value={pieceIdentiteType || ''}
-                      onChange={e => {
-                        const value = e.target.value;
-                        setPieceIdentiteType(value);
-                        touch('pieceIdentiteType');
-                        // Force re-render du dropdown
-                        e.target.blur();
-                        setTimeout(() => e.target.focus(), 0);
-                      }}
-                      onBlur={() => touch('pieceIdentiteType')}
-                      required
-                    >
-                      <option value="">Sélectionner</option>
-                      <option value="carte_identite">Carte d'identité</option>
-                      <option value="passeport">Passeport</option>
-                      <option value="titre_sejour">Titre de séjour</option>
-                      <option value="autre">Autre</option>
-                    </select>
-                    {errPieceIdentiteType && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteType}</p>}
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Numéro de pièce d’identité *</label>
-                    <input
-                      type="text"
-                      style={getStyle('pieceIdentiteNumero')}
-                      value={pieceIdentiteNumero}
-                      onChange={e => setPieceIdentiteNumero(e.target.value)}
-                      onBlur={() => touch('pieceIdentiteNumero')}
-                      placeholder="Numéro du document"
-                      autoComplete="off"
-                      required
-                    />
-                    {errPieceIdentiteNumero && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errPieceIdentiteNumero}</p>}
-                  </div>
+
                 </div>
               </div>
             </div>
