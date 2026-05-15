@@ -584,7 +584,10 @@ export default function AddClientModal({ onClose, client }: Props) {
                     <select
                       style={getStyle('pieceIdentiteType')}
                       value={pieceIdentiteType}
-                      onChange={e => setPieceIdentiteType(e.target.value)}
+                      onChange={e => {
+                        setPieceIdentiteType(e.target.value);
+                        touch('pieceIdentiteType');
+                      }}
                       onBlur={() => touch('pieceIdentiteType')}
                       required
                     >
