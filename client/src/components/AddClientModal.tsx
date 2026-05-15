@@ -277,9 +277,9 @@ export default function AddClientModal({ onClose, client }: Props) {
     border: '1px solid var(--brand-border)',
     color: 'var(--brand-text)',
     borderRadius: '0.5rem',
-    padding: '0.6rem 0.75rem',
+    padding: '0.25rem 0.5rem',
     width: '100%',
-    fontSize: '15px',
+    fontSize: '12px',
     outline: 'none',
     WebkitAppearance: 'none',
     appearance: 'none',
@@ -294,9 +294,9 @@ export default function AddClientModal({ onClose, client }: Props) {
 
   const labelStyle: React.CSSProperties = {
     display: 'block',
-    fontSize: '12px',
+    fontSize: '10px',
     color: 'var(--brand-text-muted)',
-    marginBottom: '4px',
+    marginBottom: '2px',
     fontWeight: 500,
   };
 
@@ -322,38 +322,38 @@ export default function AddClientModal({ onClose, client }: Props) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
       <div
         className="relative w-full md:max-w-lg rounded-xl"
-        style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)', display: 'flex', flexDirection: 'column', maxHeight: '90vh', overflow: 'hidden' }}
+        style={{ background: 'var(--brand-navy-light)', border: '1px solid var(--brand-border)', display: 'flex', flexDirection: 'column', maxHeight: '95vh', overflow: 'hidden' }}
       >
         {/* Header */}
         <div
-          className="flex items-center justify-between p-4 border-b sticky top-0 z-10"
+          className="flex items-center justify-between p-1.5 border-b sticky top-0 z-10"
           style={{ borderColor: 'var(--brand-border)', background: 'var(--brand-navy-light)' }}
         >
-          <h2 className="text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>
+          <h2 className="text-xs" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>
             {isEditMode ? 'Modifier le client' : 'Nouveau client'}
           </h2>
           {state.isDemo && (
             <span
-              className="text-xs px-2 py-0.5 rounded"
+              className="text-xs px-1.5 py-0.5 rounded"
               style={{ background: 'rgba(255,152,0,0.15)', color: '#FF9800', border: '1px solid #FF9800' }}
             >
               Mode démo
             </span>
           )}
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/10 transition-all">
-            <X size={18} style={{ color: 'var(--brand-text-muted)' }} />
+          <button onClick={onClose} className="p-0.5 rounded-lg hover:bg-white/10 transition-all">
+            <X size={14} style={{ color: 'var(--brand-text-muted)' }} />
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-4 space-y-4" noValidate style={{ overflowY: "auto", flex: 1 }}>
+        <form onSubmit={handleSubmit} className="p-1.5 space-y-1" noValidate style={{ overflowY: "auto", flex: 1 }}>
 
           {/* IDENTITÉ */}
           <div>
-            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
+            <p className="text-xs mb-1 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
               Identité
             </p>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
               {/* Prénom */}
               <div>
                 <label style={labelStyle}>Prénom *</label>
@@ -630,10 +630,10 @@ export default function AddClientModal({ onClose, client }: Props) {
           )}
           {/* PRESTATIONS SOUHAITÉES */}
           <div>
-            <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: errPrestations ? '#F44336' : 'var(--brand-cyan)', fontWeight: 600 }}>
+            <p className="text-xs mb-1 uppercase tracking-wide" style={{ color: errPrestations ? '#F44336' : 'var(--brand-cyan)', fontWeight: 600 }}>
               Prestations souhaitées{isMineur ? ' *' : ''}
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1">
               {PRESTATIONS_OPTIONS.map(p => {
                 const selected = prestationsSouhaitees.includes(p);
                 return (
@@ -641,7 +641,7 @@ export default function AddClientModal({ onClose, client }: Props) {
                     key={p}
                     type="button"
                     onClick={() => togglePrestation(p)}
-                    className="px-3 py-1.5 rounded-full text-xs transition-all"
+                    className="px-2 py-0.5 rounded-full text-xs transition-all"
                     style={{
                       background: selected ? 'var(--brand-cyan)' : 'rgba(255,255,255,0.05)',
                       color: selected ? 'var(--brand-navy)' : 'var(--brand-text-muted)',
@@ -655,18 +655,18 @@ export default function AddClientModal({ onClose, client }: Props) {
               })}
             </div>
             {errPrestations && (
-              <p className="flex items-center gap-1 mt-2 text-xs" style={{ color: '#F44336' }}>
+              <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}>
                 <AlertCircle size={11} /> {errPrestations}
               </p>
             )}
           </div>
 
           {/* BOUTONS */}
-          <div className="flex gap-3 pt-2">
+          <div className="flex gap-2 pt-1">
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 py-3 rounded-lg text-sm transition-all"
+              className="flex-1 py-1.5 rounded-lg text-xs transition-all"
               style={{
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid var(--brand-border)',
@@ -678,7 +678,7 @@ export default function AddClientModal({ onClose, client }: Props) {
             </button>
             <button
               type="submit"
-              className="flex-1 py-3 rounded-lg text-sm transition-all active:scale-95"
+              className="flex-1 py-1.5 rounded-lg text-xs transition-all active:scale-95"
               style={{
                 background: 'var(--brand-cyan)',
                 color: 'var(--brand-navy)',
