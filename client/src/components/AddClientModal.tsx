@@ -594,8 +594,6 @@ export default function AddClientModal({ onClose, client }: Props) {
                     {errVille && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errVille}</p>}
                   </div>
                 </div>
-
-                </div>
               </div>
             </div>
           )}
