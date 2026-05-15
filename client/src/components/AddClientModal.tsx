@@ -151,7 +151,7 @@ export default function AddClientModal({ onClose, client }: Props) {
       case 'nom': return !nom.trim() ? 'Le nom est requis' : '';
       case 'telephone': return !telephone.trim() ? 'Le téléphone est requis' : '';
       case 'email': return !email.trim() ? "L'adresse mail est obligatoire" : '';
-      case 'adresse': return isMineur && !adresse.trim() ? "L'adresse est requise pour une fiche mineur" : '';
+      case 'adresse': return isMineur && !adresse?.trim() ? "L'adresse est requise pour une fiche mineur" : '';
       case 'codePostal': return isMineur && !codePostal.trim() ? 'Le code postal est requis pour une fiche mineur' : '';
       case 'ville': return isMineur && !ville.trim() ? 'La ville est requise pour une fiche mineur' : '';
       case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? "Le type de pièce d'identité est requis pour une fiche mineur" : '';
