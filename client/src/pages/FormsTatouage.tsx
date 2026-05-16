@@ -120,8 +120,54 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
       <FormSection title="2 — TRAÇABILITÉ DU MATÉRIEL RÉUTILISABLE STÉRILISÉ" />
       <WarningBox>Photographiez les étiquettes de traçabilité du matériel stérile. L'emballage stérile est ouvert devant le client. Conserver les photos 5 ans minimum.</WarningBox>
 
-
-
+      <FormSection title="3 — PHOTOS MATÉRIEL STÉRILE (ARS obligatoire)" />
+      <div className="p-4 rounded-xl mb-4" style={{ background: 'rgba(0,180,216,0.05)', border: '1px solid rgba(0,180,216,0.3)' }}>
+        <p className="text-xs mb-2" style={{ color: '#0369a1', fontWeight: 600 }}>
+          Photographiez les emballages et étiquettes des produits utilisés : numéro de lot, date de péremption et fabricant lorsque ces informations sont visibles.
+        </p>
+        <p className="text-xs mb-3" style={{ color: '#C0396A', fontWeight: 700 }}>
+          Photo obligatoire : au moins une photo doit être ajoutée pour sauvegarder cette fiche.
+        </p>
+        <div className="flex flex-wrap gap-2 items-center">
+          <button
+            type="button"
+            onClick={() => cameraInputRef.current?.click()}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#00B4D8', color: 'white', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, border: 'none' }}
+          >
+            Prendre une photo
+          </button>
+          <button
+            type="button"
+            onClick={() => photoInputRef.current?.click()}
+            style={{ display: 'inline-flex', alignItems: 'center', gap: 8, padding: '10px 16px', background: '#0f766e', color: 'white', borderRadius: 8, cursor: 'pointer', fontSize: 13, fontWeight: 600, border: 'none' }}
+          >
+            Ajouter depuis la galerie
+          </button>
+          <input ref={cameraInputRef} type="file" accept="image/*" capture="environment" onChange={e => addPhotos(e.target.files)} style={{ display: 'none' }} />
+          <input ref={photoInputRef} type="file" accept="image/*" multiple onChange={e => addPhotos(e.target.files)} style={{ display: 'none' }} />
+          <span style={{ marginLeft: 4, fontSize: 12, color: photos.length > 0 ? '#15803d' : '#C0396A', fontWeight: 700 }}>{photos.length} photo(s) — obligatoire</span>
+        </div>
+        {photos.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: 8, marginTop: 12 }}>
+            {photos.map((p: any, i: number) => {
+              const src = typeof p === 'string' ? p : p?.url;
+              const label = typeof p === 'string' ? `Photo ${i + 1}` : (p?.nom || `Photo ${i + 1}`);
+              return (
+                <div key={(typeof p === 'string' ? p.slice(0, 32) : p?.id) || i} style={{ position: 'relative', border: '1px solid #e5e7eb', borderRadius: 8, overflow: 'hidden', background: '#fff' }}>
+                  {src && <img src={src} alt={label} onClick={() => setLightboxPhoto(src)} style={{ width: '100%', height: 100, objectFit: 'cover', cursor: 'zoom-in' }} />}
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(i)}
+                    style={{ position: 'absolute', top: 4, right: 4, background: '#ef4444', border: 'none', borderRadius: '50%', width: 22, height: 22, color: 'white', fontSize: 14, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                    aria-label="Supprimer la photo"
+                  >×</button>
+                  <p style={{ fontSize: 10, color: '#6b7280', padding: '2px 4px', textAlign: 'center' }}>{label}</p>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </div>
 
       {/* Lightbox */}
       {lightboxPhoto && (
@@ -143,7 +189,7 @@ function FormFicheSeance({ data, update, client }: { data: Record<string, any>; 
 
 
 
-      <FormSection title="3 — SIGNATURE DU PIERCEUR" />
+      <FormSection title="4 — SIGNATURE DU PIERCEUR" />
       <div className="grid grid-cols-1 gap-3">
         <FormField label="Nom du pierceur" value={data.nomPierceur || salonInfo?.nomTatoueur || ''} onChange={v => update('nomPierceur', v)} />
         <FormField label="Date" value={data.datePierceur || new Date().toLocaleDateString('fr-FR')} onChange={v => update('datePierceur', v)} />
