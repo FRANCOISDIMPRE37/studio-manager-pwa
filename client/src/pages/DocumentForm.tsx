@@ -205,6 +205,33 @@ export default function DocumentForm() {
     autorisation_parentale_dermographie: [
       { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
     ],
+    // Fiches de séance et consentements : signatures professionnelles et client obligatoires.
+    fiche_seance_piercing: [
+      { key: 'signaturePierceur', label: 'signature du pierceur' },
+    ],
+    fiche_seance_tatouage: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImageTatoueur', label: 'signature du tatoueur' },
+    ],
+    fiche_seance_dermographe: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImageDermographe', label: 'signature du dermographe' },
+    ],
+    questionnaire_tatouage_majeur: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImageTatoueur', label: 'signature du tatoueur' },
+    ],
+    questionnaire_dermographe: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImageDermographe', label: 'signature du dermographe' },
+    ],
+    consentement_soins_tatouage: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImageTatoueur', label: 'signature du tatoueur' },
+    ],
+    engagement_confidentialite: [
+      { key: 'signatureImageSignataire', label: 'signature du signataire' },
+    ],
   };
 
   const signatureRequise = FICHES_SIGNATURE_OBLIGATOIRE.includes(docType);
@@ -374,9 +401,25 @@ export default function DocumentForm() {
       ],
     };
     const requiredBoxes = requiredCheckboxMap[docType] || [];
-    const uncheckedBoxes = requiredBoxes.filter(f => !formData[f.key]);
+    const uncheckedBoxLabels = new Set<string>();
+
+    // Validation générique : toutes les cases rendues avec <CheckboxField required /> exposent data-required-checkbox.
+    // Cela couvre automatiquement les fiches de séance, consentements, dossiers mineurs et documents ajoutés ensuite.
+    const requiredCheckboxNodes = document.querySelectorAll('[data-required-checkbox="true"]');
+    requiredCheckboxNodes.forEach((el: any) => {
+      if (el.getAttribute('data-checkbox-value') !== 'true') {
+        uncheckedBoxLabels.add(el.getAttribute('data-checkbox-label') || 'Case obligatoire');
+      }
+    });
+
+    // Validation complémentaire historique par clé de données, conservée pour les libellés métier et les anciens composants.
+    requiredBoxes
+      .filter(f => !formData[f.key])
+      .forEach(f => uncheckedBoxLabels.add(f.label));
+
+    const uncheckedBoxes = Array.from(uncheckedBoxLabels);
     if (uncheckedBoxes.length > 0) {
-      toast.error('Cases obligatoires non cochées : ' + uncheckedBoxes.slice(0, 2).map(f => f.label).join(', ') + (uncheckedBoxes.length > 2 ? '...' : ''));
+      toast.error('Cases obligatoires non cochées : ' + uncheckedBoxes.slice(0, 3).join(', ') + (uncheckedBoxes.length > 3 ? '...' : ''));
       return;
     }
     // Validation photo obligatoire pour la fiche de traçabilité matériel stérile piercing.

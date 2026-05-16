@@ -124,6 +124,7 @@ function DateSlashField({ label, value, onChange, required }: { label: string; v
   };
   return (
     <div>
+      {required && <input type="hidden" data-required="true" data-label={label} value={value || ''} readOnly />}
       <label className="block text-xs mb-1" style={{ color: '#9ca3af' }}>{label}{required && <span style={{ color: '#ef4444' }}> *</span>}</label>
       <div className="flex items-center gap-1" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid var(--brand-border)', borderRadius: 8, padding: '6px 10px' }}>
         <input
