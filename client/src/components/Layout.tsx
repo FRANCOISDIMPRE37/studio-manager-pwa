@@ -37,7 +37,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       items: [
         { path: '/', icon: LayoutDashboard, labelKey: 'nav.dashboard' },
         { path: '/clients', icon: Users, labelKey: 'nav.clients' },
-        { path: '/salaries', icon: Users, labelKey: 'nav.salaries' },
         { path: '/documents', icon: FileText, labelKey: 'nav.documents' },
       ],
     },
@@ -52,7 +51,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
     {
       sectionKey: 'nav.section_admin',
       items: [
-        { path: '/engagements', icon: FileText, labelKey: 'nav.engagements' },
+        { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.engagement_confidentialite' },
         { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
 
       ],
