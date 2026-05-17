@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Search, ArrowLeft, Trash2, Eye, X, Plus, Camera, Printer } from 'lucide-react';
+import { Search, ArrowLeft, Trash2, Eye, X, Plus, Camera } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 
@@ -161,18 +161,7 @@ export default function ArchivesNumerisees() {
           <div className="w-full max-w-lg rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto" style={{ background: 'var(--brand-card)' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-700 text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>{selected.nom} {selected.prenom}</h2>
-              <div className="flex gap-2">
-              <button onClick={() => {
-                const win = window.open('', '_blank');
-                if (!win) return;
-                win.document.write(`<html><head><title>${selected.nom} ${selected.prenom}</title><style>body{font-family:sans-serif;padding:20px} img{max-width:100%;margin:8px 0;border-radius:8px} h1{font-size:18px} p{color:#555;font-size:14px}</style></head><body><h1>${selected.nom} ${selected.prenom}</h1><p>Numérisé le ${new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>${(selected.photos||[]).map((p: string) => `<img src="${p}" />`).join('')}</body></html>`);
-                win.document.close();
-                win.print();
-              }} className="p-2 rounded-lg" style={{ background: 'rgba(131,208,245,0.1)' }}>
-                <Printer size={18} style={{ color: 'var(--brand-cyan)' }} />
-              </button>
               <button onClick={() => setSelected(null)}><X size={20} style={{ color: 'var(--brand-text-muted)' }} /></button>
-            </div>
             </div>
             <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>
             {selected.photos?.length > 0 && (
