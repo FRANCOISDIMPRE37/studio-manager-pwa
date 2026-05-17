@@ -314,7 +314,7 @@ export const appRouter = router({
         signatureClient: z.string().optional(),
         signatureProfessionnel: z.string().optional(),
         signatureRepresentant: z.string().optional(),
-        dateSigned: z.string().optional(),
+        dateSigned: z.string().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         return createDocument({ ...input, userId: ctx.user.id });
@@ -327,7 +327,7 @@ export const appRouter = router({
         signatureClient: z.string().optional(),
         signatureProfessionnel: z.string().optional(),
         signatureRepresentant: z.string().optional(),
-        dateSigned: z.string().optional(),
+        dateSigned: z.string().nullable().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         const { id, ...data } = input;

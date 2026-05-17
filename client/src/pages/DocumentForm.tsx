@@ -191,6 +191,10 @@ export default function DocumentForm() {
     autorisation_parentale: [
       { key: 'signatureImageParent', label: 'signature du représentant légal' },
     ],
+    questionnaire_majeur: [
+      { key: 'signatureImageClient', label: 'signature du client' },
+      { key: 'signatureImagePierceur', label: 'signature du pierceur' },
+    ],
     questionnaire_tatouage_mineur: [
       { key: 'signatureImageClient', label: 'signature du mineur' },
       { key: 'signatureImageRepresentant', label: 'signature du représentant légal' },
@@ -476,7 +480,7 @@ export default function DocumentForm() {
       
       const docData = {
         id: existingDoc ? existingDoc.id : `doc-${client.id.substring(0, 8)}-${Date.now()}`,
-        clientId: client.id,
+        dateSigned: isSigned ? dateShort : (existingDoc ? (existingDoc.dateSigned ?? undefined) : undefined),
         type: docType,
         status: isSigned ? 'signed' as const : 'filled' as const,
         data: formData,
