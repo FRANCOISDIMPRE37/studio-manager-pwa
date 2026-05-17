@@ -735,20 +735,28 @@ export async function getAdminStats() {
 
 // ─── Archives Numérisées ────────────────────────────────────────────────────
 export async function getArchivesNumerisees(userId: number) {
-  const db = await getDb();
-  if (!db) return [];
-  const [rows] = await db.execute('SELECT * FROM archives_numerisees WHERE user_id = ? ORDER BY created_at DESC', [userId]);
-  return rows as any[];
+  const mysql = await import('mysql2/promise');
+  const conn = await mysql.createConnection(process.env.DATABASE_URL!);
+  try {
+    const [rows] = await conn.execute('SELECT id, user_id, nom, prenom, date_numerisation as dateNumerisation, type_document as typeDocument, praticien, periode, notes, photos, created_at as createdAt FROM archives_numerisees WHERE user_id = ? ORDER BY created_at DESC', [userId]);
+    return (rows as any[]).map(r => ({ ...r, photos: typeof r.photos === "string" ? JSON.parse(r.photos) : r.photos || [] }));
+  } finally {
+    await conn.end();
+  }
 }
 
 export async function createArchiveNumerisee(userId: number, data: any) {
-  const db = await getDb();
-  if (!db) throw new Error('DB');
-  const [result] = await db.execute(
-    'INSERT INTO archives_numerisees (user_id, nom, prenom, date_numerisation, type_document, praticien, periode, notes, photos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
-    [userId, data.nom||'', data.prenom||'', data.dateNumerisation||'', data.typeDocument||'', data.praticien||'', data.periode||'', data.notes||'', JSON.stringify(data.photos||[])]
-  );
-  return result;
+  const mysql = await import('mysql2/promise');
+  const conn = await mysql.createConnection(process.env.DATABASE_URL!);
+  try {
+    const [result] = await conn.execute(
+      'INSERT INTO archives_numerisees (user_id, nom, prenom, date_numerisation, type_document, praticien, periode, notes, photos) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+      [userId, data.nom||'', data.prenom||'', data.dateNumerisation||'', data.typeDocument||'', data.praticien||'', data.periode||'', data.notes||'', JSON.stringify(data.photos||[])]
+    );
+    return result;
+  } finally {
+    await conn.end();
+  }
 }
 
 export async function deleteArchiveNumerisee(userId: number, id: number) {
@@ -763,7 +771,7 @@ export async function getEngagementsRgpd(userId: number) {
   const db = await getDb();
   if (!db) return [];
   const [rows] = await db.execute('SELECT * FROM engagements_rgpd WHERE user_id = ? ORDER BY created_at DESC', [userId]);
-  return rows as any[];
+  return (rows as any[]).map(r => ({ ...r, photos: typeof r.photos === "string" ? JSON.parse(r.photos) : r.photos || [] }));
 }
 
 export async function createEngagementRgpd(userId: number, data: any) {

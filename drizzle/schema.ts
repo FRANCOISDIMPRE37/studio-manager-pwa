@@ -1,4 +1,4 @@
-import { boolean, int, json, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
+import { boolean, datetime, int, json, longtext, mysqlEnum, mysqlTable, text, timestamp, varchar } from "drizzle-orm/mysql-core";
 
 /**
  * Core user table backing auth flow.
@@ -420,3 +420,17 @@ export const auditLogs = mysqlTable("audit_logs", {
 export type AuditLog = typeof auditLogs.$inferSelect;
 
 // Patch: champs multi-studio ajoutés
+
+export const archivesNumerisees = mysqlTable("archives_numerisees", {
+  id: int("id").primaryKey().autoincrement(),
+  userId: int("user_id").notNull(),
+  nom: text("nom"),
+  prenom: text("prenom"),
+  dateNumerisation: text("date_numerisation"),
+  typeDocument: text("type_document"),
+  praticien: text("praticien"),
+  periode: text("periode"),
+  notes: longtext("notes"),
+  photos: longtext("photos"),
+  createdAt: datetime("created_at"),
+});
