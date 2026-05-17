@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { trpc } from '@/lib/trpc';
-import { Shield, Trash2, CheckCircle, Clock } from 'lucide-react';
+import { Shield, Trash2, CheckCircle, Clock, PenLine } from 'lucide-react';
+import { useLocation } from 'wouter';
 import type { Client, ClientDocument } from '@/lib/types';
 
 export default function Engagements() {
   const { state, updateClient } = useApp();
+  const [, navigate] = useLocation();
   const [deleting, setDeleting] = useState<string | null>(null);
 
   const updateDocMutation = trpc.documents.update.useMutation();
@@ -155,10 +157,13 @@ export default function Engagements() {
                       </p>
                     </div>
                   </div>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 4, fontSize: 12, padding: '4px 10px', borderRadius: 20, background: 'rgba(251,191,36,0.1)', color: '#fbbf24', fontWeight: 600 }}>
-                    <Clock size={11} />
-                    En attente
-                  </span>
+                  <button
+                    onClick={() => navigate(`/rgpd-salarie?salarieId=${s.id}`)}
+                    style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, padding: '6px 12px', borderRadius: 20, background: 'rgba(99,102,241,0.15)', color: '#6366f1', fontWeight: 600, border: '1px solid rgba(99,102,241,0.3)', cursor: 'pointer' }}
+                  >
+                    <PenLine size={11} />
+                    Signer
+                  </button>
                 </div>
               ))}
             </div>

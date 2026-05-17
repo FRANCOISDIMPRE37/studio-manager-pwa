@@ -19,7 +19,7 @@ export default function ArchivesNumerisees() {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
-  const [dateVisite, setDateVisite] = useState(new Date().toISOString().split('T')[0]);
+  const [dateVisite, setDateVisite] = useState(new Date().toLocaleDateString('fr-FR'));
   const photoRef = useRef<HTMLInputElement>(null);
 
   const { data: archives = [], refetch } = trpc.archives.list.useQuery();
@@ -42,21 +42,25 @@ export default function ArchivesNumerisees() {
 
   const handleSave = async () => {
     if (!nom.trim() || !prenom.trim()) return;
-    await createMutation.mutateAsync({
-      nom: nom.trim(),
-      prenom: prenom.trim(),
-      dateNumerisation: dateVisite,
-      typeDocument: '',
-      praticien: '',
-      periode: '',
-      notes: '',
-      photos,
-    });
-    setShowForm(false);
-    setNom('');
-    setPrenom('');
-    setPhotos([]);
-    setDateVisite(new Date().toISOString().split('T')[0]);
+    try {
+      await createMutation.mutateAsync({
+        nom: nom.trim(),
+        prenom: prenom.trim(),
+        dateNumerisation: new Date().toISOString().split('T')[0],
+        typeDocument: '',
+        praticien: '',
+        periode: '',
+        notes: '',
+        photos,
+      });
+      setShowForm(false);
+      setNom('');
+      setPrenom('');
+      setPhotos([]);
+      setDateVisite(new Date().toISOString().split('T')[0]);
+    } catch (e: any) {
+      alert('Erreur sauvegarde: ' + (e?.message || 'inconnue'));
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -87,8 +91,8 @@ export default function ArchivesNumerisees() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>DATE DE VISITE</label>
-                <input type="date" value={dateVisite} onChange={e => setDateVisite(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
+                <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>DATE DE VISITE (JJ/MM/AAAA)</label>
+                <input type="text" inputMode="numeric" placeholder="JJ/MM/AAAA" value={dateVisite} onChange={e => setDateVisite(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
               </div>
               <div>
                 <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>NOM *</label>
