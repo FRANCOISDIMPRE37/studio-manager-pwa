@@ -519,7 +519,7 @@ export default function DocumentForm() {
         type: docType,
         status: isSigned ? 'signed' as const : 'filled' as const,
         data: formData,
-        dateSigned: isSigned ? dateShort : (existingDoc ? existingDoc.dateSigned ?? undefinedd : undefined),
+        dateSigned: isSigned ? dateShort : (existingDoc ? (existingDoc.dateSigned ?? undefined) : undefined),
       };
 
       // Stratégie "Zéro Erreur" : Mise à jour si existe, sinon création

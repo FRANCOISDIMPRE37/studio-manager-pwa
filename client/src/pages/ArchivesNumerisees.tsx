@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { Search, ArrowLeft, Trash2, Eye, X, Plus, Camera } from 'lucide-react';
+import { Search, ArrowLeft, Trash2, Eye, X, Plus, Camera, Printer } from 'lucide-react';
 import { useLocation } from 'wouter';
 import { trpc } from '@/lib/trpc';
 
@@ -19,7 +19,9 @@ export default function ArchivesNumerisees() {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
-  const [dateVisite, setDateVisite] = useState(new Date().toISOString().split('T')[0]);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [loadingPhotos, setLoadingPhotos] = useState(false);
+  const [dateVisite, setDateVisite] = useState(new Date().toLocaleDateString('fr-FR'));
   const photoRef = useRef<HTMLInputElement>(null);
 
   const { data: archives = [], refetch } = trpc.archives.list.useQuery();
@@ -32,43 +34,43 @@ export default function ArchivesNumerisees() {
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
+    if (!files.length) return;
+    setLoadingPhotos(true);
+    let loaded = 0;
     files.forEach(file => {
-      const img = new Image();
-      const url = URL.createObjectURL(file);
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        const maxW = 1200;
-        const scale = Math.min(1, maxW / img.width);
-        canvas.width = img.width * scale;
-        canvas.height = img.height * scale;
-        const ctx = canvas.getContext('2d')!;
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        const compressed = canvas.toDataURL('image/jpeg', 0.7);
-        setPhotos(p => [...p, compressed]);
-        URL.revokeObjectURL(url);
+      const reader = new FileReader();
+      reader.onload = ev => {
+        const result = ev.target?.result as string;
+        if (result) setPhotos(p => [...p, result]);
+        loaded++;
+        if (loaded === files.length) setLoadingPhotos(false);
       };
-      img.src = url;
+      reader.readAsDataURL(file);
     });
     e.target.value = '';
   };
 
   const handleSave = async () => {
     if (!nom.trim() || !prenom.trim()) return;
-    await createMutation.mutateAsync({
-      nom: nom.trim(),
-      prenom: prenom.trim(),
-      dateNumerisation: dateVisite,
-      typeDocument: '',
-      praticien: '',
-      periode: '',
-      notes: '',
-      photos,
-    });
-    setShowForm(false);
-    setNom('');
-    setPrenom('');
-    setPhotos([]);
-    setDateVisite(new Date().toISOString().split('T')[0]);
+    try {
+      await createMutation.mutateAsync({
+        nom: nom.trim(),
+        prenom: prenom.trim(),
+        dateNumerisation: new Date().toISOString().split('T')[0],
+        typeDocument: '',
+        praticien: '',
+        periode: '',
+        notes: '',
+        photos: photos.map(p => p.substring(0, 500000)),
+      });
+      setShowForm(false);
+      setNom('');
+      setPrenom('');
+      setPhotos([]);
+      setDateVisite(new Date().toISOString().split('T')[0]);
+    } catch (e: any) {
+      alert('Erreur sauvegarde: ' + (e?.message || 'inconnue') + ' | taille photos: ' + photos.map(p => Math.round(p.length/1024) + 'kb').join(', '));
+    }
   };
 
   const handleDelete = async (id: number) => {
@@ -99,8 +101,8 @@ export default function ArchivesNumerisees() {
             </div>
             <div className="space-y-4">
               <div>
-                <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>DATE DE VISITE</label>
-                <input type="date" value={dateVisite} onChange={e => setDateVisite(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
+                <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>DATE DE VISITE (JJ/MM/AAAA)</label>
+                <input type="text" inputMode="numeric" placeholder="JJ/MM/AAAA" value={dateVisite} onChange={e => setDateVisite(e.target.value)} className="w-full px-3 py-2 rounded-lg text-sm outline-none" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid var(--brand-border)', color: 'var(--brand-text)' }} />
               </div>
               <div>
                 <label className="text-xs mb-1 block" style={{ color: 'var(--brand-text-muted)' }}>NOM *</label>
@@ -127,8 +129,8 @@ export default function ArchivesNumerisees() {
                   </div>
                 )}
               </div>
-              <button onClick={handleSave} disabled={!nom.trim() || !prenom.trim()} className="w-full py-3 rounded-xl text-sm font-700 mt-2" style={{ background: (!nom.trim() || !prenom.trim()) ? '#333' : '#10b981', color: '#fff', fontWeight: 700 }}>
-                ✓ Sauvegarder
+              <button onClick={handleSave} disabled={!nom.trim() || !prenom.trim() || loadingPhotos} className="w-full py-3 rounded-xl text-sm font-700 mt-2" style={{ background: (!nom.trim() || !prenom.trim()) ? '#333' : '#10b981', color: '#fff', fontWeight: 700 }}>
+                {loadingPhotos ? '⏳ Chargement photo...' : '✓ Sauvegarder'}
               </button>
             </div>
           </div>
@@ -173,7 +175,18 @@ export default function ArchivesNumerisees() {
           <div className="w-full max-w-lg rounded-t-2xl p-6 max-h-[80vh] overflow-y-auto" style={{ background: 'var(--brand-card)' }} onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-700 text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>{selected.nom} {selected.prenom}</h2>
+              <div className="flex gap-2">
+              <button onClick={() => {
+                const win = window.open('', '_blank');
+                if (!win) return;
+                win.document.write(`<html><head><title>${selected.nom} ${selected.prenom}</title><style>body{font-family:sans-serif;padding:20px} img{max-width:100%;margin:8px 0;border-radius:8px} h1{font-size:18px} p{color:#555;font-size:14px}</style></head><body><h1>${selected.nom} ${selected.prenom}</h1><p>Numérisé le ${new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>${(selected.photos||[]).map((p: string) => `<img src="${p}" />`).join('')}</body></html>`);
+                win.document.close();
+                win.print();
+              }} className="p-2 rounded-lg" style={{ background: 'rgba(131,208,245,0.1)' }}>
+                <Printer size={18} style={{ color: 'var(--brand-cyan)' }} />
+              </button>
               <button onClick={() => setSelected(null)}><X size={20} style={{ color: 'var(--brand-text-muted)' }} /></button>
+            </div>
             </div>
             <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>
             {selected.photos?.length > 0 && (
