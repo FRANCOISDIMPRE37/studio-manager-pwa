@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
 import { useApp } from '@/lib/app-context';
 import { trpc } from '@/lib/trpc';
-import { Shield, ChevronLeft, FileText, CheckCircle } from 'lucide-react';
+import { Shield, ChevronLeft, FileText, CheckCircle, Printer } from 'lucide-react';
 import { Client, ClientDocument } from '@/lib/types';
 import { FormEngagementConfidentialite } from './FormsRGPD';
 import SignaturePad from '@/components/SignaturePad';
@@ -23,10 +23,11 @@ export default function RgpdSalarie() {
   });
   const [signatureData, setSignatureData] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
   // Récupérer les données du salarié depuis studioUsers
   const studioUsersList = trpc.studioUsers.list.useQuery();
-  const salarieData = studioUsersList.data?.find((u: any) => u.id === salarieId);
+  const salarieData = studioUsersList.data?.find((u: any) => String(u.id) === String(salarieId));
 
   // On cherche aussi dans les clients pour les documents existants
   const salarie = state.clients.find(c => c.id === salarieId);
@@ -116,7 +117,7 @@ export default function RgpdSalarie() {
       }
 
       toast.success('Engagement de confidentialité enregistré !');
-      navigate('/salaries');
+      setSaved(true);
     } catch (error) {
       toast.error("Erreur lors de l'enregistrement");
     } finally {
@@ -175,18 +176,37 @@ export default function RgpdSalarie() {
           </div>
         </div>
 
-        <button
-          onClick={handleSignAndSave}
-          disabled={isSaving || !signatureData}
-          className="w-full py-4 rounded-xl font-bold text-base shadow-lg transition-all active:scale-[0.98]"
-          style={{
-            background: isSaving || !signatureData ? '#334155' : 'linear-gradient(135deg, #10b981, #059669)',
-            color: 'white',
-            opacity: isSaving || !signatureData ? 0.5 : 1
-          }}
-        >
-          {isSaving ? 'Enregistrement...' : '✓ Valider et Enregistrer la signature'}
-        </button>
+        {saved ? (
+          <div className="flex gap-3">
+            <button
+              onClick={() => window.print()}
+              className="flex-1 py-4 rounded-xl font-bold text-base shadow-lg flex items-center justify-center gap-2"
+              style={{ background: 'linear-gradient(135deg, #3b82f6, #2563eb)', color: 'white' }}
+            >
+              <Printer size={20} /> Imprimer
+            </button>
+            <button
+              onClick={() => navigate('/salaries')}
+              className="flex-1 py-4 rounded-xl font-bold text-base shadow-lg"
+              style={{ background: 'linear-gradient(135deg, #10b981, #059669)', color: 'white' }}
+            >
+              ✓ Terminer
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={handleSignAndSave}
+            disabled={isSaving || !signatureData}
+            className="w-full py-4 rounded-xl font-bold text-base shadow-lg transition-all active:scale-[0.98]"
+            style={{
+              background: isSaving || !signatureData ? '#334155' : 'linear-gradient(135deg, #10b981, #059669)',
+              color: 'white',
+              opacity: isSaving || !signatureData ? 0.5 : 1
+            }}
+          >
+            {isSaving ? 'Enregistrement...' : '✓ Valider et Enregistrer la signature'}
+          </button>
+        )}
       </div>
     </div>
   );

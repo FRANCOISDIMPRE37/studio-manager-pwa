@@ -506,7 +506,23 @@ router.get('/api/super-admin/studios/:id/open', superAdminAuth, async (req, res)
       'SELECT id, prenom, nom, role FROM studio_users WHERE ownerId = ? AND role = ? AND actif = 1 LIMIT 1',
       [ownerId, 'admin']
     );
-    if (!(suRows as any[]).length) return res.status(404).json({ error: 'Aucun admin trouvé pour ce studio' });
+    if (!(suRows as any[]).length) {
+      // Créer automatiquement un studio_user admin si inexistant
+      const [userInfo] = await (db as any).$client.query('SELECT name FROM users WHERE id = ? LIMIT 1', [ownerId]);
+      const userName = userInfo.length ? (userInfo[0].name || 'Admin') : 'Admin';
+      const parts = userName.split(' ');
+      const prenom = parts[0] || 'Admin';
+      const nom = parts.slice(1).join(' ') || '';
+      await (db as any).$client.query(
+        'INSERT INTO studio_users (ownerId, prenom, nom, login, passwordHash, role, actif) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [ownerId, prenom, nom, 'admin', '', 'admin', 1]
+      );
+      const [newSuRows] = await (db as any).$client.query(
+        'SELECT id, prenom, nom, role FROM studio_users WHERE ownerId = ? AND role = ? AND actif = 1 LIMIT 1',
+        [ownerId, 'admin']
+      );
+      if (!(newSuRows as any[]).length) return res.status(404).json({ error: 'Aucun admin trouvé pour ce studio' });
+    }
     // Récupérer le openId du studio depuis la table users
     const [userRows] = await (db as any).$client.query(
       'SELECT openId FROM users WHERE id = ? LIMIT 1', [ownerId]

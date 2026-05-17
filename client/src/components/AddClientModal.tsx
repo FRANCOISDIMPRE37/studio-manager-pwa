@@ -151,9 +151,6 @@ export default function AddClientModal({ isOpen, onClose, client: initialClient 
       case 'nom': return !nom.trim() ? 'Le nom est requis' : '';
       case 'telephone': return !telephone.trim() ? 'Le téléphone est requis' : '';
       case 'email': return !email.trim() ? "L'adresse mail est obligatoire" : '';
-      case 'adresse': return isMineur && !adresse?.trim() ? "L'adresse est requise pour une fiche mineur" : '';
-      case 'codePostal': return isMineur && !codePostal.trim() ? 'Le code postal est requis pour une fiche mineur' : '';
-      case 'ville': return isMineur && !ville.trim() ? 'La ville est requise pour une fiche mineur' : '';
       case 'pieceIdentiteType': return isMineur && !pieceIdentiteType.trim() ? "Le type de pièce d'identité est requis pour une fiche mineur" : '';
       case 'pieceIdentiteNumero': return isMineur && !pieceIdentiteNumero.trim() ? "Le numéro de pièce d'identité est requis pour une fiche mineur" : '';
       case 'nomRepresentant': return isMineur && !nomRepresentant.trim() ? "Le nom du représentant légal est requis" : '';
@@ -178,9 +175,6 @@ export default function AddClientModal({ isOpen, onClose, client: initialClient 
       dateJour !== '' && dateMois !== '' && dateAnnee !== '' &&
       isDateValid &&
       (!isMineur || (
-        adresse.trim() !== '' &&
-        codePostal.trim() !== '' &&
-        ville.trim() !== '' &&
         nomRepresentant.trim() !== '' &&
         prenomRepresentant.trim() !== '' &&
         lienRepresentant.trim() !== '' &&
@@ -204,8 +198,6 @@ export default function AddClientModal({ isOpen, onClose, client: initialClient 
       if (!isDateValid) errors.push('Date invalide');
       if (isMineur) {
         if (!adresse.trim()) errors.push('Adresse requise');
-        if (!codePostal.trim()) errors.push('Code postal requis');
-        if (!ville.trim()) errors.push('Ville requise');
         if (!nomRepresentant.trim()) errors.push('Nom du représentant légal requis');
         if (!prenomRepresentant.trim()) errors.push('Prénom du représentant légal requis');
         if (!lienRepresentant.trim()) errors.push('Lien avec le mineur requis');
@@ -547,60 +539,6 @@ export default function AddClientModal({ isOpen, onClose, client: initialClient 
           </div>
 
           {/* COORDONNÉES ET IDENTITÉ — obligatoires pour les mineurs */}
-          {isMineur && (
-            <div>
-              <p className="text-xs mb-3 uppercase tracking-wide" style={{ color: 'var(--brand-cyan)', fontWeight: 600 }}>
-                Coordonnées et pièce d’identité *
-              </p>
-              <div className="space-y-3">
-                <div>
-                  <label style={labelStyle}>Adresse complète *</label>
-                  <input
-                    type="text"
-                    style={getStyle('adresse')}
-                    value={adresse}
-                    onChange={e => setAdresse(e.target.value)}
-                    onBlur={() => touch('adresse')}
-                    placeholder="Numéro, rue, bâtiment..."
-                    autoComplete="street-address"
-                    required
-                  />
-                  {errAdresse && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errAdresse}</p>}
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div>
-                    <label style={labelStyle}>Code postal *</label>
-                    <input
-                      type="text"
-                      style={getStyle('codePostal')}
-                      value={codePostal}
-                      onChange={e => setCodePostal(e.target.value)}
-                      onBlur={() => touch('codePostal')}
-                      placeholder="75000"
-                      inputMode="numeric"
-                      autoComplete="postal-code"
-                      required
-                    />
-                    {errCodePostal && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errCodePostal}</p>}
-                  </div>
-                  <div>
-                    <label style={labelStyle}>Ville *</label>
-                    <input
-                      type="text"
-                      style={getStyle('ville')}
-                      value={ville}
-                      onChange={e => setVille(e.target.value)}
-                      onBlur={() => touch('ville')}
-                      placeholder="Ville"
-                      autoComplete="address-level2"
-                      required
-                    />
-                    {errVille && <p className="flex items-center gap-1 mt-1 text-xs" style={{ color: '#F44336' }}><AlertCircle size={11} /> {errVille}</p>}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* REPRÉSENTANT LÉGAL */}
           {isMineur && (

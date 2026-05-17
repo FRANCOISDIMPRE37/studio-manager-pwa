@@ -130,21 +130,21 @@ function DateSlashField({ label, value, onChange, required }: { label: string; v
         <input
           type="text" maxLength={2} placeholder="JJ" value={dd}
           onChange={e => { const v = e.target.value.replace(/\D/g,''); update(v, mm, yyyy); if(v.length===2) refMM.current?.focus(); }}
-          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#000000', fontSize: 14, textAlign: 'center' }}
         />
         <span style={{ color: '#9ca3af' }}>/</span>
         <input
           ref={refMM} type="text" maxLength={2} placeholder="MM" value={mm}
           onChange={e => { const v = e.target.value.replace(/\D/g,''); update(dd, v, yyyy); if(v.length===2) refYYYY.current?.focus(); }}
           onKeyDown={e => { if(e.key==='Backspace' && mm==='' && dd!=='') update('', '', yyyy); }}
-          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+          style={{ width: 28, background: 'transparent', border: 'none', outline: 'none', color: '#000000', fontSize: 14, textAlign: 'center' }}
         />
         <span style={{ color: '#9ca3af' }}>/</span>
         <input
           ref={refYYYY} type="text" maxLength={4} placeholder="AAAA" value={yyyy}
           onChange={e => { const v = e.target.value.replace(/\D/g,''); update(dd, mm, v); }}
           onKeyDown={e => { if(e.key==='Backspace' && yyyy==='' && mm!=='') refMM.current?.focus(); }}
-          style={{ width: 44, background: 'transparent', border: 'none', outline: 'none', color: '#fff', fontSize: 14, textAlign: 'center' }}
+          style={{ width: 44, background: 'transparent', border: 'none', outline: 'none', color: '#000000', fontSize: 14, textAlign: 'center' }}
         />
       </div>
     </div>
