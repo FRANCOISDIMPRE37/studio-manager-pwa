@@ -420,8 +420,6 @@ export default function Parametres() {
 
 
 
-      {/* Salariés */}
-      <SalarieSection />
 
       {/* Logout */}
       <button
