@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
-import { Client, SalonInfo, DashboardStats, RGPDStatus, RendezVous, Prestation, ClientDocument, DocumentType, calculateRGPDStatus } from './types';
+import { Client, SalonInfo, DashboardStats, RGPDStatus, RendezVous, Prestation, ClientDocument, calculateRGPDStatus } from './types';
 import { nanoid } from 'nanoid';
 import { trpc } from './trpc';
 import { useEmployeSession } from '@/contexts/EmployeSessionContext';
@@ -13,10 +13,6 @@ interface AppState {
   isDemo: boolean;
   isSyncing: boolean;
 }
-
-const CLIENT_DOCUMENT_EXCLUDED_TYPES: DocumentType[] = ['engagement_confidentialite'];
-const isClientDocumentType = (type: ClientDocument['type'] | DocumentType | string): type is DocumentType =>
-  !CLIENT_DOCUMENT_EXCLUDED_TYPES.includes(type as DocumentType);
 
 type AppAction =
   | { type: 'SET_CLIENTS'; payload: Client[] }
@@ -70,8 +66,11 @@ function generateDocumentsForClient(estMineur: boolean, prestationsSouhaitees: s
     }
   }
   
-  // Retirer les doublons et exclure les documents réservés aux salariés.
-  return [...new Set(docs)].filter(isClientDocumentType);
+  // Ajouter les documents généraux
+  docs.push('engagement_confidentialite');
+  
+  // Retirer les doublons
+  return [...new Set(docs)];
 }
 
 function appReducer(state: AppState, action: AppAction): AppState {
@@ -368,8 +367,8 @@ function AppProviderInner({ children, dispatch, state }: {
         return {
           ...dbC,
           prestations: dbPrestList,
-          documentsAssocies: dbDocList.map(d => d.type).filter(isClientDocumentType) as Client['documentsAssocies'],
-          documents: dbDocList.filter(d => isClientDocumentType(d.type)),
+          documentsAssocies: dbDocList.map(d => d.type) as Client['documentsAssocies'],
+          documents: dbDocList,
           photos: [],
         };
       });

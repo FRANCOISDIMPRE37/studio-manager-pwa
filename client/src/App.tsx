@@ -90,7 +90,6 @@ function AppRoutes() {
   if (path === '/connexion') return <ConnexionEmail />;
   
   if (path === '/super-admin') {
-    // Autoriser l'accès au Super-Admin sur studio.intemporelle.eu également
     if (hostname !== 'app.intemporelle.eu' && hostname !== 'studio.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
       window.location.href = '/';
       return null;
@@ -137,7 +136,6 @@ function AppRoutes() {
           <Route path="/clients/:id" component={ClientDetail} />
           <Route path="/clients/:clientId/document/:docType" component={DocumentForm} />
           <Route path="/document/:docType" component={DocumentForm} />
-          <Route path="/documents/:docType" component={DocumentForm} />
           <Route path="/documents" component={Documents} />
           <Route path="/parametres" component={Parametres} />
           <Route path="/salaries" component={Salaries} />
