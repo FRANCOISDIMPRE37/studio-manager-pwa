@@ -19,7 +19,6 @@ export default function ArchivesNumerisees() {
   const [nom, setNom] = useState('');
   const [prenom, setPrenom] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
-  const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [dateVisite, setDateVisite] = useState(new Date().toLocaleDateString('fr-FR'));
   const photoRef = useRef<HTMLInputElement>(null);
 
@@ -33,17 +32,9 @@ export default function ArchivesNumerisees() {
 
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    if (!files.length) return;
-    setLoadingPhotos(true);
-    let loaded = 0;
     files.forEach(file => {
       const reader = new FileReader();
-      reader.onload = ev => {
-        const result = ev.target?.result as string;
-        if (result) setPhotos(p => [...p, result]);
-        loaded++;
-        if (loaded === files.length) setLoadingPhotos(false);
-      };
+      reader.onload = ev => setPhotos(p => [...p, ev.target?.result as string]);
       reader.readAsDataURL(file);
     });
     e.target.value = '';
@@ -60,7 +51,7 @@ export default function ArchivesNumerisees() {
         praticien: '',
         periode: '',
         notes: '',
-        photos: photos.map(p => p.substring(0, 500000)),
+        photos,
       });
       setShowForm(false);
       setNom('');
@@ -68,7 +59,7 @@ export default function ArchivesNumerisees() {
       setPhotos([]);
       setDateVisite(new Date().toISOString().split('T')[0]);
     } catch (e: any) {
-      alert('Erreur sauvegarde: ' + (e?.message || 'inconnue') + ' | taille photos: ' + photos.map(p => Math.round(p.length/1024) + 'kb').join(', '));
+      alert('Erreur sauvegarde: ' + (e?.message || 'inconnue'));
     }
   };
 
@@ -128,8 +119,8 @@ export default function ArchivesNumerisees() {
                   </div>
                 )}
               </div>
-              <button onClick={handleSave} disabled={!nom.trim() || !prenom.trim() || loadingPhotos} className="w-full py-3 rounded-xl text-sm font-700 mt-2" style={{ background: (!nom.trim() || !prenom.trim()) ? '#333' : '#10b981', color: '#fff', fontWeight: 700 }}>
-                {loadingPhotos ? '⏳ Chargement photo...' : '✓ Sauvegarder'}
+              <button onClick={handleSave} disabled={!nom.trim() || !prenom.trim()} className="w-full py-3 rounded-xl text-sm font-700 mt-2" style={{ background: (!nom.trim() || !prenom.trim()) ? '#333' : '#10b981', color: '#fff', fontWeight: 700 }}>
+                ✓ Sauvegarder
               </button>
             </div>
           </div>

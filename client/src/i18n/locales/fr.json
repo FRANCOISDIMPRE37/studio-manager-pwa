@@ -1137,5 +1137,6 @@
     "section_signatures": "7 — SIGNATURES"
   },
   "nav.salaries": "Salaries",
-  "nav.engagements": "Engagements RGPD"
+  "nav.engagements": "Engagements RGPD",
+  "nav.engagement_confidentialite": "Engagement Confidentialité"
 }

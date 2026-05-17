@@ -1239,7 +1239,7 @@ export const appRouter = router({
     create: protectedProcedure.input(z.object({
       nom: z.string().default(''),
       prenom: z.string().default(''),
-      dateNumerisation: z.string(),
+      dateNumerisation: z.string().default(""),
       typeDocument: z.string().default(''),
       praticien: z.string().default(''),
       periode: z.string().default(''),

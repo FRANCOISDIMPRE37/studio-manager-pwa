@@ -52,6 +52,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       sectionKey: 'nav.section_admin',
       items: [
         { path: '/rgpd-salarie', icon: Shield, labelKey: 'nav.engagement_confidentialite' },
+        { path: '/engagements', icon: FileText, labelKey: 'nav.engagements' },
         { path: '/parametres', icon: Settings, labelKey: 'nav.settings' },
 
       ],
