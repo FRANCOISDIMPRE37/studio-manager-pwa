@@ -33,9 +33,21 @@ export default function ArchivesNumerisees() {
   const handlePhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     files.forEach(file => {
-      const reader = new FileReader();
-      reader.onload = ev => setPhotos(p => [...p, ev.target?.result as string]);
-      reader.readAsDataURL(file);
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxW = 1200;
+        const scale = Math.min(1, maxW / img.width);
+        canvas.width = img.width * scale;
+        canvas.height = img.height * scale;
+        const ctx = canvas.getContext('2d')!;
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        const compressed = canvas.toDataURL('image/jpeg', 0.7);
+        setPhotos(p => [...p, compressed]);
+        URL.revokeObjectURL(url);
+      };
+      img.src = url;
     });
     e.target.value = '';
   };
