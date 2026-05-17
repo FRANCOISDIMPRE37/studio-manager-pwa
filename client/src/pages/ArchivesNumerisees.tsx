@@ -1,13 +1,13 @@
 import { useState, useRef } from 'react';
 import { Search, ArrowLeft, Trash2, Eye, X, Plus, Camera } from 'lucide-react';
 import { useLocation } from 'wouter';
+import { trpc } from '@/lib/trpc';
 
 interface ArchiveDossier {
-  id: string;
+  id: number;
   nom: string;
   prenom: string;
-  date: string;
-  expiration?: string;
+  dateNumerisation: string;
   photos: string[];
 }
 
@@ -22,15 +22,11 @@ export default function ArchivesNumerisees() {
   const [dateVisite, setDateVisite] = useState(new Date().toISOString().split('T')[0]);
   const photoRef = useRef<HTMLInputElement>(null);
 
-  // Archives stockées en mémoire (session uniquement) — migration vers BDD OVH prévue
-  // Aucun localStorage utilisé
-  const [archives, setArchives] = useState<ArchiveDossier[]>([]);
+  const { data: archives = [], refetch } = trpc.archives.list.useQuery();
+  const createMutation = trpc.archives.create.useMutation({ onSuccess: () => refetch() });
+  const deleteMutation = trpc.archives.delete.useMutation({ onSuccess: () => { refetch(); setSelected(null); } });
 
-  const saveArchives = (data: ArchiveDossier[]) => {
-    setArchives(data);
-  };
-
-  const filtered = archives.filter(a =>
+  const filtered = (archives as ArchiveDossier[]).filter(a =>
     (a.nom + ' ' + a.prenom).toLowerCase().includes(search.toLowerCase())
   );
 
@@ -44,25 +40,27 @@ export default function ArchivesNumerisees() {
     e.target.value = '';
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!nom.trim() || !prenom.trim()) return;
-    const newDossier: ArchiveDossier = {
-      id: Date.now().toString(),
+    await createMutation.mutateAsync({
       nom: nom.trim(),
       prenom: prenom.trim(),
-      date: new Date(dateVisite).toLocaleDateString('fr-FR'),
-      expiration: new Date(new Date(dateVisite).setFullYear(new Date(dateVisite).getFullYear() + 3)).toLocaleDateString('fr-FR'),
+      dateNumerisation: dateVisite,
+      typeDocument: '',
+      praticien: '',
+      periode: '',
+      notes: '',
       photos,
-    };
-    saveArchives([newDossier, ...archives]);
+    });
     setShowForm(false);
     setNom('');
     setPrenom('');
     setPhotos([]);
+    setDateVisite(new Date().toISOString().split('T')[0]);
   };
 
-  const handleDelete = (id: string) => {
-    saveArchives(archives.filter(a => a.id !== id));
+  const handleDelete = async (id: number) => {
+    await deleteMutation.mutateAsync({ id });
   };
 
   return (
@@ -139,19 +137,13 @@ export default function ArchivesNumerisees() {
           </div>
         ) : (
           <div className="space-y-3">
-            {filtered.map(a => (
+            {filtered.map((a: any) => (
               <div key={a.id} className="rounded-xl p-4" style={{ background: 'var(--brand-card)', border: '1px solid var(--brand-border)' }}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex-1">
                     <p className="font-700 text-sm" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>{a.nom} {a.prenom}</p>
-                    <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {a.date}</p>
-                    {a.expiration && (() => {
-                      const parts = a.expiration.split('/');
-                      const exp = new Date(+parts[2], +parts[1]-1, +parts[0]);
-                      const expired = exp < new Date();
-                      return <p className="text-xs mt-1" style={{ color: expired ? '#ef4444' : '#10b981' }}>{expired ? '🔴 Expiré' : '🟢 Expire'} le {a.expiration}</p>;
-                    })()}
-                    {a.photos.length > 0 && <p className="text-xs mt-1" style={{ color: '#607D8B' }}>📷 {a.photos.length} photo(s)</p>}
+                    <p className="text-xs mt-1" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {new Date(a.dateNumerisation).toLocaleDateString('fr-FR')}</p>
+                    {a.photos?.length > 0 && <p className="text-xs mt-1" style={{ color: '#607D8B' }}>📷 {a.photos.length} photo(s)</p>}
                   </div>
                   <div className="flex gap-2">
                     <button onClick={() => setSelected(a)} className="p-2 rounded-lg" style={{ background: 'rgba(96,125,139,0.2)' }}><Eye size={14} style={{ color: '#607D8B' }} /></button>
@@ -171,8 +163,8 @@ export default function ArchivesNumerisees() {
               <h2 className="font-700 text-base" style={{ color: 'var(--brand-text)', fontWeight: 700 }}>{selected.nom} {selected.prenom}</h2>
               <button onClick={() => setSelected(null)}><X size={20} style={{ color: 'var(--brand-text-muted)' }} /></button>
             </div>
-            <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {selected.date}</p>
-            {selected.photos.length > 0 && (
+            <p className="text-xs mb-4" style={{ color: 'var(--brand-text-muted)' }}>Numérisé le {new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>
+            {selected.photos?.length > 0 && (
               <div className="grid grid-cols-2 gap-2">
                 {selected.photos.map((p, i) => (
                   <img key={i} src={p} alt={`photo ${i+1}`} className="w-full rounded-lg object-cover" style={{ maxHeight: 200 }} />
