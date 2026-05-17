@@ -760,10 +760,14 @@ export async function createArchiveNumerisee(userId: number, data: any) {
 }
 
 export async function deleteArchiveNumerisee(userId: number, id: number) {
-  const db = await getDb();
-  if (!db) throw new Error('DB');
-  await db.execute('DELETE FROM archives_numerisees WHERE id = ? AND user_id = ?', [id, userId]);
-  return { success: true };
+  const mysql = await import('mysql2/promise');
+  const conn = await mysql.createConnection(process.env.DATABASE_URL!);
+  try {
+    await conn.execute('DELETE FROM archives_numerisees WHERE id = ? AND user_id = ?', [id, userId]);
+    return { success: true };
+  } finally {
+    await conn.end();
+  }
 }
 
 // ─── Engagements RGPD ───────────────────────────────────────────────────────
