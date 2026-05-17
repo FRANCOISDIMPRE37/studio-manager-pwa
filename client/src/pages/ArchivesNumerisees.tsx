@@ -20,7 +20,6 @@ export default function ArchivesNumerisees() {
   const [prenom, setPrenom] = useState('');
   const [photos, setPhotos] = useState<string[]>([]);
   const [loadingPhotos, setLoadingPhotos] = useState(false);
-  const [loadingPhotos, setLoadingPhotos] = useState(false);
   const [dateVisite, setDateVisite] = useState(new Date().toLocaleDateString('fr-FR'));
   const photoRef = useRef<HTMLInputElement>(null);
 

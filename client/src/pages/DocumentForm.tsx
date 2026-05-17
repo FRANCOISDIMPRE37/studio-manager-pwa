@@ -515,7 +515,7 @@ export default function DocumentForm() {
       
       const docData = {
         id: existingDoc ? existingDoc.id : `doc-${client.id.substring(0, 8)}-${Date.now()}`,
-        dateSigned: isSigned ? dateShort : (existingDoc ? (existingDoc.dateSigned ?? undefined) : undefined),
+        clientId: client.id,
         type: docType,
         status: isSigned ? 'signed' as const : 'filled' as const,
         data: formData,
