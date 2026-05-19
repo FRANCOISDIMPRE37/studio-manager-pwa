@@ -535,8 +535,10 @@ router.get('/api/super-admin/studios/:id/open', superAdminAuth, async (req, res)
       maxAge: 8 * 60 * 60 * 1000,
       domain: '.intemporelle.eu',
     } );
-    const referer = req.headers.referer || req.headers.origin || 'https://studio.intemporelle.eu';
-    const baseUrl = referer.includes('app.intemporelle.eu') ? 'https://app.intemporelle.eu' : 'https://studio.intemporelle.eu';
+    const host = req.headers.host || '';
+    const referer = req.headers.referer || req.headers.origin || '';
+    const isApp = host.includes('app.intemporelle.eu') || referer.includes('app.intemporelle.eu');
+    const baseUrl = isApp ? 'https://app.intemporelle.eu' : 'https://studio.intemporelle.eu';
     return res.redirect(baseUrl + '/');
   } catch (e: any) {
     return res.status(500).json({ error: e.message });
