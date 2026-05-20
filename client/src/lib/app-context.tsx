@@ -537,7 +537,12 @@ function AppProviderInner({ children, dispatch, state }: {
         }
       }
     }
-  }, [state.isDemo, createClientMutation, createDocumentMutation]);
+    if (!state.isDemo) {
+      await utils.clients.list.invalidate();
+      await syncFromCloud();
+      window.location.reload();
+    }
+  }, [state.isDemo, createClientMutation, createDocumentMutation, syncFromCloud, utils]);
 
   const updateClient = useCallback(async (client: Client) => {
     dispatch({ type: 'UPDATE_CLIENT', payload: client });
