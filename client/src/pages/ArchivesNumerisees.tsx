@@ -169,9 +169,9 @@ export default function ArchivesNumerisees() {
               <button onClick={() => {
                 const win = window.open('', '_blank');
                 if (!win) return;
-                win.document.write(`<html><head><title>${selected.nom} ${selected.prenom}</title><style>body{font-family:sans-serif;padding:20px} img{max-width:100%;margin:8px 0;border-radius:8px} h1{font-size:18px} p{color:#555;font-size:14px}</style></head><body><h1>${selected.nom} ${selected.prenom}</h1><p>Numérisé le ${new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>${(selected.photos||[]).map((p: string) => `<img src="${p}" />`).join('')}</body></html>`);
+                const imgs = (selected.photos||[]).map((p: string) => `<img src="${p}" onload="window.__loaded=(window.__loaded||0)+1" style="max-width:100%;margin:8px 0;border-radius:8px;display:block" />`).join('');
+                win.document.write(`<html><head><title>${selected.nom} ${selected.prenom}</title><style>body{font-family:sans-serif;padding:20px} h1{font-size:18px} p{color:#555;font-size:14px} @media print{img{max-width:100%}}</style></head><body><h1>${selected.nom} ${selected.prenom}</h1><p>Numérisé le ${new Date(selected.dateNumerisation).toLocaleDateString('fr-FR')}</p>${imgs}<script>window.__loaded=0;var total=${(selected.photos||[]).length};function tryPrint(){if(window.__loaded>=total||total===0){window.print();}else{setTimeout(tryPrint,200);}}tryPrint();<\/script></body></html>`);
                 win.document.close();
-                win.print();
               }} className="p-2 rounded-lg" style={{ background: 'rgba(131,208,245,0.1)' }}>
                 <Printer size={18} style={{ color: 'var(--brand-cyan)' }} />
               </button>
