@@ -430,7 +430,7 @@ export const archivesNumerisees = mysqlTable("archives_numerisees", {
   typeDocument: text("type_document"),
   praticien: text("praticien"),
   periode: text("periode"),
-  notes: text("notes"),
-  photos: text("photos"),
+  notes: longtext("notes"),
+  photos: longtext("photos"),
   createdAt: datetime("created_at"),
 });
