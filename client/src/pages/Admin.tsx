@@ -285,8 +285,8 @@ export default function Admin() {
                           <div style={{ color: "white", fontWeight: 500 }}>{s.salonNom || s.name || "—"}</div>
                           <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{s.loginMethod === "email" ? "📧 Email" : "🔢 PIN"}</div>
                           {s.loginMethod === "email" && s.email && (
-                            <a href={`https://studio.intemporelle.eu`} target="_blank" style={{ color: "#34d399", fontSize: 10 }}>
-                              studio.intemporelle.eu
+                            <a href={`https://studio.studiomanagereurope.eu`} target="_blank" style={{ color: "#34d399", fontSize: 10 }}>
+                              studio.studiomanagereurope.eu
                             </a>
                           )}
                         </td>
@@ -309,8 +309,8 @@ export default function Admin() {
                           <div style={{ display: "flex", gap: 6 }}>
                             <button
                               onClick={() => {
-                                const url = s.salonNom ? `https://${s.email?.split('@')[0]}.intemporelle.eu` : 'https://studio.intemporelle.eu';
-                                window.open('https://studio.intemporelle.eu', '_blank');
+                                const url = s.salonNom ? `https://${s.email?.split('@')[0]}.studiomanagereurope.eu` : 'https://studio.studiomanagereurope.eu';
+                                window.open('https://studio.studiomanagereurope.eu', '_blank');
                               }}
                               style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, border: "1px solid #10b981", background: "transparent", color: "#34d399", cursor: "pointer" }}
                             >
@@ -758,7 +758,7 @@ export default function Admin() {
                         <td style={{ padding: "10px 12px", fontWeight: 600 }}>{s.name}</td>
                         <td style={{ padding: "10px 12px", color: "rgba(255,255,255,0.6)" }}>{s.city ?? "-"}</td>
                         <td style={{ padding: "10px 12px", color: "#818cf8" }}>{s.email ?? "-"}</td>
-                        <td style={{ padding: "10px 12px" }}><a href={"https://" + (s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".intemporelle.eu"} target="_blank" style={{ color: "#22c55e", textDecoration: "none" }}>{(s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".intemporelle.eu"}</a></td>
+                        <td style={{ padding: "10px 12px" }}><a href={"https://" + (s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".studiomanagereurope.eu"} target="_blank" style={{ color: "#22c55e", textDecoration: "none" }}>{(s.slug ?? s.name?.toLowerCase()?.replace(/ /g,"")) + ".studiomanagereurope.eu"}</a></td>
                         <td style={{ padding: "10px 12px" }}><span style={{ background: "rgba(99,102,241,0.15)", border: "1px solid rgba(99,102,241,0.3)", borderRadius: 6, padding: "3px 10px", fontFamily: "monospace", fontSize: 12 }}>{s.licenseNotes ?? "—"}</span></td>
                       </tr>
                     ))}
@@ -825,7 +825,7 @@ export default function Admin() {
                             onChange={e => setNewSalon(s => ({ ...s, nomSalon: e.target.value, slug: s.slug || e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))} />
                         </div>
                         <div>
-                          <Label style={labelStyle}>Sous-domaine (slug) * — sera : slug.intemporelle.eu</Label>
+                          <Label style={labelStyle}>Sous-domaine (slug) * — sera : slug.studiomanagereurope.eu</Label>
                           <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
                             <Input style={{ ...inputStyle, marginTop: 0, flex: 1 }} placeholder="ex: salon-paris" value={newSalon.slug}
                               onChange={e => setNewSalon(s => ({ ...s, slug: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))} />
@@ -833,7 +833,7 @@ export default function Admin() {
                               {newSalon.slug.length >= 2 ? (checkSlug.isLoading ? '⏳' : checkSlug.data?.available ? '✅ Disponible' : '❌ Pris') : ''}
                             </span>
                           </div>
-                          {newSalon.slug && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>→ https://{newSalon.slug}.intemporelle.eu</div>}
+                          {newSalon.slug && <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>→ https://{newSalon.slug}.studiomanagereurope.eu</div>}
                         </div>
                         <div>
                           <Label style={labelStyle}>Email du gérant *</Label>
@@ -911,7 +911,7 @@ export default function Admin() {
                           <div>
                             <h3 style={{ margin: 0, color: "white", fontSize: 16 }}>Résumé du provisionnement</h3>
                             <p style={{ margin: "4px 0 0", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>
-                              {newSalon.slug ? `https://${newSalon.slug}.intemporelle.eu` : "Renseignez le slug"}
+                              {newSalon.slug ? `https://${newSalon.slug}.studiomanagereurope.eu` : "Renseignez le slug"}
                               {" → "}
                               {newSalon.planType} · {newSalon.maxClients} clients max
                             </p>

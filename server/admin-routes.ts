@@ -533,13 +533,11 @@ router.get('/api/super-admin/studios/:id/open', superAdminAuth, async (req, res)
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
       maxAge: 8 * 60 * 60 * 1000,
-      domain: '.intemporelle.eu',
+      domain: 'studio.studiomanagereurope.eu',
     } );
     const host = req.headers.host || '';
     const referer = req.headers.referer || req.headers.origin || '';
-    const isApp = host.includes('app.intemporelle.eu') || referer.includes('app.intemporelle.eu');
-    const baseUrl = 'https://app.intemporelle.eu';
-    return res.redirect(baseUrl + '/');
+    return res.redirect('https://studio.studiomanagereurope.eu/');
   } catch (e: any) {
     return res.status(500).json({ error: e.message });
   }

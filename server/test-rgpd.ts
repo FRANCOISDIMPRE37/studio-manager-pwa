@@ -38,7 +38,7 @@ async function test() {
   const clientNomComplet = `${client.prenom || ''} ${client.nom || ''}`.trim().toUpperCase();
   const dateSuppression = new Date(client.dateSuppressionPrevue).toLocaleDateString('fr-FR');
   const studioNom = client.studioNom || "Studio Intemporelle";
-  const studioEmail = client.studioEmail || "contact@intemporelle.eu";
+  const studioEmail = client.studioEmail || "contact@studiomanagereurope.eu";
   const studioTel = client.studioTel || "0617074169";
   const studioAdresse = `${client.studioAdresse || '3 rue de tours'}, ${client.studioCP || '37000'} ${client.studioVille || 'TOURS'}`;
 

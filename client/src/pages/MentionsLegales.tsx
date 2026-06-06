@@ -11,8 +11,8 @@ export default function MentionsLegales() {
         <h2 className="text-xl font-semibold mb-4" style={{ color: 'var(--brand-cyan)' }}>Mentions Légales</h2>
         <div className="p-5 rounded-lg space-y-2" style={{ background: 'var(--brand-surface)' }}>
           <p><strong>Éditeur :</strong> Intemporelle — François Dimpre</p>
-          <p><strong>Site :</strong> studio.intemporelle.eu</p>
-          <p><strong>Contact :</strong> <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a></p>
+          <p><strong>Site :</strong> studio.studiomanagereurope.eu</p>
+          <p><strong>Contact :</strong> <a href="mailto:privacy@studiomanagereurope.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@studiomanagereurope.eu</a></p>
           <p><strong>Hébergeur :</strong> OVHcloud — Gravelines (France)</p>
           <p><strong>Nom de domaine :</strong> IONOS SARL — 7 place de la Gare, BP 70109, 57201 Sarreguemines Cedex</p>
         </div>
@@ -39,7 +39,7 @@ export default function MentionsLegales() {
                 "Recueillir le consentement explicite de chaque client avant tout traitement de données de santé",
                 "Ne collecter que les données strictement nécessaires (principe de minimisation, art. 5-1c RGPD)",
                 "Respecter les durées de conservation définies dans la politique de confidentialité",
-                "Signaler immédiatement toute violation de données à privacy@intemporelle.eu",
+                "Signaler immédiatement toute violation de données à privacy@studiomanagereurope.eu",
                 "Ne pas utiliser la plateforme à des fins illicites",
               ].map((item, i) => (
                 <li key={i} className="flex gap-2 text-xs p-2 rounded" style={{ background: 'rgba(255,255,255,0.03)', color: 'var(--brand-text-muted)', listStyle: 'none' }}>
@@ -115,7 +115,7 @@ export default function MentionsLegales() {
       </section>
 
       <div className="mt-10 pt-6 text-xs text-center" style={{ borderTop: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
+        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@studiomanagereurope.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@studiomanagereurope.eu</a>
       </div>
     </div>
   );

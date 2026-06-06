@@ -238,7 +238,7 @@
     "consent_text": "Accetto che i miei dati personali vengano trattati in conformità con il GDPR",
     "data_retention": "Conservazione dei dati: 3 anni",
     "rights": "Hai il diritto di accesso, rettifica e cancellazione dei tuoi dati",
-    "contact_dpo": "Contatto DPO: rgpd@intemporelle.eu",
+    "contact_dpo": "Contatto DPO: rgpd@studiomanagereurope.eu",
     "employee_title": "Accordo di Riservatezza",
     "employee_subtitle": "Documento da firmare da ogni membro del personale",
     "client_info_title": "Informazioni Cliente GDPR",
@@ -706,8 +706,8 @@
     "age": "Età"
   },
   "legal": {
-    "rgpd_minor": "Conservazione: minimo 3 anni dalla maggiore età del minore. Copia conservata dallo studio. I TUOI DIRITTI RGPD: Art. 15 — Diritto di accesso · Art. 16 — Diritto di rettifica · Art. 17 — Diritto alla cancellazione · Art. 21 — Diritto di opposizione. Contatto: francois-dimpre@intemporelle.eu",
-    "rgpd_adult": "Conservazione: minimo 3 anni dall'ultima prestazione. Copia conservata dallo studio. I TUOI DIRITTI RGPD: Art. 15 — Diritto di accesso · Art. 16 — Diritto di rettifica · Art. 17 — Diritto alla cancellazione · Art. 21 — Diritto di opposizione. Contatto: francois-dimpre@intemporelle.eu",
+    "rgpd_minor": "Conservazione: minimo 3 anni dalla maggiore età del minore. Copia conservata dallo studio. I TUOI DIRITTI RGPD: Art. 15 — Diritto di accesso · Art. 16 — Diritto di rettifica · Art. 17 — Diritto alla cancellazione · Art. 21 — Diritto di opposizione. Contatto: francois-dimpre@studiomanagereurope.eu",
+    "rgpd_adult": "Conservazione: minimo 3 anni dall'ultima prestazione. Copia conservata dallo studio. I TUOI DIRITTI RGPD: Art. 15 — Diritto di accesso · Art. 16 — Diritto di rettifica · Art. 17 — Diritto alla cancellazione · Art. 21 — Diritto di opposizione. Contatto: francois-dimpre@studiomanagereurope.eu",
     "minor_legal_frame": "■ Quadro legale ■ Qualsiasi servizio di piercing su un minore richiede il consenso scritto del/dei titolare/i della responsabilità genitoriale. ■ La presenza fisica di un rappresentante legale è obbligatoria per tutta la durata della sessione.",
     "ink_regulation": "▪ Regolamento UE 2020/2081 — Inchiostri per tatuaggi ▪ Gli inchiostri utilizzati sono conformi al Regolamento UE 2020/2081 in vigore dal 4 gennaio 2022. ▪ La tracciabilità degli inchiostri è conservata per 5 anni.",
     "support_line": "La scrittura elettronica ha la stessa forza probatoria della scrittura cartacea."

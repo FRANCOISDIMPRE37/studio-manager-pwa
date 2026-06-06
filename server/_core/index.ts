@@ -39,8 +39,8 @@ async function startServer() {
   const app = express();
 app.use(cors({
   origin: [
-    'https://studio.intemporelle.eu',
-    'https://app.intemporelle.eu',
+    'https://studio.studiomanagereurope.eu',
+
     'http://localhost:3000',
     'http://localhost:8080',
     'http://localhost:8081',

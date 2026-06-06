@@ -238,7 +238,7 @@
     "consent_text": "Acepto que mis datos personales sean tratados de conformidad con el RGPD",
     "data_retention": "Conservación de datos: 3 años",
     "rights": "Tiene derecho de acceso, rectificación y supresión de sus datos",
-    "contact_dpo": "Contacto DPO: rgpd@intemporelle.eu",
+    "contact_dpo": "Contacto DPO: rgpd@studiomanagereurope.eu",
     "employee_title": "Acuerdo de Confidencialidad",
     "employee_subtitle": "Documento a firmar por cada miembro del personal",
     "client_info_title": "Información Cliente RGPD",
@@ -706,8 +706,8 @@
     "age": "Edad"
   },
   "legal": {
-    "rgpd_minor": "Conservación: mínimo 3 años desde la mayoría de edad del menor. Copia conservada por el estudio. SUS DERECHOS RGPD: Art. 15 — Derecho de acceso · Art. 16 — Derecho de rectificación · Art. 17 — Derecho de supresión · Art. 21 — Derecho de oposición. Contacto: francois-dimpre@intemporelle.eu",
-    "rgpd_adult": "Conservación: mínimo 3 años desde la última prestación. Copia conservada por el estudio. SUS DERECHOS RGPD: Art. 15 — Derecho de acceso · Art. 16 — Derecho de rectificación · Art. 17 — Derecho de supresión · Art. 21 — Derecho de oposición. Contacto: francois-dimpre@intemporelle.eu",
+    "rgpd_minor": "Conservación: mínimo 3 años desde la mayoría de edad del menor. Copia conservada por el estudio. SUS DERECHOS RGPD: Art. 15 — Derecho de acceso · Art. 16 — Derecho de rectificación · Art. 17 — Derecho de supresión · Art. 21 — Derecho de oposición. Contacto: francois-dimpre@studiomanagereurope.eu",
+    "rgpd_adult": "Conservación: mínimo 3 años desde la última prestación. Copia conservada por el estudio. SUS DERECHOS RGPD: Art. 15 — Derecho de acceso · Art. 16 — Derecho de rectificación · Art. 17 — Derecho de supresión · Art. 21 — Derecho de oposición. Contacto: francois-dimpre@studiomanagereurope.eu",
     "minor_legal_frame": "■ Marco legal ■ Cualquier servicio de piercing en un menor requiere el consentimiento escrito del/los titular(es) de la patria potestad. ■ La presencia física de un representante legal es obligatoria durante toda la sesión.",
     "ink_regulation": "▪ Reglamento UE 2020/2081 — Tintas de tatuaje ▪ Las tintas utilizadas cumplen con el Reglamento UE 2020/2081 vigente desde el 4 de enero de 2022. ▪ La trazabilidad de las tintas se conserva 5 años.",
     "support_line": "El escrito electrónico tiene la misma fuerza probatoria que el escrito en papel."

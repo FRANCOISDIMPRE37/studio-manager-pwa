@@ -183,7 +183,7 @@
     "consent_text": "Ich stimme zu, dass meine personenbezogenen Daten gemäß der DSGVO verarbeitet werden",
     "data_retention": "Datenspeicherung: 3 Jahre",
     "rights": "Sie haben das Recht auf Zugang, Berichtigung und Löschung Ihrer Daten",
-    "contact_dpo": "DSB-Kontakt: rgpd@intemporelle.eu"
+    "contact_dpo": "DSB-Kontakt: rgpd@studiomanagereurope.eu"
   },
   "language": {
     "select": "Sprache",
@@ -570,8 +570,8 @@
     "age": "Alter"
   },
   "legal": {
-    "rgpd_minor": "Aufbewahrung: mindestens 3 Jahre ab Volljährigkeit des Minderjährigen. Kopie im Studio aufbewahrt. IHRE DSGVO-RECHTE: Art. 15 — Auskunftsrecht · Art. 16 — Berichtigungsrecht · Art. 17 — Löschungsrecht · Art. 21 — Widerspruchsrecht. Gesundheitsdaten: 3 Jahre. Kontakt: francois-dimpre@intemporelle.eu",
-    "rgpd_adult": "Aufbewahrung: mindestens 3 Jahre ab der letzten Leistung. Kopie im Studio aufbewahrt. IHRE DSGVO-RECHTE: Art. 15 — Auskunftsrecht · Art. 16 — Berichtigungsrecht · Art. 17 — Löschungsrecht · Art. 21 — Widerspruchsrecht. Kontakt: francois-dimpre@intemporelle.eu",
+    "rgpd_minor": "Aufbewahrung: mindestens 3 Jahre ab Volljährigkeit des Minderjährigen. Kopie im Studio aufbewahrt. IHRE DSGVO-RECHTE: Art. 15 — Auskunftsrecht · Art. 16 — Berichtigungsrecht · Art. 17 — Löschungsrecht · Art. 21 — Widerspruchsrecht. Gesundheitsdaten: 3 Jahre. Kontakt: francois-dimpre@studiomanagereurope.eu",
+    "rgpd_adult": "Aufbewahrung: mindestens 3 Jahre ab der letzten Leistung. Kopie im Studio aufbewahrt. IHRE DSGVO-RECHTE: Art. 15 — Auskunftsrecht · Art. 16 — Berichtigungsrecht · Art. 17 — Löschungsrecht · Art. 21 — Widerspruchsrecht. Kontakt: francois-dimpre@studiomanagereurope.eu",
     "minor_legal_frame": "■ Rechtsrahmen — §§ 1626 ff. BGB ■ Jede Piercing-Leistung an Minderjährigen erfordert die schriftliche Einwilligung der Sorgeberechtigten. ■ Die körperliche Anwesenheit eines gesetzlichen Vertreters ist während der gesamten Sitzung obligatorisch.",
     "ink_regulation": "▪ EU-Verordnung 2020/2081 — Tätowierfarben ▪ Die verwendeten Farben entsprechen der EU-Verordnung 2020/2081, die seit dem 4. Januar 2022 gilt. ▪ Die Rückverfolgbarkeit der Farben wird 5 Jahre aufbewahrt.",
     "support_line": "Elektronische Schrift hat dieselbe Beweiskraft wie Papierschrift (Art. 1366 des Zivilgesetzbuches)."

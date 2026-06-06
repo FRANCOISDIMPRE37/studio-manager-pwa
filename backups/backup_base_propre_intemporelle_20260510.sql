@@ -597,7 +597,7 @@ CREATE TABLE `salon_settings` (
 
 LOCK TABLES `salon_settings` WRITE;
 /*!40000 ALTER TABLE `salon_settings` DISABLE KEYS */;
-INSERT INTO `salon_settings` VALUES (25,397,'Studio Pierceur Tatoueur Dermographe',NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@intemporelle.eu',NULL,NULL,NULL,NULL,NULL,'$2b$10$5Z6Zb/E6Zt5xUUQHXkLBtOJ6NZNSceigAx0lQaQPuar4goox8blOG','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6','2026-05-10 01:19:42',NULL,NULL,NULL),(48,466,'NOUVEAU SALON PIERCEUR',NULL,'12 rue du palais','37000','TOURS','0615123654','francois@dimpre.fr','987654321',NULL,'DAVID',NULL,NULL,'$2b$10$AT7OItrgRUIe0nL8QZz4geMtvErjk/jRtlmnoS./CNosVJiziDNeK',NULL,'2026-05-10 05:47:19',NULL,NULL,NULL);
+INSERT INTO `salon_settings` VALUES (25,397,'Studio Pierceur Tatoueur Dermographe',NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@studiomanagereurope.eu',NULL,NULL,NULL,NULL,NULL,'$2b$10$5Z6Zb/E6Zt5xUUQHXkLBtOJ6NZNSceigAx0lQaQPuar4goox8blOG','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6','2026-05-10 01:19:42',NULL,NULL,NULL),(48,466,'NOUVEAU SALON PIERCEUR',NULL,'12 rue du palais','37000','TOURS','0615123654','francois@dimpre.fr','987654321',NULL,'DAVID',NULL,NULL,'$2b$10$AT7OItrgRUIe0nL8QZz4geMtvErjk/jRtlmnoS./CNosVJiziDNeK',NULL,'2026-05-10 05:47:19',NULL,NULL,NULL);
 /*!40000 ALTER TABLE `salon_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -808,7 +808,7 @@ CREATE TABLE `studios` (
 
 LOCK TABLES `studios` WRITE;
 /*!40000 ALTER TABLE `studios` DISABLE KEYS */;
-INSERT INTO `studios` VALUES (38,397,'Studio Pierceur Tatoueur Dermographe','studio-manager-pro-moqqt5nw',NULL,NULL,NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@intemporelle.eu',NULL,'studio','2027-05-04 03:12:17',1,'2026-05-04 05:12:17','2026-05-09 01:44:41','contact@intemporelle.eu',1,0,'0232','piercing,tatouage,dermographie'),(71,466,'NOUVEAU SALON PIERCEUR','nouveau-salon-pierceur-moza5jhl',NULL,'987654321',NULL,'12 rue du palais','37000','TOURS','0615123654','francois@dimpre.fr',NULL,'trial','2026-06-09 02:35:57',1,'2026-05-10 04:35:57','2026-05-10 04:47:33','francois@dimpre.fr',1,0,'1968','piercing');
+INSERT INTO `studios` VALUES (38,397,'Studio Pierceur Tatoueur Dermographe','studio-manager-pro-moqqt5nw',NULL,NULL,NULL,'1 Impasse du palais','37000','TOURS','0617074169','contact@studiomanagereurope.eu',NULL,'studio','2027-05-04 03:12:17',1,'2026-05-04 05:12:17','2026-05-09 01:44:41','contact@studiomanagereurope.eu',1,0,'0232','piercing,tatouage,dermographie'),(71,466,'NOUVEAU SALON PIERCEUR','nouveau-salon-pierceur-moza5jhl',NULL,'987654321',NULL,'12 rue du palais','37000','TOURS','0615123654','francois@dimpre.fr',NULL,'trial','2026-06-09 02:35:57',1,'2026-05-10 04:35:57','2026-05-10 04:47:33','francois@dimpre.fr',1,0,'1968','piercing');
 /*!40000 ALTER TABLE `studios` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -875,7 +875,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (397,'admin-intemporelle','STUDIO INTEMPORELLE','contact@intemporelle.eu',NULL,'admin','2026-05-07 03:34:49','2026-05-10 03:20:33','2026-05-10 01:20:34','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6'),(466,'temp-1778387757033-a9nsp26v1l','NOUVEAU SALON PIERCEUR','francois@dimpre.fr','pin','user','2026-05-10 04:35:57','2026-05-10 06:03:46','2026-05-10 04:03:47','$2b$10$nSFtxDE3uARAOFp6cDHYZurTaDrZKEC1JNzD2875XAbBn6j2vuHYC');
+INSERT INTO `users` VALUES (397,'admin-intemporelle','STUDIO INTEMPORELLE','contact@studiomanagereurope.eu',NULL,'admin','2026-05-07 03:34:49','2026-05-10 03:20:33','2026-05-10 01:20:34','$2b$10$gbY98wOI782Ie7kVfU6QQOFtn3sLAJDZA6BC0gbvSAzNX6A3r5kV6'),(466,'temp-1778387757033-a9nsp26v1l','NOUVEAU SALON PIERCEUR','francois@dimpre.fr','pin','user','2026-05-10 04:35:57','2026-05-10 06:03:46','2026-05-10 04:03:47','$2b$10$nSFtxDE3uARAOFp6cDHYZurTaDrZKEC1JNzD2875XAbBn6j2vuHYC');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;

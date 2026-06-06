@@ -19,7 +19,7 @@ set -e
 # --- Paramètres ---
 SLUG="${1}"
 NOM_SALON="${2:-Studio Manager}"
-DOMAIN_BASE="intemporelle.eu"
+DOMAIN_BASE="studiomanagereurope.eu"
 REPO_URL="https://FRANCOISDIMPRE37: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@github.com/INTEMPORELLE/studio-manager-pwa.git"
 APP_DIR="/var/www/${SLUG}"
 PORT_BASE=4000  # Le port sera 4000 + numéro d'instance
@@ -125,7 +125,7 @@ echo "✅ Nginx configuré"
 echo ""
 echo "🔒 Génération du certificat SSL..."
 if command -v certbot >/dev/null 2>&1; then
-  certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "francois-dimpre@intemporelle.eu" || echo "⚠️  SSL échoué (DNS pas encore propagé ?). Relancez : certbot --nginx -d ${DOMAIN}"
+  certbot --nginx -d "$DOMAIN" --non-interactive --agree-tos -m "francois-dimpre@studiomanagereurope.eu" || echo "⚠️  SSL échoué (DNS pas encore propagé ?). Relancez : certbot --nginx -d ${DOMAIN}"
 else
   echo "⚠️  Certbot non installé. Installez-le : sudo apt-get install -y certbot python3-certbot-nginx"
   echo "   Puis : sudo certbot --nginx -d ${DOMAIN}"

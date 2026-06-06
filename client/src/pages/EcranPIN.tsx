@@ -115,7 +115,7 @@ export default function EcranPIN(){
 
         {/* Subtitle */}
         <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>app.intemporelle.eu</div>
+          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>studio.studiomanagereurope.eu</div>
           <div style={{fontSize:13,fontWeight:800,color:GOLD,letterSpacing:'0.08em',marginTop:8,textTransform:'uppercase'}}>{salonName}</div>
           {salonCity&&<div style={{fontSize:11,fontWeight:600,color:'rgba(255,255,255,0.55)',marginTop:3}}>Salon de {salonCity}</div>}
           <div style={{fontSize:11,fontWeight:600,color:GOLD,letterSpacing:'0.18em',marginTop:8}}>{step==='pin'&&selectedIdentity?`PIN DE ${selectedIdentity.toUpperCase()}`:'TABLETTE DU SALON'}</div>

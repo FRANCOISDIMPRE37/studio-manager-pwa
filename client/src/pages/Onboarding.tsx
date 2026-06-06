@@ -119,7 +119,7 @@ export default function Onboarding() {
             className="text-2xl font-800 text-white text-center"
             style={{ fontFamily: 'Outfit', fontWeight: 800 }}
           >
-            studio.intemporelle.eu
+            studio.studiomanagereurope.eu
           </h1>
           <p className="text-xs mt-1" style={{ color: 'var(--brand-cyan)' }}>
             Première utilisation — Engagements professionnels

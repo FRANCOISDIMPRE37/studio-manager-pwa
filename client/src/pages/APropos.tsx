@@ -128,8 +128,8 @@ export default function APropos() {
         {/* Email + site */}
         <div className="space-y-2">
           {[
-            { icon: Mail, label: 'contact@intemporelle.eu', href: 'mailto:contact@intemporelle.eu', sub: 'Support & questions' },
-            { icon: Globe, label: 'www.intemporelle.eu', href: 'https://www.intemporelle.eu', sub: 'Site officiel' },
+            { icon: Mail, label: 'contact@studiomanagereurope.eu', href: 'mailto:contact@studiomanagereurope.eu', sub: 'Support & questions' },
+            { icon: Globe, label: 'www.studiomanagereurope.eu', href: 'https://www.studiomanagereurope.eu', sub: 'Site officiel' },
           ].map(({ icon: Icon, label, href, sub }) => (
             <a
               key={href}

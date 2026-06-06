@@ -157,9 +157,7 @@ export default function Login() {
     cursor: 'pointer', border: 'none', transition: 'all 0.2s',
   };
 
-  const displayDomain = typeof window !== 'undefined' && window.location.hostname
-    ? window.location.hostname
-    : 'studio.intemporelle.eu';
+  const displayDomain = 'studio.studiomanagereurope.eu';
 
   return (
     <div

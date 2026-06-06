@@ -66,7 +66,7 @@ async function checkAndSendRgpdRappels() {
     port: parseInt(process.env.SMTP_PORT || "465"),
     secure: true, // SSL/TLS
     auth: {
-      user: process.env.SMTP_USER || "piercing-tatouage-dermographie@intemporelle.eu",
+      user: process.env.SMTP_USER || "piercing-tatouage-dermographie@studiomanagereurope.eu",
       pass: process.env.SMTP_PASS || "M@tdepasseionos37",
     },
     tls: { rejectUnauthorized: false },
@@ -94,14 +94,14 @@ async function checkAndSendRgpdRappels() {
       
       // Infos du studio par défaut si non renseignées
       const studioNom = client.studioNom || "Studio Intemporelle";
-      const studioEmail = client.studioEmail || "contact@intemporelle.eu";
+      const studioEmail = client.studioEmail || "contact@studiomanagereurope.eu";
       const studioTel = client.studioTel || "0617074169";
       const studioAdresse = `${client.studioAdresse || '3 rue de tours'}, ${client.studioCP || '37000'} ${client.studioVille || 'TOURS'}`;
 
       console.log(`[RGPD] Tentative d'envoi mail à ${client.email}...`);
 
       await transporter.sendMail({
-        from: `"${studioNom}" <${process.env.SMTP_USER || 'piercing-tatouage-dermographie@intemporelle.eu'}>`,
+        from: `"${studioNom}" <${process.env.SMTP_USER || 'piercing-tatouage-dermographie@studiomanagereurope.eu'}>`,
         to: client.email,
         subject: `⚠️ Suppression de vos données personnelles — Dans 30 jours`,
         text: `Bonjour ${clientNomComplet},

@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 
 describe("IONOS DNS API", () => {
-  it("should authenticate and list the intemporelle.eu zone", async () => {
+  it("should authenticate and list the studiomanagereurope.eu zone", async () => {
     const apiKey = process.env.IONOS_API_KEY;
     const zoneId = process.env.IONOS_ZONE_ID;
 
@@ -14,7 +14,7 @@ describe("IONOS DNS API", () => {
 
     expect(res.ok).toBe(true);
     const data = await res.json() as { name: string; records: unknown[] };
-    expect(data.name).toBe("intemporelle.eu");
+    expect(data.name).toBe("studiomanagereurope.eu");
     expect(Array.isArray(data.records)).toBe(true);
   });
 });

@@ -35,7 +35,7 @@ function createAuthContext(): TrpcContext {
   const user: AuthenticatedUser = {
     id: 42,
     openId: "test-user-openid",
-    email: "francois-dimpre@intemporelle.eu",
+    email: "francois-dimpre@studiomanagereurope.eu",
     name: "François Dimpré",
     loginMethod: "manus",
     role: "admin",
@@ -186,7 +186,7 @@ describe("auth router", () => {
     const result = await caller.auth.me();
 
     expect(result).toMatchObject({
-      email: "francois-dimpre@intemporelle.eu",
+      email: "francois-dimpre@studiomanagereurope.eu",
       role: "admin",
     });
   });

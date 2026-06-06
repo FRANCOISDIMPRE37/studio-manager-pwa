@@ -183,7 +183,7 @@
     "consent_text": "I agree that my personal data will be processed in accordance with GDPR",
     "data_retention": "Data retention: 3 years",
     "rights": "You have the right to access, rectify and delete your data",
-    "contact_dpo": "DPO contact: rgpd@intemporelle.eu"
+    "contact_dpo": "DPO contact: rgpd@studiomanagereurope.eu"
   },
   "language": {
     "select": "Language",
@@ -584,8 +584,8 @@
     "age": "Age"
   },
   "legal": {
-    "rgpd_minor": "Retention: minimum 3 years from the minor's majority (Art. L1110-4 CSP). Copy kept by the studio — Attachments: copy of the legal representative(s) ID. YOUR GDPR RIGHTS In the context of your service, we collect and process your personal data. In accordance with GDPR, you have the following rights: Art. 15 — Right of access · Art. 16 — Right of rectification · Art. 17 — Right to erasure · Art. 21 — Right to object. Retention: health data 3 years — To exercise your rights: francois-dimpre@intemporelle.eu Support: Electronic writing has the same probative value as paper writing (Art. 1366 of the Civil Code).",
-    "rgpd_adult": "Retention: minimum 3 years from the last service (Art. L1110-4 CSP). Copy kept by the studio. YOUR GDPR RIGHTS In the context of your service, we collect and process your personal data. In accordance with GDPR, you have the following rights: Art. 15 — Right of access · Art. 16 — Right of rectification · Art. 17 — Right to erasure · Art. 21 — Right to object. Retention: health data 3 years — To exercise your rights: francois-dimpre@intemporelle.eu",
+    "rgpd_minor": "Retention: minimum 3 years from the minor's majority (Art. L1110-4 CSP). Copy kept by the studio — Attachments: copy of the legal representative(s) ID. YOUR GDPR RIGHTS In the context of your service, we collect and process your personal data. In accordance with GDPR, you have the following rights: Art. 15 — Right of access · Art. 16 — Right of rectification · Art. 17 — Right to erasure · Art. 21 — Right to object. Retention: health data 3 years — To exercise your rights: francois-dimpre@studiomanagereurope.eu Support: Electronic writing has the same probative value as paper writing (Art. 1366 of the Civil Code).",
+    "rgpd_adult": "Retention: minimum 3 years from the last service (Art. L1110-4 CSP). Copy kept by the studio. YOUR GDPR RIGHTS In the context of your service, we collect and process your personal data. In accordance with GDPR, you have the following rights: Art. 15 — Right of access · Art. 16 — Right of rectification · Art. 17 — Right to erasure · Art. 21 — Right to object. Retention: health data 3 years — To exercise your rights: francois-dimpre@studiomanagereurope.eu",
     "minor_legal_frame": "■ Legal framework — Art. 371-1 et seq. of the Civil Code ■ Any piercing service on a minor requires written consent from the holder(s) of parental authority. ■ Physical presence of a legal representative is mandatory throughout the session. Retention: minimum 3 years from the minor's majority (Art. L1110-4 CSP).",
     "ink_regulation": "▪ EU Regulation 2020/2081 — Tattoo inks ▪ The inks used comply with EU Regulation 2020/2081 in force since January 4, 2022. ▪ Ink traceability is kept for 5 years (Art. R 1311-7 CSP + Order 13/03/2009).",
     "support_line": "Support: Electronic writing has the same probative value as paper writing (Art. 1366 of the Civil Code)."

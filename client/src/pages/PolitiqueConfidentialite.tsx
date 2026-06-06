@@ -12,9 +12,9 @@ export default function PolitiqueConfidentialite() {
       <section className="mb-8">
         <h2 className="text-xl font-semibold mb-3" style={{ color: 'var(--brand-cyan)' }}>1. Responsable de traitement</h2>
         <p>
-          La présente politique de confidentialité s'applique à l'application <strong>Studio Pierceur Tatoueur Dermographe</strong>, accessible à l'adresse <strong>studio.intemporelle.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
+          La présente politique de confidentialité s'applique à l'application <strong>Studio Pierceur Tatoueur Dermographe</strong>, accessible à l'adresse <strong>studio.studiomanagereurope.eu</strong>, éditée par <strong>Intemporelle</strong> (François Dimpre), France.
         </p>
-        <p className="mt-2">Contact RGPD : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a></p>
+        <p className="mt-2">Contact RGPD : <a href="mailto:privacy@studiomanagereurope.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@studiomanagereurope.eu</a></p>
       </section>
 
       {/* Section 2 */}
@@ -139,7 +139,7 @@ export default function PolitiqueConfidentialite() {
           ))}
         </ul>
         <p className="mt-4">
-          Pour exercer vos droits : <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
+          Pour exercer vos droits : <a href="mailto:privacy@studiomanagereurope.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@studiomanagereurope.eu</a>
         </p>
         <p className="mt-2" style={{ color: 'var(--brand-text-muted)' }}>
           Vous disposez également du droit d'introduire une réclamation auprès de la <a href="https://www.cnil.fr" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--brand-cyan)' }}>CNIL</a>.
@@ -201,7 +201,7 @@ export default function PolitiqueConfidentialite() {
       </section>
 
       <div className="mt-10 pt-6 text-xs text-center" style={{ borderTop: '1px solid var(--brand-border)', color: 'var(--brand-text-muted)' }}>
-        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@intemporelle.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@intemporelle.eu</a>
+        Studio Pierceur Tatoueur Dermographe by Intemporelle — <a href="mailto:privacy@studiomanagereurope.eu" style={{ color: 'var(--brand-cyan)' }}>privacy@studiomanagereurope.eu</a>
       </div>
     </div>
   );

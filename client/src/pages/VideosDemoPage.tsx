@@ -9,7 +9,7 @@ const videos = [
     title: "Motion Design Tech",
     subtitle: "Site web & LinkedIn",
     description:
-      "Style cybersécurité sombre avec animations dynamiques. Idéale pour votre site intemporelle.eu et les emails de prospection B2B.",
+      "Style cybersécurité sombre avec animations dynamiques. Idéale pour votre site studiomanagereurope.eu et les emails de prospection B2B.",
     duration: "38 sec",
     format: "16:9 Paysage",
     icon: Monitor,
@@ -265,14 +265,14 @@ export default function VideosDemoPage() {
                 06.17.07.41.69
               </a>
               <a
-                href="https://app.intemporelle.eu"
+                href="https://studio.studiomanagereurope.eu"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-opacity hover:opacity-90"
                 style={{ background: "rgba(255,255,255,0.08)", color: "white", border: "1px solid rgba(255,255,255,0.15)" }}
               >
                 <Globe size={16} />
-                app.intemporelle.eu
+                studio.studiomanagereurope.eu
                 <ExternalLink size={12} />
               </a>
             </div>

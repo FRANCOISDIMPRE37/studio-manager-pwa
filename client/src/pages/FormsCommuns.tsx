@@ -361,7 +361,7 @@ function PrintFooter({ salonInfo, docTitle }: {
           </div>
           <div style={{ textAlign: 'right' }}>
             {salonInfo?.siteWeb && <div style={{ fontWeight: 600, color: '#333' }}>{salonInfo.siteWeb}</div>}
-            <div>Développé par Société Intemporelle · www.intemporelle.eu</div>
+            <div>Développé par Société Intemporelle · www.studiomanagereurope.eu</div>
           </div>
         </div>
       </div>

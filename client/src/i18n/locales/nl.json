@@ -183,7 +183,7 @@
     "consent_text": "Ik ga akkoord dat mijn persoonsgegevens worden verwerkt in overeenstemming met de AVG",
     "data_retention": "Gegevensbewaring: 3 jaar",
     "rights": "U heeft het recht op toegang, rectificatie en verwijdering van uw gegevens",
-    "contact_dpo": "FG-contact: rgpd@intemporelle.eu"
+    "contact_dpo": "FG-contact: rgpd@studiomanagereurope.eu"
   },
   "language": {
     "select": "Taal",
@@ -560,8 +560,8 @@
     "age": "Leeftijd"
   },
   "legal": {
-    "rgpd_minor": "Bewaring: minimaal 3 jaar vanaf de meerderjarigheid van de minderjarige. Kopie bewaard door de studio. UW AVG-RECHTEN: Art. 15 — Recht op inzage · Art. 16 — Recht op rectificatie · Art. 17 — Recht op verwijdering · Art. 21 — Recht op bezwaar. Contact: francois-dimpre@intemporelle.eu",
-    "rgpd_adult": "Bewaring: minimaal 3 jaar vanaf de laatste dienst. Kopie bewaard door de studio. UW AVG-RECHTEN: Art. 15 — Recht op inzage · Art. 16 — Recht op rectificatie · Art. 17 — Recht op verwijdering · Art. 21 — Recht op bezwaar. Contact: francois-dimpre@intemporelle.eu",
+    "rgpd_minor": "Bewaring: minimaal 3 jaar vanaf de meerderjarigheid van de minderjarige. Kopie bewaard door de studio. UW AVG-RECHTEN: Art. 15 — Recht op inzage · Art. 16 — Recht op rectificatie · Art. 17 — Recht op verwijdering · Art. 21 — Recht op bezwaar. Contact: francois-dimpre@studiomanagereurope.eu",
+    "rgpd_adult": "Bewaring: minimaal 3 jaar vanaf de laatste dienst. Kopie bewaard door de studio. UW AVG-RECHTEN: Art. 15 — Recht op inzage · Art. 16 — Recht op rectificatie · Art. 17 — Recht op verwijdering · Art. 21 — Recht op bezwaar. Contact: francois-dimpre@studiomanagereurope.eu",
     "minor_legal_frame": "■ Wettelijk kader ■ Elke piercingdienst bij een minderjarige vereist schriftelijke toestemming van de houder(s) van het ouderlijk gezag. ■ Fysieke aanwezigheid van een wettelijke vertegenwoordiger is verplicht tijdens de gehele sessie.",
     "ink_regulation": "▪ EU-verordening 2020/2081 — Tatoeage-inkt ▪ De gebruikte inkten voldoen aan EU-verordening 2020/2081 van kracht sinds 4 januari 2022. ▪ Traceerbaarheid van inkten wordt 5 jaar bewaard.",
     "support_line": "Elektronisch geschrift heeft dezelfde bewijskracht als papieren geschrift."
