@@ -24,8 +24,9 @@ export default function SuperAdmin() {
   // Redirection : si on est sur un domaine studio spécifique (pas app.intemporelle.eu), rediriger vers le dashboard du studio
   useEffect(() => {
     const hostname = window.location.hostname;
+    // Autorisation de studio.intemporelle.eu pour l'administration globale
     if (hostname !== 'app.intemporelle.eu' && hostname !== 'studio.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
-      // C'est un domaine studio spécifique (studio.intemporelle.eu, studio-francois.intemporelle.eu, etc.)
+      // C'est un domaine studio spécifique, redirection vers l'accueil du studio
       window.location.href = '/';
     }
   }, []);

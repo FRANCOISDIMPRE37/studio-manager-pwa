@@ -1,14 +1,16 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { useEffect, lazy, Suspense } from "react";
-import { Route, Switch } from "wouter";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { EmployeSessionProvider, useEmployeSession } from "./contexts/EmployeSessionContext";
 import { AppProvider, useApp } from "./lib/app-context";
 import { trpc } from "@/lib/trpc";
 import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+// import Vitrine from "./pages/Vitrine"; // Composant supprimé
 import NotFound from "./pages/NotFound";
 import Inscription from "@/pages/Inscription";
 import ConnexionEmail from "@/pages/ConnexionEmail";
@@ -36,6 +38,11 @@ const Onboarding = lazy(() => import("@/pages/Onboarding"));
 const APropos = lazy(() => import("@/pages/APropos"));
 const Admin = lazy(() => import("@/pages/Admin"));
 
+const isEmployeAllowedRoute = (path: string) => {
+  const cleanPath = path.split('?')[0];
+  return cleanPath === '/pin' || cleanPath === '/clients' || /^\/clients\/[^/]+$/.test(cleanPath) || /^\/clients\/[^/]+\/document\/[^/]+$/.test(cleanPath);
+};
+
 // Composant de chargement
 function LoadingFallback() {
   return (
@@ -50,6 +57,8 @@ function LoadingFallback() {
 
 function AppRoutes() {
   const { state, setAuthenticated } = useApp();
+  const { isLoggedIn: isEmployeLoggedIn } = useEmployeSession();
+  const [location, navigate] = useLocation();
   const { data: firstLoginData, isLoading: firstLoginLoading, error: firstLoginError } = trpc.salon.getFirstLogin.useQuery(
     undefined,
     {
@@ -66,6 +75,13 @@ function AppRoutes() {
       setAuthenticated(false);
     }
   }, [state.isAuthenticated, firstLoginError, setAuthenticated]);
+
+  useEffect(() => {
+    if (isEmployeLoggedIn && !isEmployeAllowedRoute(location)) {
+      navigate('/clients');
+    }
+  }, [isEmployeLoggedIn, location, navigate]);
+
   if (state.isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center" style={{ background: 'var(--brand-navy)' }}>
@@ -83,14 +99,19 @@ function AppRoutes() {
   }
 
   // Routes publiques accessibles sans authentification
-  const path = window.location.pathname;
+  const path = location;
   const hostname = window.location.hostname;
+
+  if (isEmployeLoggedIn && !isEmployeAllowedRoute(path)) {
+    return <LoadingFallback />;
+  }
 
   if (path === '/inscription') return <Inscription />;
   if (path === '/connexion') return <ConnexionEmail />;
   
   if (path === '/super-admin') {
-    if (hostname !== 'app.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
+    // Autoriser studio.intemporelle.eu pour l'accès super-admin
+    if (hostname !== 'app.intemporelle.eu' && hostname !== 'studio.intemporelle.eu' && hostname !== 'localhost' && !hostname.startsWith('127.')) {
       window.location.href = '/';
       return null;
     }
@@ -148,6 +169,7 @@ function AppRoutes() {
           <Route path="/mentions-legales" component={MentionsLegales} />
           <Route path="/videos-demo" component={VideosDemoPage} />
           <Route path="/a-propos" component={APropos} />
+          <Route path="/vitrine" component={Vitrine} />
           <Route path="/inscription" component={Inscription} />
           <Route path="/connexion" component={ConnexionEmail} />
           <Route component={NotFound} />
@@ -162,10 +184,12 @@ function App() {
     <ErrorBoundary>
       <ThemeProvider defaultTheme="dark">
         <AppProvider>
-          <TooltipProvider>
-            <Toaster position="top-right" />
-            <AppRoutes />
-          </TooltipProvider>
+          <EmployeSessionProvider>
+            <TooltipProvider>
+              <Toaster position="top-right" />
+              <AppRoutes />
+            </TooltipProvider>
+          </EmployeSessionProvider>
         </AppProvider>
       </ThemeProvider>
     </ErrorBoundary>

@@ -12,7 +12,9 @@ export default function RgpdSalarie() {
   const [, navigate] = useLocation();
   const { state, updateClient, addClient } = useApp();
   const [search] = useLocation();
-  const salarieId = new URLSearchParams(window.location.search).get('salarieId');
+  const params = new URLSearchParams(window.location.search);
+  const salarieId = params.get('salarieId');
+  const autoPrint = params.get('print') === '1';
 
   const [formData, setFormData] = useState<Record<string, any>>({
     nomSignataire: '',
@@ -66,6 +68,42 @@ export default function RgpdSalarie() {
       }
     }
   }, [salarieData, salarie]);
+
+
+  useEffect(() => {
+    if (!autoPrint || studioUsersList.isLoading) return;
+
+    const style = document.createElement('style');
+    style.id = '__rgpd_salarie_print_style__';
+    style.innerHTML = `
+      @media print {
+        @page { size: A4; margin: 10mm; }
+        body { background: #ffffff !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        .no-print { display: none !important; }
+        .min-h-screen { min-height: auto !important; padding-bottom: 0 !important; background: #ffffff !important; }
+        .max-w-3xl { max-width: none !important; margin: 0 !important; padding: 0 !important; }
+        .bg-white { box-shadow: none !important; border-radius: 0 !important; margin: 0 !important; overflow: visible !important; }
+        input, textarea { border-color: transparent !important; background: transparent !important; }
+        canvas, img { max-width: 100% !important; }
+      }
+    `;
+    document.head.appendChild(style);
+
+    const timer = window.setTimeout(() => {
+      window.focus();
+      window.print();
+      window.setTimeout(() => {
+        const existing = document.getElementById('__rgpd_salarie_print_style__');
+        if (existing) existing.remove();
+      }, 2000);
+    }, 900);
+
+    return () => {
+      window.clearTimeout(timer);
+      const existing = document.getElementById('__rgpd_salarie_print_style__');
+      if (existing) existing.remove();
+    };
+  }, [autoPrint, studioUsersList.isLoading, salarieData, salarie, signatureData]);
 
   const updateForm = (key: string, value: any) => {
     setFormData(prev => ({ ...prev, [key]: value }));
@@ -130,7 +168,7 @@ export default function RgpdSalarie() {
       <div className="max-w-3xl mx-auto p-6">
         <button
           onClick={() => navigate('/salaries')}
-          className="flex items-center gap-2 text-sm mb-6"
+          className="no-print flex items-center gap-2 text-sm mb-6"
           style={{ color: 'var(--brand-cyan)' }}
         >
           <ChevronLeft size={16} />
@@ -158,7 +196,7 @@ export default function RgpdSalarie() {
             <div className="mt-12 pt-8 border-t border-gray-100">
               <div className="flex items-center gap-2 mb-4">
                 <FileText size={18} className="text-green-600" />
-                <h3 className="text-lg font-bold text-gray-900">Signature du salarié</h3>
+                <h3 className="text-lg font-bold text-gray-900">Signature du dirigeant</h3>
               </div>
               
               <div className="bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 p-2">
@@ -177,7 +215,7 @@ export default function RgpdSalarie() {
         </div>
 
         {saved ? (
-          <div className="flex gap-3">
+          <div className="no-print flex gap-3">
             <button
               onClick={() => window.print()}
               className="flex-1 py-4 rounded-xl font-bold text-base shadow-lg flex items-center justify-center gap-2"
@@ -197,7 +235,7 @@ export default function RgpdSalarie() {
           <button
             onClick={handleSignAndSave}
             disabled={isSaving || !signatureData}
-            className="w-full py-4 rounded-xl font-bold text-base shadow-lg transition-all active:scale-[0.98]"
+            className="no-print w-full py-4 rounded-xl font-bold text-base shadow-lg transition-all active:scale-[0.98]"
             style={{
               background: isSaving || !signatureData ? '#334155' : 'linear-gradient(135deg, #10b981, #059669)',
               color: 'white',

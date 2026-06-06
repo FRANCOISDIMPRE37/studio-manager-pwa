@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useApp } from '@/lib/app-context';
 import { X } from 'lucide-react';
 import SignaturePad from '@/components/SignaturePad';
-import { Client } from '@/lib/types';
+import { Client, SalonInfo } from '@/lib/types';
 import { FormSection, FormField, DateSlashField, LegalBox, PrintHeader, PrintFooter } from './FormsCommuns';
 
 function FormEngagementConfidentialite({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
@@ -39,7 +39,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>PRÉAMBULE</p>
         </div>
         <div className="p-4 rounded-xl text-xs leading-relaxed space-y-3" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#0f172a', lineHeight: 1.7 }}>
-          <p>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: 'var(--brand-cyan)' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
+          <p style={{ color: '#000000' }}>Dans le cadre de ses fonctions au sein du salon de piercing, le signataire est amené à accéder à des données personnelles de clients, incluant notamment des <strong style={{ color: '#000000' }}>données de santé</strong> au sens de l'article 9 du RGPD (Règlement UE 2016/679). Ces données sont strictement confidentielles et font l'objet d'une protection renforcée en droit français et européen.</p>
           <p>Conformément à l'article 29 du RGPD, les personnes agissant sous l'autorité du responsable de traitement ne peuvent traiter ces données que sur instruction de ce dernier, sauf obligation légale contraire.</p>
         </div>
       </div>
@@ -81,7 +81,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
           <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>DURÉE DE L'ENGAGEMENT</p>
         </div>
         <div className="p-4 rounded-xl text-xs leading-relaxed" style={{ background: '#f8fafc', border: '1px solid #e2e8f0', color: '#0f172a', lineHeight: 1.7 }}>
-          <p>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: 'var(--brand-cyan)' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
+          <p style={{ color: '#000000' }}>Le présent engagement prend effet à la date de signature et s'applique pendant toute la durée de la relation contractuelle. Les obligations de confidentialité <strong style={{ color: '#000000' }}>survivent à la cessation du contrat, sans limitation de durée</strong>, pour toutes les informations auxquelles le signataire a eu accès.</p>
         </div>
       </div>
 
@@ -92,11 +92,12 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
         </div>
         <div className="grid grid-cols-1 gap-6">
           <div className="p-4 rounded-xl space-y-3" style={{ background: 'var(--brand-surface)', border: '1px solid var(--brand-border)' }}>
-            <p className="text-xs font-700" style={{ color: '#1b5e20', fontWeight: 700 }}>LE SIGNATAIRE — Lu et approuvé</p>
-            <FormField label="Nom, Prénom" value={data.signataireNomSignature || ''} onChange={v => update('signataireNomSignature', v)} />
+            <p className="text-xs font-700" style={{ color: '#1b5e20', fontWeight: 700 }}>SALARIÉ — Lu et approuvé <span aria-hidden="true" style={{ color: '#b71c1c', fontWeight: 900 }}>*</span></p>
+            <FormField label="Nom, Prénom" value={data.signataireNomSignature || ''} onChange={v => update('signataireNomSignature', v)} required />
             <DateSlashField label="Date" value={data.signataireDate || ''} onChange={v => update('signataireDate', v)} required />
+            <FormField label="Nom du dirigeant" value={data.nomDirigeant || ''} onChange={v => update('nomDirigeant', v)} required />
             <SignaturePad
-              label="Signature du signataire"
+              label="Signature du dirigeant"
               value={data.signatureImageSignataire || ''}
               onChange={v => update('signatureImageSignataire', v ?? '')}
             />
@@ -110,7 +111,7 @@ function FormEngagementConfidentialite({ data, update, client }: { data: Record<
   );
 }
 // ─── Formulaire Affichage Salon ───
-function FormAffichageSalon({ data, update, client }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client }) {
+function FormAffichageSalon({ data, update, client, salonInfo }: { data: Record<string, any>; update: (k: string, v: any) => void; client: Client; salonInfo?: SalonInfo | null }) {
   const blocs = [    {
       titre: 'Pourquoi ces informations vous sont demandées ?',
       texte: "Nous collectons certaines informations afin d'assurer votre sécurité lors de la réalisation du tatouage ou du piercing. (Article 5 RGPD – principe de finalité)",
@@ -178,28 +179,12 @@ function FormAffichageSalon({ data, update, client }: { data: Record<string, any
           </div>
         ))}
       </div>
-
-      {/* Personnalisation salon */}
-      <div className="mb-4">
-        <div className="px-3 py-2 mb-3" style={{ background: 'var(--brand-navy)', borderRadius: 6 }}>
-          <p className="text-xs font-700 uppercase tracking-wider" style={{ color: '#fff', fontWeight: 700 }}>INFORMATIONS DU SALON</p>
-        </div>
-        <div className="space-y-3">
-          <FormField label="Nom du salon" value={data.nomSalon || ''} onChange={v => update('nomSalon', v)} />
-          <FormField label="Responsable du traitement (Nom, Prénom)" value={data.responsableTraitement || ''} onChange={v => update('responsableTraitement', v)} />
-          <FormField label="Email de contact RGPD" value={data.emailRgpd || ''} onChange={v => update('emailRgpd', v)} type="email" />
-          <FormField label="Durée de conservation des données" value={data.dureeConservation || '5 ans'} onChange={v => update('dureeConservation', v)} />
-        </div>
-      </div>
-
       <div className="p-4 rounded-xl" style={{ background: 'rgba(229,57,53,0.05)', border: '1px solid rgba(229,57,53,0.2)' }}>
         <p className="text-xs" style={{ color: 'var(--brand-text)', lineHeight: 1.7 }}>
-          <strong style={{ color: '#E53935' }}>Base légale :</strong> Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 (RGPD). Ce document est destiné à être affiché dans le salon ou remis au client lors de chaque prestation.
+          <strong style={{ color: '#E53935' }}>Base légale :</strong> Règlement (UE) 2016/679 du Parlement européen et du Conseil du 27 avril 2016 (RGPD). Ce document est destiné à être affiché dans le salon ou remis au client lors de chaque prestation.
         </p>
       </div>
     </>
   );
 }
-
-
 export { FormEngagementConfidentialite, FormAffichageSalon };

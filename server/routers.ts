@@ -631,6 +631,45 @@ export const appRouter = router({
       return getStudioUsersByOwner(ctx.user.id);
     }),
 
+    // Lister les profils actifs disponibles sur l’écran PIN
+    listForPin: protectedProcedure
+      .query(async ({ ctx }) => {
+        const rows = await getStudioUsersByOwner(ctx.user.id);
+        return rows
+          .filter((u: any) => u.actif)
+          .map((u: any) => ({
+            id: Number(u.id),
+            prenom: u.prenom,
+            nom: u.nom,
+            role: u.role,
+            hasPinSet: Boolean(u.hasPinSet),
+          }));
+      }),
+    // Connexion salarié par PIN sur le studio déjà ouvert
+    loginWithPin: protectedProcedure
+      .input(z.object({
+        employeId: z.number(),
+        pin: z.string().length(4).regex(/^[0-9]{4}$/, "Le PIN doit être composé de 4 chiffres"),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        const employe = await getStudioUserById(input.employeId, ctx.user.id);
+        if (!employe || !employe.actif || !employe.pinHash) {
+          throw new Error("PIN incorrect");
+        }
+        const ok = await bcrypt.compare(input.pin, employe.pinHash);
+        if (!ok) {
+          throw new Error("PIN incorrect");
+        }
+        return {
+          success: true,
+          employe: {
+            id: Number(employe.id),
+            prenom: employe.prenom,
+            nom: employe.nom,
+            role: employe.role,
+          },
+        };
+      }),
     // Créer un nouvel utilisateur
     create: protectedProcedure
       .input(z.object({

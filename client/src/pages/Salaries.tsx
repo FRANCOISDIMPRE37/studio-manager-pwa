@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from 'react';
 import { trpc } from '@/lib/trpc';
 import { toast } from 'sonner';
 import { useLocation } from 'wouter';
-import { FileText, Pencil, Trash2, UserPlus, X } from 'lucide-react';
+import { FileText, Pencil, Printer, Trash2, UserPlus, X } from 'lucide-react';
 import { useApp } from '@/lib/app-context';
 import { ClientDocument } from '@/lib/types';
 
@@ -287,7 +287,7 @@ export default function Salaries() {
 
       {/* Liste des salariés */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        {list.data?.map((salarie: any) => (
+        {list.data?.filter((s: any) => !(s.role === "admin" && s.login === "admin")).map((salarie: any) => (
           <div key={salarie.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 16, padding: 20 }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 }}>
               <div>
@@ -317,6 +317,12 @@ export default function Salaries() {
                   style={{ background: hasSignedEngagement(salarie.id) ? 'rgba(34,197,94,0.15)' : 'rgba(99,102,241,0.15)', border: `1px solid ${hasSignedEngagement(salarie.id) ? '#22c55e' : '#6366f1'}`, color: hasSignedEngagement(salarie.id) ? '#22c55e' : '#6366f1', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
                 >
                   <FileText size={14} /> {hasSignedEngagement(salarie.id) ? 'Fiche 15 signée' : 'Signer fiche 15'}
+                </button>
+                <button
+                  onClick={() => navigate(`/rgpd-salarie?salarieId=${salarie.id}&print=1`)}
+                  style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.12)', color: 'white', borderRadius: 8, padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 6, fontSize: 13 }}
+                >
+                  <Printer size={14} /> Imprimer
                 </button>
                 <button
                   onClick={() => {

@@ -1,4 +1,4 @@
-import{useState,useEffect}from'react';import{useLocation}from'wouter';import{trpc}from'@/lib/trpc';import{useEmployeSession,EmployeSession}from'@/contexts/EmployeSessionContext';import{toast}from'sonner';
+import{useState,useEffect}from'react';import{useLocation}from'wouter';import{trpc}from'@/lib/trpc';import{useEmployeSession,EmployeSession}from'@/contexts/EmployeSessionContext';import{useApp}from'@/lib/app-context';import{toast}from'sonner';
 
 // Design: "Prestige Noir" — Fond noir texturé, bordure dorée, boutons blancs
 // Palette: #000 fond, #C9A84C or, #fff boutons, #1a1a1a carte
@@ -11,11 +11,16 @@ const GOLD_BORDER = 'rgba(201,168,76,0.6)';
 export default function EcranPIN(){
   const[,nav]=useLocation();
   const{setEmploye}=useEmployeSession();
+  const{state}=useApp();
   const[step,setStep]=useState<'sel'|'pin'>('sel');
   const[selId,setSelId]=useState(0);
   const[selNom,setSelNom]=useState('');
   const[pin,setPin]=useState('');
   const{data:emps}=trpc.studioUsers.listForPin.useQuery();
+  const salonName=state.salonInfo?.nom||'votre salon';
+  const salonCity=state.salonInfo?.ville||'';
+  const selectedEmploye=emps?.find((e:any)=>e.id===selId);
+  const selectedIdentity=selectedEmploye?[selectedEmploye.prenom,selectedEmploye.nom].filter(Boolean).join(' '):selNom;
   const login=trpc.studioUsers.loginWithPin.useMutation({
     onSuccess:(d)=>{setEmploye({...d.employe,loginAt:new Date().toISOString()} as EmployeSession);nav('/clients');},
     onError:(e)=>toast.error(e.message||'PIN incorrect'),
@@ -110,15 +115,18 @@ export default function EcranPIN(){
 
         {/* Subtitle */}
         <div style={{textAlign:'center',marginBottom:24}}>
-          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>studio.intemporelle.eu</div>
-          <div style={{fontSize:11,fontWeight:600,color:GOLD,letterSpacing:'0.18em',marginTop:4}}>{step==='pin'&&selNom?selNom.toUpperCase():'MON STUDIO'}</div>
+          <div style={{fontSize:16,fontWeight:700,color:'#ffffff',letterSpacing:'0.02em'}}>app.intemporelle.eu</div>
+          <div style={{fontSize:13,fontWeight:800,color:GOLD,letterSpacing:'0.08em',marginTop:8,textTransform:'uppercase'}}>{salonName}</div>
+          {salonCity&&<div style={{fontSize:11,fontWeight:600,color:'rgba(255,255,255,0.55)',marginTop:3}}>Salon de {salonCity}</div>}
+          <div style={{fontSize:11,fontWeight:600,color:GOLD,letterSpacing:'0.18em',marginTop:8}}>{step==='pin'&&selectedIdentity?`PIN DE ${selectedIdentity.toUpperCase()}`:'TABLETTE DU SALON'}</div>
         </div>
 
         {/* PIN pad inner card */}
         <div style={{width:'100%',background:'rgba(0,0,0,0.4)',borderRadius:14,padding:'20px 16px',marginBottom:20,border:'1px solid rgba(255,255,255,0.06)'}}>
           {step==='sel'&&(
             <>
-              <p style={{color:'#ffffff',fontWeight:700,fontSize:15,textAlign:'center',marginBottom:16,marginTop:0}}>Entrez votre code PIN</p>
+              <p style={{color:'#ffffff',fontWeight:700,fontSize:15,textAlign:'center',marginBottom:8,marginTop:0}}>Qui utilise la tablette ?</p>
+              <p style={{color:'rgba(255,255,255,0.62)',fontSize:12,textAlign:'center',marginBottom:16,marginTop:0}}>Sélectionnez le profil rattaché à {salonName}, puis saisissez son code PIN.</p>
               {/* Dots placeholder */}
               <div style={{display:'flex',gap:10,justifyContent:'center',marginBottom:20}}>
                 {[0,1,2,3].map(i=><div key={i} style={{width:14,height:14,borderRadius:'50%',border:`1.5px solid ${GOLD}`,background:'transparent'}}/>)}
@@ -127,7 +135,7 @@ export default function EcranPIN(){
               <p style={{color:'rgba(255,255,255,0.5)',fontSize:12,textAlign:'center',marginBottom:12,marginTop:0}}>Sélectionnez votre profil</p>
               <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center'}}>
                 {emps?.map((e:any)=>(
-                  <button key={e.id} onClick={()=>{if(!e.hasPinSet)return;setSelId(e.id);setSelNom(e.prenom);setPin('');setStep('pin');}} style={{...empBtnStyle,opacity:e.hasPinSet?1:0.4}}>{e.prenom}</button>
+                  <button key={e.id} onClick={()=>{if(!e.hasPinSet)return;setSelId(e.id);setSelNom(e.prenom);setPin('');setStep('pin');}} style={{...empBtnStyle,opacity:e.hasPinSet?1:0.4}}>{[e.prenom,e.nom].filter(Boolean).join(' ')}</button>
                 ))}
               </div>
             </>
@@ -135,7 +143,8 @@ export default function EcranPIN(){
 
           {step==='pin'&&(
             <>
-              <p style={{color:'#ffffff',fontWeight:700,fontSize:15,textAlign:'center',marginBottom:16,marginTop:0}}>Entrez votre code PIN</p>
+              <p style={{color:'#ffffff',fontWeight:700,fontSize:15,textAlign:'center',marginBottom:8,marginTop:0}}>Code PIN de {selectedIdentity||selNom}</p>
+              <p style={{color:'rgba(255,255,255,0.62)',fontSize:12,textAlign:'center',marginBottom:16,marginTop:0}}>Vous êtes sur la tablette de {salonName}. Vérifiez le nom avant de saisir le PIN.</p>
               {/* Dots */}
               <div style={{display:'flex',gap:10,justifyContent:'center',marginBottom:20}}>
                 {[0,1,2,3].map(i=><div key={i} style={{width:14,height:14,borderRadius:'50%',border:`1.5px solid ${GOLD}`,background:i<pin.length?GOLD:'transparent',transition:'background 0.15s'}}/>)}

@@ -67,7 +67,7 @@ export default function Login() {
 
         // Connexion Studio via PIN direct
         try {
-          const res = await fetch('/api/auth/login-pin', {
+          const res = await fetch('/api/auth/pin', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ pin: newPin }),
@@ -157,6 +157,10 @@ export default function Login() {
     cursor: 'pointer', border: 'none', transition: 'all 0.2s',
   };
 
+  const displayDomain = typeof window !== 'undefined' && window.location.hostname
+    ? window.location.hostname
+    : 'studio.intemporelle.eu';
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
@@ -181,7 +185,7 @@ export default function Login() {
             style={{ width: '220px', objectFit: 'contain' }}
           />
           <h1 className="text-2xl text-white text-center" style={{ fontFamily: 'Outfit', fontWeight: 800 }}>
-            studio.intemporelle.eu
+            {displayDomain}
           </h1>
           {state.salonInfo?.nom && (
             <p className="text-sm mt-1 text-center" style={{ color: 'var(--brand-cyan)', fontFamily: 'Outfit', fontWeight: 600 }}>
